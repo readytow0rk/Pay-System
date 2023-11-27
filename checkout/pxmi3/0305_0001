@@ -1,0 +1,4860 @@
+var isMicrosoft = !!window.MSInputMethodContext;
+
+// Console Object is not created by default in IE
+// https://www.quora.com/What-does-the-JavaScript-error-console-is-undefined-mean-and-how-do-you-correct-it
+window.console = window.console || (function () {
+  var c = {};
+  c.log = c.warn = c.debug = function (s) { };
+  return c;
+})();
+
+//http://stackoverflow.com/questions/7918868/how-to-escape-xml-entities-in-javascript
+String.prototype.decodeHTML = function () {
+  return this.replace(/&apos;/g, "'").replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+};
+
+// IE9 or older doesn't support checkValidity, we will provide stub function to avoid noises
+if (!HTMLSelectElement.prototype.checkValidity) {
+  HTMLSelectElement.prototype.checkValidity = function () {
+    return true;
+  }
+}
+
+//IE8 or older doesn't support forEach() on Array, we need to polyfill it for IE8. 
+if (!Array.prototype.forEach) {
+  Array.prototype.forEach = function (callback) {
+    if (callback != null) {
+      for (var i = 0; i < this.length; i++) {
+        callback.apply(this, [this[i], i, this]);
+      }
+    }
+  }
+}
+
+//IE doesn't support startsWith, we will polyfill it
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function (searchString) {
+    return this.indexOf(searchString) == 0;
+  }
+}
+
+//originally JQuery '.hover(handlerInOUt)' , which is equivalent to add event handler to "mousesenter" and "mouseleave"
+PxOnEvent(".DpsTableCell", "mouseenter", function () {
+  PxAddClass(this, "DpsTableCellFirstHoverDone"); 
+});
+
+PxOnEvent(".DpsTableCell", "mouseleave", function () {
+  PxAddClass(this, "DpsTableCellFirstHoverDone"); 
+});
+
+//check IE version for IE <= 10, will return false for IE11
+//https://stackoverflow.com/questions/10964966/detect-ie-version-prior-to-v9-in-javascript
+function isIE10OrOlder() {
+  var myNav = navigator.userAgent.toLowerCase();
+  return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) : false;
+}
+
+function makeASCIIOnly(evt, elem) {
+  if(evt.type == "keyup" && (evt.keyCode == 16 || evt.keyCode == 9 || (evt.keyCode >= 35 && evt.keyCode <= 40)))
+    return;
+
+  var whiteList = /^[ -\x7D]+$/;
+  var value = elem.value;
+
+  if(value.length && !whiteList.test(value)) {
+    value = value.replace(/[^ -\x7D]/g, "");
+    elem.value = value;
+  }
+}
+
+function makeCardNumber(evt, elem) {
+  var formattedText = elem.value.replace(/\D/g, '');
+
+  if (formattedText.length > 1) {
+    if (isAmexCard(formattedText)) { // 37 or 34
+      // EX: AMEX 3717 123456 030091 OR 3717 123456 03009
+      formattedText = formattedText.match(new RegExp('^[0-9]{1,4}|[0-9]{1,6}', 'g')).join(' ');
+      updateCardNumberInputConstraint(elem, true);
+    }
+    else {
+      formattedText = formattedText.match(new RegExp('.{1,4}', 'g')).join(' ');
+      updateCardNumberInputConstraint(elem, false);
+    }
+  }
+
+
+  elem.value = formattedText;
+}
+
+function updateCardNumberInputConstraint(elem, isAmex) {
+  var update = function (minLength, maxLength) {
+    if (minLength > 0) {
+      elem.setAttribute("minLength", minLength);
+      elem.setAttribute("pattern", '(?=.{' + minLength + ',}).*');
+    }
+
+    if (maxLength > 0) {
+      elem.setAttribute("maxLength", maxLength);
+    }
+  }
+
+  var calculateAmexLength = function (length) {
+    if (length <= 4) {
+      return length;
+    } else if (length <= 10) {
+      return length + 1;
+    } else {
+      return length + 1 + Math.floor((length - 4 - 1) / 6);
+    }
+  }
+
+  if (elem.isAmex == isAmex)
+    return;
+
+  var MinLength = parseInt(elem.getAttribute("originalMinLength"));
+  var MaxLength = parseInt(elem.getAttribute("originalMaxLength"));
+  if (isNaN(MinLength) || isNaN(MaxLength))
+    return;
+
+  if (isAmex) {
+    MinLength = calculateAmexLength(MinLength);
+    MaxLength = calculateAmexLength(MaxLength);
+  } else {
+    MinLength = MinLength + Math.floor((MinLength - 1) / 4);
+    MaxLength = MaxLength + Math.floor((MaxLength - 1) / 4);
+  }
+
+  update(MinLength.toString(), MaxLength.toString());
+  elem.isAmex = isAmex;
+}
+
+function makePhoneNumber(evt, elem) {
+
+  // spacing, ex 22 333 4444 or 022 333 4444
+  var cursor = elem.selectionStart;
+  var formattedText = elem.value.replace(/\D/g, '');
+
+  if (formattedText.length > 0) {
+    formattedText = formattedText.match(new RegExp('^0[0-9]{1,2}|^[1-9]{1,2}|.{1,4}$|.{1,3}', 'g')).join(' ');
+  }
+
+  elem.value = formattedText;
+
+  try {
+    if (evt.inputType == "deleteContentForward" || evt.inputType == "deleteContentBackward") {
+      elem.setSelectionRange(cursor, cursor);
+    }
+  } catch (e) { }
+}
+
+
+function makeIRDNumber(evt, elem) {
+
+  // spacing, ex 00-000-000 or 000-000-000
+  var cursor = elem.selectionStart;
+  var formattedText = elem.value.replace(/\D/g, '');
+
+  if (formattedText.length == 8) {
+    formattedText = formattedText.match(new RegExp('^[0-9]{2}|.{1,3}', 'g')).join('-');
+  }
+  else if (formattedText.length > 0) {
+    formattedText = formattedText.match(new RegExp('.{1,3}', 'g')).join('-');
+  }
+
+  elem.value = formattedText;
+
+  try {
+    if (evt.inputType == "deleteContentForward" || evt.inputType == "deleteContentBackward") {
+      elem.setSelectionRange(cursor, cursor);
+    }
+  } catch (e) { }
+}
+
+
+function CheckIRDNumberWithSpaces(b) {
+
+  var n = b.replace(/\s/g, '');
+  n = n.replace(/-/g, '');
+
+  if (parseInt(n, 10) <= 10, 000, 000)
+    return false;
+
+  if (n.match(/\D+/g) != null || n.match(/\d{8,9}/g) == null)
+    return false;
+
+  if (n.length == 8)
+    n = '0' + n;
+
+  // 3 , 2, 7, 6, 5, 4, 3, 2
+  var t = n[0] * 3 + n[1] * 2 + n[2] * 7 + n[3] * 6 + n[4] * 5 + n[5] * 4 + n[6] * 3 + n[7] * 2;
+  var m = t % 11;
+
+  if (m == 1) {
+    // 7, 4, 3, 2, 5, 2, 7, 6
+    t = n[0] * 7 + n[1] * 4 + n[2] * 3 + n[3] * 2 + n[4] * 5 + n[5] * 2 + n[6] * 7 + n[7] * 6;
+    m = t % 11;
+  }
+
+  if (m == 1)
+    return false;
+
+  if (m == 0)
+    return n[8] == 0;
+
+  return 11 - m == n[8];
+
+}
+
+
+function makeBankAccountNumber(elem, currency) {
+  // In New Zealand, bank account numbers are generally presented in the format: BB-bbbb-AAAAAAA-SSS where B is the bank number (2 digits), 
+  // b is the branch number(4 digits), A is the account number(7 digits) and S are digits of the suffix(2 or 3 digits)
+  //
+  // In Australia, bank account numbers are generally presented in the format: XXY-ZZZ AAAAAAAAA where XXY-ZZZ is BSB code, The first two digits (XX)
+  // specify the bank or financial institution where the money is being sent.The third digit(Y) tells which state the branch is located in.
+  // The last three digits(ZZZ) specify the address of the branch.Z is the account number(8 or 9 digits)
+
+  var formattedText = elem.value.replace(/\D/g, '');
+
+  var extractSection = function (start, length, delimiter) {
+    var subText = formattedText.slice(start, start + length);
+    if (subText)
+      return delimiter + subText;
+    else
+      return '';
+  };
+
+  if (formattedText.length > 0) {
+    if (currency == 'NZD') {
+      formattedText = extractSection(0, 2, '') + extractSection(2, 4, '-') + extractSection(6, 7, '-') + extractSection(13, 3, '-');
+    } else if (currency == 'AUD') {
+      formattedText = extractSection(0, 3, '') + extractSection(3, 3, '-') + extractSection(6, 10, ' ');
+    }
+  }
+
+  elem.value = formattedText;
+}
+
+function CheckRequirement(LHSName, RHSElemName, predicate, message) {
+  var LHSElem = PxSelectOne("[name=" + LHSName + "]");
+  if (!LHSElem)
+	  return true;
+  
+  var LHSVal = LHSElem ? LHSElem.value : undefined;
+  var RHSElem = PxSelectOne("[name=" + RHSElemName + "]");
+  var RHSVal = RHSElem ? RHSElem.value : undefined;
+  
+  if ((LHSVal || RHSVal) && !predicate(LHSVal, RHSVal)) {
+    LHSElem.setCustomValidity(message);
+    return false;
+  }
+  
+  return true;
+}
+
+// b - Number to validate or add checksum digit to, as Number or as String. y - optional; if true, add checksum digit to b, otherwise validate. t, e, s, u - placeholders
+function CheckLuhn(b, y, t, e, s, u) {
+
+  // accept the empty string as special case.
+  if ( b.length == 0 )
+	  return true;
+	  
+  if (b.match(/\D+/g) != null || b.match(/\d{13,19}/g) == null)
+    return false;
+
+  s = 0;
+  u = y ? 1 : 2;
+  // ensure b is a string and iterate over digits in b from right to left
+  for (t = (b = b + '').length; t--;) {
+    e = b[t] * (u ^= 3); // if we are at an "even" position, double the digit
+    s += e - (e > 9 ? 9 : 0); // reduce to one digit and add up
+  }
+  t = 10 - (s % 10 || 10); // calculate the difference to modulo10
+  return y ? b + t : !t; // if calculating checksum, concat; if validating, 0 is a pass
+}
+
+function CheckLuhnWithSpaces(b, y, t, e, s, u) {
+  var formattedText = b.replace(/\s/g,'');
+  return CheckLuhn(formattedText, y, t, e, s, u);
+}
+
+function IsThereALuhnPresent(text) {
+  var matcher = /^\D*(\d{13,19}).*$/;
+  var matches = matcher.exec(text);
+
+  if (matches == null)
+    return false;
+
+  return CheckLuhn(matches[1]);
+}
+
+function EnsureAlphanumeric(text) {
+  return text.match(/\W+/g) == null;
+}
+
+function EnsureAlphanumericWithPotentialSpaces(text) {
+  return text.match(/^(\s*\w+\s*)+$/) != null;
+}
+
+function EnsureDigits(text) {
+  return text.match(/\D+/g) == null;
+}
+
+function CleanupCardholderName(value) {
+    return value.replace(/[\u2018\u2019]/g, "'");
+}
+
+function ValidateCardHolderName() {
+  PxSelectAll("input[name=CardHolderName]").forEach(function(node, index) {
+    var cardHolderName = node.value.trim();
+    if (cardHolderName.length == 0 ||
+      IsThereALuhnPresent(cardHolderName) == true) {
+      node.setCustomValidity("Value is invalid, please try again. Example: John Smith");
+    }
+    else {
+        node.value = CleanupCardholderName(cardHolderName);
+    }
+    return true;
+  });
+}
+
+function ResetFieldsetControls() {
+  //finds nearest parent fieldset, loops through all controls and 'clears' them
+  var fieldSet = $('[name=Clear]').closest("fieldset");
+
+  fieldSet.find('input,textarea:not([readonly])').each(function () {
+    //this should fetch pretty much everything needed apart from dropdowns. 
+    this.value = '';
+  });
+
+  fieldSet.find('.DpsFieldAmountNumeral').each(function() { this.value = '0'; });
+  fieldSet.find('.DpsFieldAmountFraction').each(function() { this.value = '00'; });
+
+  //select:not([class^=DpsFieldDate])
+  fieldSet.find('select').each(function() {
+    //fetch dropdowns. If a dropdown has no blank option, then don't touch it (can't really 'clear' it). Search dropdowns generally would have mustselect="0", but dates usually wouldn't have a blank option 
+    $(this).find('option').each(function() {
+      if (this.value === '')
+        $(this).prop('selected', true);
+    });
+  });
+
+  //clear datetime filters... make the assumption that startDay/Month/Year will precede endDay/Month/Year in the <fieldset>s
+  var startVersion = true; //is this the startDay/Month/Year or the endDay/Month/Year
+  var startDate = new Date();
+  var endDate = new Date(startDate.getTime() + 1 * 24 * 60 * 60 * 1000); //+ 1 day. let javascript handle the day/month/year overflow logic.
+
+  fieldSet.find('select.DpsFieldDateDay').each(function () {
+    //if the datetime allows a blank value, then it should have already been set to that value by the 2nd selector::find in this method. So all is good.
+    if (startVersion && $(this).val() != '') {
+      this.selectedIndex = startDate.getDate() - 1;
+      //Clear the Custom Validity set by PxValidateDateRange
+      this.setCustomValidity("");
+    }
+    else if ($(this).val() != '')
+      this.selectedIndex = endDate.getDate() - 1;
+    startVersion = !startVersion;
+	
+  });
+  
+  startVersion = true;
+  
+  fieldSet.find('select.DpsFieldDateMonth').each(function() {
+    //if the datetime allows a blank value, then it should have already been set to that value by the 2nd selector::find in this method. So all is good.
+    if (startVersion && $(this).val() != '')
+      this.selectedIndex = startDate.getMonth();
+    else if ($(this).val() != '')
+      this.selectedIndex = endDate.getMonth();
+    startVersion = !startVersion;
+  });
+
+  startVersion = true;
+
+  fieldSet.find('select.DpsFieldDateYear').each(function() {
+    //if the datetime allows a blank value, then it should have already been set to that value by the 2nd selector::find in this method. So all is good.
+    if (startVersion && $(this).val() != '')
+      this.value = startDate.getYear() + 1900;
+    else if ($(this).val() != '')
+      this.value = endDate.getYear() + 1900;
+    startVersion = !startVersion;
+  });
+  
+  //these are actually Reset to '00' (not related to current time)
+  fieldSet.find('select.DpsFieldDateHour, select.DpsFieldDateMin, select.DpsFieldDateSec').each(function() {
+    this.selectedIndex = 0;
+  });
+}
+
+function isMasterCard(cn) {
+  if (cn.length < 8)
+    return false;
+
+  var prefixStr2 = cn.slice(0, 2);
+  var prefix2 = parseInt(prefixStr2, 10);
+  if ((prefix2 >= 51) && (prefix2 <= 55))
+    return true;
+
+  var prefixStr8 = cn.slice(0, 8);
+  var prefix8 = parseInt(prefixStr8, 10);
+  return (prefix8 >= 22210000) && (prefix8 <= 27209999);
+}
+
+function isJCBCard(cn) {
+  
+  if (cn.length < 8)
+    return false;
+
+  var prefixStr8 = cn.slice(0, 8);
+  var prefix8 = parseInt(prefixStr8, 10);
+  return ((prefix8 >= 35000000) && (prefix8 <= 35999999)) ||
+         ((prefix8 >= 21310000) && (prefix8 <= 21319999)) ||
+         ((prefix8 >= 18000000) && (prefix8 <= 18009999)) ||
+         ((prefix8 >= 30880000) && (prefix8 <= 30949999)) ||
+         ((prefix8 >= 30960000) && (prefix8 <= 31029999)) ||
+         ((prefix8 >= 31120000) && (prefix8 <= 31209999)) ||
+         ((prefix8 >= 31580000) && (prefix8 <= 31599999)) ||
+         ((prefix8 >= 33370000) && (prefix8 <= 33499999));
+
+}
+
+function isVisaCard(cn) {
+  if (cn.length < 1)
+		return false;
+	var prefixStr2 = cn.slice(0, 1);
+	var prefix2 = parseInt(prefixStr2, 10);
+	return (prefix2 == 4);
+}
+
+function isAmexCard(cn) {
+	if (cn.length < 2)
+		return false;
+	var prefixStr2 = cn.slice(0, 2);
+	var prefix2 = parseInt(prefixStr2, 10);
+	return (prefix2 == 34) || (prefix2 == 37) ;
+}
+
+function isDiscoverCard(cn) {
+  if (cn.length < 4)
+    return false;
+
+  var prefixStr4 = cn.slice(0, 4);
+  if (prefixStr4 == "6011")
+    return true;
+
+  var prefixStr3 = cn.slice(0, 3);
+  var prefix3 = parseInt(prefixStr3, 10);
+  if (prefix3 >= 644 && prefix3 < 660)
+    return true;
+
+  return false;
+}
+
+function ValidateCvc2() {
+  cardElement = PxGetElementByName('CardNumber');
+  if(!cardElement)
+    return;
+  cn = '';
+  if (cardElement.value) {
+    cn = cardElement.value;
+  }
+  else if (cardElement.innerHTML) {
+    cn = cardElement.innerHTML;
+  }
+
+  PxSelectAll("input[name=Cvc2]").forEach(function (node, index) {
+    var cvc2 = node.value.trim();
+    if (cn.length > 1) {
+      var cardName = (this.__PageDetail && this.__PageDetail.CardName) ? this.__PageDetail.CardName : "";
+      var isVisa = isVisaCard(cn) || cardName == "Visa";
+      var isMastercard = isMasterCard(cn) || cardName == "MasterCard";
+      var isJCB = isJCBCard(cn) || cardName == "JCB";
+      var isAmex = isAmexCard(cn) || cardName == "Amex";
+      if (((isVisa|| isMastercard || isJCB) && cvc2.length != 3) || (isAmex && cvc2.length != 4))
+        node.setCustomValidity("Your card number requires a valid cvc value.");
+    }
+    return true;
+  });
+}
+
+function PxValidateIpAddressElement(name) {
+    var ve = document.getElementsByName(name)[0];
+    if (ve && ve.value) {
+        var ipValidate = PxValidateIpAddressElementFromString(ve.value)
+        if (ipValidate.length > 0)
+            ve.setCustomValidity(ipValidate);
+    }
+}
+
+function PxValidateIpAddressElementFromString(value) {
+    if (value.length != 0) {
+        if (value >= 0 && value <= 255)
+            return '';
+        return 'Value must be between 0 and 255, please try again.';
+    }
+    return '';
+
+}
+
+function PxRemovePxPayInternalFields() {
+  var elem = PxSelectOne("[name=IIdMenuItemSelected]"); if (elem) { elem.parentNode.removeChild(elem);}
+  elem = PxSelectOne("[name=IId]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=IIdVal]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=IIdMenuShown]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=CurrentTab]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=PxStats]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=IsPageInFrame]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=IIdValReal]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=UserDeviceFingerprint]"); if (elem) { elem.parentNode.removeChild(elem); }
+  elem = PxSelectOne("[name=CallerPageId]"); if (elem) { elem.parentNode.removeChild(elem); }
+}
+
+function PxValidateBankAccount(name, index, countryName) {
+  var ve = document.getElementsByName(name)[0];
+  if (!ve) return;
+
+  ve.value = ve.value.trim();
+  var value = ve.value;
+
+  for (var currentIndex = index; currentIndex; --currentIndex) {
+    //if preceding field is filled out, then all of the fields should be filled out. only allow blank if all 4 inputs are blank
+    var precedingElementIndex = getIndex(ve) - 1 - index + currentIndex;
+    var precedingElement = ve.form[precedingElementIndex];
+    if (precedingElement.value.length && value.length == 0 || precedingElement.value.length == 0 && value.length) {
+      ve.setCustomValidity('Field must be filled out.');
+      return;
+    }
+  }
+
+  //atm. country checks are not too precise e.g. 32-37 would pass for NZ even though they are invalid. no branch validation either
+  if (index == 0 && countryName == 'NZ' && value > 38)
+    ve.setCustomValidity('Value must be between 0 and 38 for NZ banks, please try again.');
+}
+
+function PasteMultiBox(element, e, boxLengths, stripOutRegex, lengthRequirement) {
+  var data = e.originalEvent.clipboardData.getData('Text').trim();
+
+  if (stripOutRegex)
+    data = data.replace(stripOutRegex, '');
+
+  if (lengthRequirement && lengthRequirement != data.length) {
+    //no way in javascript to get value of element before the paste (handler gets called afterwards) without a crap hack like setting a timeout. so just clear the element.
+    element.value = '';
+    alert('Length requirement was not met. Requirement: ' + lengthRequirement);
+    return;
+  }
+
+  var i = 0;
+  var elementIndex = getIndex(element);
+
+  for (var index = elementIndex, substringStart = 0; i < boxLengths.length; ++i) {
+    var individualBox = element.form[index + i];
+    individualBox.value = data.substring(substringStart, substringStart + boxLengths[i]);
+    substringStart += boxLengths[i];
+  }
+  //set focus 1 element past the last item in the multibox
+  element.form[(elementIndex + i) % element.form.length].focus();
+  element.form[(elementIndex + i) % element.form.length].select();
+}
+
+
+var XmlHttp = null;
+
+function RemoveContent(id) {
+  var elem = PxSelectOne("#" + id); if (elem) { elem.style.display = "none"; }
+}
+
+function InsertContent(id) {
+  var elem = document.getElementById(id); if (elem) { elem.style.display = "" };
+}
+
+function GetXmlHttpObject() {
+  try {
+    // Firefox, Opera 8.0+, Safari
+    xmlHttp = new XMLHttpRequest();
+  } catch (e) {
+    // IE
+    try {
+      xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (e) {
+      xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+  }
+  return xmlHttp;
+}
+
+
+PxOnEvent('.DpsSearchField', 'input', function () {
+  if(this.value.length==0)
+    PxTriggerEvent(this, 'SelectValueChanged'); //no item in the search <li> was clicked, however it was cleared so technically we should re-query
+});
+
+function ShowSearchUiItemList(responseObj) {
+  var target = document.getElementById(responseObj.UiItemId);
+
+  if (target == null)
+    return;
+
+  // remove elements if we've lost focus.
+  target.onblur = function() {
+    FinalizeSelectedListOption(this.id, this.value);
+  };
+
+  // display list for active input only
+  if (target != document.activeElement || !document.activeElement.value)
+    return;
+
+  var divId = responseObj.UiItemId + '_' + "Popup";
+  var existing = document.getElementById(divId);
+  if (existing != null)
+    document.body.removeChild(existing);
+
+  var rootDiv = document.createElement('div');
+  rootDiv.id = divId;
+  rootDiv.setAttribute('class', 'DpsSearchPopupBox');
+
+  PxAssignPosition(target, rootDiv, 0);
+
+  var searchList = document.createElement('ul');
+  searchList.id = responseObj.UiItemId + '_' + "list";
+  searchList.setAttribute('class', 'DpsSearchList');
+  searchList.setAttribute('role', 'listbox');
+
+  var position = 0;
+  var nextPosition = 0;
+
+  $(responseObj.ListElements).each(
+    function(index, elementValue) {
+      var listElement = document.createElement('li');
+      listElement.setAttribute('role', 'option');
+      listElement.innerText = elementValue;
+      listElement.textContent = elementValue.decodeHTML();
+
+      listElement.id = responseObj.UiItemId;
+      listElement.setAttribute('data-selected', 0);
+
+      listElement.onmouseenter = function() {
+        // clear all currently selected.
+        var length = this.parentNode.children.length;
+        for (var i = 0; i < length; ++i) {
+          this.parentNode.children[i].setAttribute('data-selected', 0);
+        }
+
+        // set this element option to selected.
+        searchOptionMouseHighlighted = true;
+        this.setAttribute('data-selected', 1);
+      };
+
+      listElement.onmouseleave = function() {
+        searchOptionMouseHighlighted = false;
+        this.setAttribute('data-selected', 0);
+      };
+      // set callback when pressed.
+      listElement.onclick = PxSearchOptionSelected; //tried to bind onkeydown here but could not
+      searchList.appendChild(listElement);
+    }
+  );
+
+  // if there was no search results, let them know.
+  if (responseObj.ListElements.length == 0) {
+    var listElement = document.createElement('li');
+    listElement.setAttribute('role', 'option');
+    listElement.innerText = searchOptionNoResultsFound;
+    listElement.textContent = searchOptionNoResultsFound;
+    listElement.id = responseObj.UiItemId;
+
+    searchList.appendChild(listElement);
+  }
+
+  if (searchOptionPasteOn) {
+    rootDiv.className += ' DpsHidden';
+    searchOptionPasteOn = false;
+  }
+
+  rootDiv.appendChild(searchList);
+  document.body.appendChild(rootDiv);
+}
+
+//this is done on a DataMap level now. Pretty sure can delete. Maybe wait till next release (so no risk of breaking CRM.)
+function makeUnique(array) {
+  return array.filter(function (item, index) {
+    return array.indexOf(item) == index;
+  });
+}
+
+function PxClearDropList(item) {
+  while (item && item.firstChild) {
+    item.removeChild(item.firstChild);
+  }
+}
+
+// check whether the item is from the non-active tab.
+function PxIsInsideHiddenTab(item) {
+  if (item != null && item.parentElement != null) {
+    var hiddenTabParent = $(item.parentElement).closest(".tabbertabhide");
+    if (hiddenTabParent.length > 0)
+      return true;
+  }
+  return false;
+}
+
+// disable item and hide input & label(whole <tr>)
+function PxDisableAndHideInput(target) {
+  target.parentNode.parentNode.style.display = "none";
+  target.disabled = true;
+}
+
+// enable item and show input & label(whole <tr>)
+function PxEnableAndShowInput(target) {
+  target.disabled = false;
+  target.parentNode.parentNode.style.display = "";
+}
+
+function FilterDroplist(responseObj) {
+  var target = PxSelectOne("#" + responseObj.UiItemId); if (!target) {return;}
+  var currentValue = target.value;
+
+  //data should be valid by default otherwise empty contents may trigger validation error
+  target.setAttribute('data-is-valid', 1);
+  PxClearDropList(target);
+
+  // put the label (selected-default) in front or else the order is meaningless
+  // check atrribute set by engine if the place older shown as initial selected option
+  if (target.getAttribute('data-initial-placeholder') == "1") {
+    // get the place holder value
+    var placeholderOption = target.getAttribute('data-placeholder');
+    if (placeholderOption.length > 0) {
+      // place holder will be shown as selected but disabled value
+      var elem = PxCreateElement(currentValue != "" ? "<option disabled value=''></option>" : "<option disabled selected value=''></option>");
+      elem.innerHTML = placeholderOption;
+      target.appendChild(elem);
+    }
+  }
+
+  // engine will put an attribute on the referencing item and hide it if the list of selectable value returned is empty
+  var hideEmpty = target.getAttribute('data-hide-empty') == "1";
+
+  if (responseObj.ListElements && responseObj.ListElements.constructor === Array) {
+
+    // return list is not empty, shown referencing item
+    if (hideEmpty)
+      PxEnableAndShowInput(target);
+
+    // if it is a required field or default blank is not allowed explicitly, we should not have empty item
+    if (!target.hasAttribute('required') && target.getAttribute('allow-default-blank') != "0" )
+        responseObj.ListElements.unshift(''); //i.e. push_front
+
+    //not sure if makeUnique should be run based on an attribute being set. I think just always run it.
+    makeUnique(responseObj.ListElements).forEach(
+      function (elementValue, index) {
+        var decodedElementValue = elementValue.decodeHTML();
+        var elem = (decodedElementValue != currentValue) ? PxCreateElement("<option></option>") : PxCreateElement("<option selected></option>");  
+        elem.setAttribute("value", decodedElementValue);
+        elem.innerHTML = elementValue;
+        target.appendChild(elem);
+      }
+      );
+
+    //If we have a valid value pre-selected, but it's not in the new list, allow it to be retained, but mark it as invalid
+    //If droplist is hidden but not inside a hidden tab we should not keep invalid item. https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent
+    if (target.value != currentValue && currentValue != "" && (target.offsetParent != null || PxIsInsideHiddenTab(target))) {
+      PxAddClass(target, 'DpsFieldError');
+      var elem = PxCreateElement("<option selected class=DpsTextError disabled></option>");
+      elem.setAttribute("value", currentValue.decodeHTML());
+      elem.textContent = currentValue;
+      target.appendChild(elem);
+        target.setAttribute('data-is-valid', 0);
+      PxBindEvent(target, 'change', function () {
+        PxRemoveClass(target, 'DpsFieldError'); target.setAttribute('data-is-valid', 1);
+      });
+    }
+    else {
+      PxRemoveClass(target, 'DpsFieldError');
+      target.setAttribute('data-is-valid', 1);
+      PxTriggerEvent(target, 'DropListReloaded');
+    }
+  }
+  else {
+    // return list is empty, disable and hide referencing item.
+    if (hideEmpty)
+      PxDisableAndHideInput(target);
+  }
+
+  if (target.getAttribute('disable-ajax-cascade') != "1")
+      PxTriggerEvent(target, 'SelectValueChanged');
+}
+
+var referenceFilterCustomResponseHandlers = {};
+
+function FilterTextInput(responseObj) {
+  var UiItem = document.getElementById(responseObj.UiItemId);
+  //check if there's a custom handler for handling this ajax response object.
+  if (referenceFilterCustomResponseHandlers[UiItem.id] != undefined) {
+    referenceFilterCustomResponseHandlers[UiItem.id](responseObj, UiItem);
+    return;
+  }
+  //there's no custom handler. So do the default, which is to grab the field with the same name as the DOM item
+  var value = responseObj.Record[UiItem.getAttribute("name")]; //don't use .name as that won't work nicely for <span>s which we seem to use for readonly inputs
+	
+	if(UiItem.hasAttribute("readonly"))
+		UiItem.innerHTML = value; //this is a <span>
+	else
+		UiItem.value = value;
+}
+
+function PxOnXmlHttpObjectStateChanged() {
+  //basing this on: http://www.ajax-tutor.com/130/handle-response/
+  if (this.readyState === 4 && this.status >= 200 && this.status < 300) {
+    var responseObj = JSON.parse(this.responseText);
+
+    if (responseObj.ActionType == "DoSearchFilter")
+      ShowSearchUiItemList(responseObj);
+    else if (responseObj.ActionType == "DoDroplistFilter")
+      FilterDroplist(responseObj);
+    else if(responseObj.ActionType == "DoTextInputFilter")
+      FilterTextInput(responseObj);
+    else if (responseObj.ActionType == "ValidateMerchant" || responseObj.ActionType == "DoTransaction")
+      ApplePaySessionResponseReceived(responseObj, false);
+    else if(responseObj.ActionType == "GetList")
+      PxRenderTables(responseObj);
+    else if(responseObj.ActionType == "UploadFile")
+      PxHandleUploadFileResponse(responseObj);
+    else if (responseObj.ActionType == "TotpTokenVerify" && HandleTotpTokenVerifyResponse instanceof Function)
+      HandleTotpTokenVerifyResponse(responseObj);
+    else if (responseObj.ActionType == "Update")
+      PxHanldeAjaxUpdateResponse(responseObj);
+    else
+      console.log("Unknown actionType for AJAX response. " + responseObj.ActionType);
+  }
+  else if (this.status > 300) {
+    var requestObj = JSON.parse(this.requestText);
+    if (requestObj.ActionType == "ValidateMerchant" || requestObj.ActionType == "DoTransaction") {
+      ApplePaySessionResponseReceived({}, true, requestObj);
+    }
+  }
+}
+
+// searchPanelInfo.searchButtonId is used to send the search request when clicking on "Apply to Default Sort" button and sortable column header
+var searchPanelInfo = { searchButtonId: "", searchPanelName: "" };
+
+function PxInitialSearchButtonId(id, panelName) {
+  searchPanelInfo.searchButtonId = id;
+  searchPanelInfo.searchPanelName = panelName;
+}
+
+function PxSubmitSearch() {
+  var SearchButton = $("#" + searchPanelInfo.searchButtonId);
+  if (SearchButton && SearchButton.length) {
+    SearchButton.click();
+  }
+}
+
+function PxUpdateSortOrderForColumnHeader(sortcolumnid, fieldname, sortorderfieldid) {
+  var CurrentSortOrder = $("#" + sortcolumnid).data("CurrentSortOrder");
+  var NextSortOrder = "";
+  var FullSortOrderText = "";
+  //sort order change sequence: "No order" -> ASC -> DESC -> "No order"
+  if (!CurrentSortOrder) {
+    NextSortOrder = "ASC";
+  }
+  if (CurrentSortOrder == "ASC") {
+    NextSortOrder = "DESC";
+  }
+  if (CurrentSortOrder == "DESC") {
+    FullSortOrderText = $("#" + sortorderfieldid).val();
+    if (FullSortOrderText.toUpperCase().trim() == fieldname.toUpperCase() + " DESC,") {
+      NextSortOrder = "ASC";
+    }
+  }
+
+  if (NextSortOrder) {
+    PxChangeSortOrder(fieldname, NextSortOrder, sortorderfieldid);
+  } else {
+    PxRemoveSortOrder(fieldname, sortorderfieldid);
+  }
+}
+
+function PxOnClickSortableColumnHeader(sortcolumnid, fieldname, sortorderfieldid) {
+  PxUpdateSortOrderForColumnHeader(sortcolumnid, fieldname, sortorderfieldid);
+  PxSubmitSearch();
+  // we need to udpate the sort states.
+  PxInitialSortableColumnHeader(sortcolumnid, fieldname, sortorderfieldid);
+}
+
+function PxOnClickSortableColumnHeaderAjax(sortcolumnid, fieldname, sortorderfieldid, tableId, PostUrl) {
+  PxUpdateSortOrderForColumnHeader(sortcolumnid, fieldname, sortorderfieldid);
+  var tableElem = PxSelectOne('#' + tableId);
+  if (tableElem ) {
+    PxTriggerSearchWithValidation(PostUrl, tableElem, tableId);
+  }
+
+  PxInitialSortableColumnHeader(sortcolumnid, fieldname, sortorderfieldid);
+}
+
+function PxNormalizeSortOrderTex(sortorderfieldid) {
+  // Add ASC if only column name is specified. <SortOrder>Username</SortOrder>. After invoking this function, the SortOrderText should be: USERNAME ASC, GROUPNAME DESC,
+  var SortOrderText = $("#" + sortorderfieldid).val();
+  if (!SortOrderText) // Defensive code. The sortorderfield should exist
+    return;
+
+  var SortOrderPairs = SortOrderText.split(","),
+    SingleSortOrderPair;
+  var LastSortPriority = 1;
+  var i, TempItem;
+  SortOrderText = "";
+  for (i = 0; i < SortOrderPairs.length; ++i) {
+    TempItem = SortOrderPairs[i].trim();
+    if (!TempItem)
+      break;
+    ++LastSortPriority;
+    SingleSortOrderPair = TempItem.split(" ");
+    SortOrderText += SingleSortOrderPair[0].trim() + " ";
+    if (SingleSortOrderPair.length == 2) {
+      SortOrderText += SingleSortOrderPair[1].trim() + ", ";
+    } else {
+      SortOrderText += "ASC, ";
+    }
+  }
+  SortOrderText.toUpperCase();
+
+  var SortOrderFiledElement = $("#" + sortorderfieldid);
+  SortOrderFiledElement.val(SortOrderText.trim());
+  SortOrderFiledElement.data("LastSortPriority", LastSortPriority);
+}
+
+function PxRemoveSortOrder(fieldname, sortorderfieldid) {
+  // Sort order text: RXDATE DESC,GROUPNAME ASC,
+  var FieldSortReg = new RegExp(fieldname + " +(ASC|DESC),", "gi");
+  var SortOrderElement = $("#" + sortorderfieldid);
+  var UpdatedSortOrderText = SortOrderElement.val().replace(FieldSortReg, "");
+  SortOrderElement.val(UpdatedSortOrderText);
+}
+
+function PxGetSortOrder(fieldname, sortorderfieldid) {
+  var SortOrderText = $("#" + sortorderfieldid).val();
+  if (!SortOrderText)
+    return null;
+
+  var SortOrderPairs = SortOrderText.split(","), TempItem, i;
+  var FieldNameIndex, FieldNameUpperCase = fieldname.toUpperCase();
+  var SortOrderText = "";
+  for (i = 0; i < SortOrderPairs.length; ++i) {
+    TempItem = SortOrderPairs[i].trim().toUpperCase();
+    FieldNameIndex = TempItem.indexOf(FieldNameUpperCase);
+    if (TempItem && FieldNameIndex >= 0) {
+      // If only specify column name, sort by ASC. For example: <SortOrder>Username</SortOrder>
+      SortOrderText = TempItem.substring(FieldNameIndex + fieldname.length).trim();
+      return { SortOrderText: SortOrderText, OrderPriority: (i + 1) };
+    }
+  }
+  return null;
+}
+
+function PxInitialSortableColumnHeader(sortcolumnid, fieldName, sortorderfieldid) {
+  var SortOrderFiledElement = $("#" + sortorderfieldid);
+  if (!SortOrderFiledElement || SortOrderFiledElement.length == 0) // Defensive code
+    return;
+
+  var SortOrderInfo = PxGetSortOrder(fieldName, sortorderfieldid);
+  var CurrentSortOrder = "";
+  // All the columns which not shows in sort order has same priority.
+  var OrderPriority = SortOrderFiledElement.data("LastSortPriority");
+  if (SortOrderInfo) {
+    CurrentSortOrder = SortOrderInfo.SortOrderText;
+    OrderPriority = SortOrderInfo.OrderPriority;
+    }
+
+  var SortableColumnHeaderElement = $("#" + sortcolumnid);
+  //for ajax table, we need to remove previous img element
+  SortableColumnHeaderElement.find("img").remove(); 
+  SortableColumnHeaderElement.data("CurrentSortOrder", CurrentSortOrder);
+  var ImageElement = $("<img></img>");
+    var CssClass = "";
+  if (!CurrentSortOrder) {
+    ImageElement.attr("src", "/pxpay/images/Sort_Neutral.gif");
+  } else if (CurrentSortOrder == "ASC") {
+    ImageElement.attr("src", "/pxpay/images/Sort_ASC.gif");
+    CssClass = "DpsSortImageSorted";
+  } else if (CurrentSortOrder == "DESC") {
+    ImageElement.attr("src", "/pxpay/images/Sort_DESC.gif");
+    CssClass = "DpsSortImageSorted";
+  }
+  ImageElement.addClass(CssClass + " DpsSortPriority" + OrderPriority);
+    SortableColumnHeaderElement.append(ImageElement);
+}
+
+function ConvertTxnDateTimeToLocalTime() {
+  var dateTimeElem = PxGetElementByName('TxnDateTime');
+  if (dateTimeElem) {
+    txntime = new Date(dateTimeElem.innerHTML);
+    dateTimeElem.innerHTML = txntime.toLocaleString();
+  }
+}
+
+function PxSelectNextAvailable(selectBox, hasBlankOption, firstValidIndex, originalIndex) {
+
+  // disable the past
+  for (var i = (hasBlankOption ? 1 : 0); i < firstValidIndex; ++i) {
+    if (originalIndex != i)
+      selectBox.options[i].disabled = true;
+  }
+
+  // if disabled, use the first day that enabled
+  if (selectBox.options[selectBox.selectedIndex].disabled)
+  {
+    for (var i = (hasBlankOption ? 1 : 0); i < selectBox.options.length; ++i) {
+      if (!selectBox.options[i].disabled) {
+        selectBox.selectedIndex = i;
+        break;
+      }
+    }
+    if (hasBlankOption && selectBox.options[selectBox.selectedIndex].disabled)
+      selectBox.selectedIndex = 0;
+  }
+
+}
+
+
+function PxValidateDate(daySelect, monthSelect, yearSelect, allowFutureInput, futureOnly, localTime, localOriginalTime, maxFromNow, secSelect, minSelect, hourSelect) {
+  //be careful: some of this stuff uses zero based index, other stuff is 1 based, other stuff is 0 or 1 based (e.g. depends on allowBlank value)
+  //sometimes the month <select> has a blank <option> tag, so you could have no month input at all. This comes first.
+  //Note: Date::getMonth() return month index 0-11, not the month but Date::getDate() return 1-31
+  var hasBlankOption = monthSelect.options[0].text.length == 0;
+  var monthIndex = monthSelect.selectedIndex - hasBlankOption;
+  var invalidRangeLower = 28 + hasBlankOption;
+  var invalidRangeHigher = 31 + hasBlankOption;
+  //reset everything to valid
+  for (var i = 0; i < daySelect.options.length; ++i)
+    daySelect.options[i].disabled = false;
+
+  for (var i = 0; i < monthSelect.options.length; ++i)
+    monthSelect.options[i].disabled = false;
+
+  if (hourSelect) {
+    for (var i = 0; i < hourSelect.options.length; ++i)
+      hourSelect.options[i].disabled = false;
+  }
+
+  if (minSelect) {
+    for (var i = 0; i < minSelect.options.length; ++i)
+      minSelect.options[i].disabled = false;
+  }
+
+  if (secSelect) {
+    for (var i = 0; i < secSelect.options.length; ++i)
+      secSelect.options[i].disabled = false;
+  }
+
+  var selectedYear = parseInt(yearSelect.options[yearSelect.selectedIndex].value);
+  //if selected month is february
+  if (monthIndex == 1) {
+    var isLeap = selectedYear % 4 == 0;
+    daySelect.selectedIndex = Math.min(daySelect.selectedIndex, 27 + hasBlankOption + isLeap);
+    for (var i = invalidRangeLower + isLeap; i < invalidRangeHigher; ++i)
+      daySelect.options[i].disabled = true;
+  }
+
+  //April, June, September, Novermber have 30 days
+  if (monthIndex == 3 || monthIndex == 5 || monthIndex == 8 || monthIndex == 10) {
+    daySelect.selectedIndex = Math.min(daySelect.selectedIndex, 29 + hasBlankOption);
+    daySelect.options[30 + hasBlankOption].disabled = true;
+  }
+
+  // apply max from now for future as well
+  if (maxFromNow > 0 && (futureOnly || allowFutureInput)) {
+    var currentTime = new Date(localTime); // need a PXMI3 logon session time, not local machine time
+    if (isNaN(currentTime)) {
+      currentTime = new Date();
+    }
+
+    var endTime = new Date(currentTime.valueOf());
+    endTime.setDate(currentTime.getDate() + maxFromNow);
+    var endYear = endTime.getFullYear();
+    var endMonth = endTime.getMonth();
+    var endDate = endTime.getDate();
+    var endHour = endTime.getHours();
+    var endMin = endTime.getMinutes();
+    var endSec = endTime.getSeconds();
+
+    var originalTime = new Date(localOriginalTime);
+    if (isNaN(originalTime)) {
+      originalTime = new Date();
+    }
+
+    var originalYear = originalTime.getFullYear(); // 2018,2019,...
+    var originalMonth = originalTime.getMonth(); // 1-12
+    var originalDay = originalTime.getDate(); // 1-31
+    var originalHour = originalTime.getHours(); // 0-23
+    var originalMin = originalTime.getMinutes(); // 0-59
+    var originalSec = originalTime.getSeconds(); // 0-59
+
+    //too far in future years except the original one
+    for (var i = 0; i < yearSelect.options.length; ++i) {
+      var runningYear = parseInt(yearSelect.options[i].value);
+      if (runningYear > endYear && runningYear != originalYear) {
+        yearSelect.options[i].disabled = true;
+      }
+    }
+
+    if (selectedYear == endYear) {
+      // disable too far in future month
+      var lastValidMonth = (selectedYear < endYear) ? 12 : endMonth;
+      var lastValidMonthIndex = lastValidMonth + (hasBlankOption ? 1 : 0);
+      var originalMonthIndex = (selectedYear == originalYear) ? originalMonth + (hasBlankOption ? 1 : 0) : -1;
+      for (var i = lastValidMonthIndex + 1; i < monthSelect.options.length; ++i) {
+        if (originalMonthIndex != i)
+          monthSelect.options[i].disabled = true;
+      }
+
+      monthSelect.selectedIndex = Math.min(lastValidMonthIndex, monthSelect.selectedIndex);
+
+      // disable too far in future days
+      selectedMonthIndex = monthSelect.selectedIndex - (hasBlankOption ? 1 : 0);
+      if (lastValidMonthIndex == selectedMonthIndex) {
+        //disable too far in future days
+        var lastValidDay = endDate;
+        var lastValidDayIndex = hasBlankOption ? lastValidDay : lastValidDay - 1;
+        var originalDayIndex = originalDay - (hasBlankOption ? 0 : 1);
+        for (var i = lastValidDayIndex + 1; i < daySelect.options.length; ++i) {
+          if (originalDayIndex != i)
+            daySelect.options[i].disabled = true;
+        }
+
+        daySelect.selectedIndex = Math.min(lastValidDayIndex, daySelect.selectedIndex);
+
+        if (hourSelect && minSelect) {
+          // disable too far hour
+          selectedDayIndex = daySelect.selectedIndex - (hasBlankOption ? 1 : 0);
+          if (lastValidDayIndex == selectedDayIndex) {
+            var lastValidHour = endHour;
+            var lastValidHourIndex = (hasBlankOption ? lastValidHour : lastValidHour - 1) + 1; // start with 00 as hh
+            var originalHourIndex = (originalHour - (hasBlankOption ? 0 : 1)) + 1; // start with 00 as hh
+
+            for (var i = lastValidHourIndex + 1; i < hourSelect.options.length; ++i) {
+              if (originalHourIndex != i)
+                hourSelect.options[i].disabled = true;
+            }
+
+            hourSelect.selectedIndex = Math.min(lastValidHourIndex, hourSelect.selectedIndex);
+
+            // disable too far minutes
+            selectedHourIndex = hourSelect.selectedIndex - (hasBlankOption ? 1 : 0);
+            if (lastValidHourIndex == selectedHourIndex) {
+              var lastValidMin = endMin;
+              var lastValidMinIndex = (hasBlankOption ? lastValidMin : lastValidMin - 1) + 1; // start with 00 as mm
+              var originalMinIndex = (originalMin - (hasBlankOption ? 0 : 1)) + 1; // start with 00 as mm
+              for (var i = lastValidMinIndex + 1; i < minSelect.options.length; ++i) {
+                if (originalMinIndex != i)
+                  minSelect.options[i].disabled = true;
+              }
+
+              minSelect.selectedIndex = Math.min(lastValidMinIndex, minSelect.selectedIndex);
+
+              if (secSelect) {
+                // disable too far seconds
+                selectedMinIndex = minSelect.selectedIndex - (hasBlankOption ? 1 : 0);
+                if (lastValidMinIndex == selectedMinIndex) {
+                  var lastValidSec = endSec;
+                  var lastValidSecIndex = (hasBlankOption ? lastValidSec : lastValidSec - 1) + 1; // start with 00 as ss
+                  var originalSecIndex = (originalSec - (hasBlankOption ? 0 : 1)) + 1; // start with 00 as ss
+                  for (var i = lastValidSecIndex + 1; i < secSelect.options.length; ++i) {
+                    if (originalMinIndex != i)
+                      secSelect.options[i].disabled = true;
+                  }
+
+                  secSelect.selectedIndex = Math.min(lastValidSecIndex, secSelect.selectedIndex);
+                }
+              }
+
+            }
+
+          }
+        }
+
+      }
+    }
+  }
+
+  // future only logic
+  if (futureOnly) {
+    var currentTime = new Date(localTime); // need a PXMI3 logon session time, not local machine time
+    if (isNaN(currentTime)) {
+      currentTime = new Date();
+    }
+    var currentYear = currentTime.getFullYear();
+    //assert that if allowFutureInput is false, then the year limit ends at the current year
+    var currentMonth = currentTime.getMonth(); // 0 -11
+    var currentDate = currentTime.getDate(); // 1-31
+    var currentHour = currentTime.getHours(); // 0-23
+    var currentMin = currentTime.getMinutes(); // 0-59
+    var currentSec = currentTime.getSeconds(); // 0-59
+
+    console.log(localOriginalTime);
+
+    var originalTime = new Date(localOriginalTime);
+
+    var originalYear = originalTime.getFullYear(); // 2018,2019,...
+    var originalMonth = originalTime.getMonth(); // 0-11
+    var originalDay = originalTime.getDate(); // 1-31
+    var originalHour = originalTime.getHours(); // 0-23
+    var originalMin = originalTime.getMinutes(); // 0-59
+
+    //disable past years except the 
+    for (var i = 0; i < yearSelect.options.length; ++i) {
+      var runningYear = parseInt(yearSelect.options[i].value);
+      if (runningYear < currentYear && runningYear != originalYear) {
+        yearSelect.options[i].disabled = true;
+      }
+    }
+    //future year or blank selected, all good, nothing to disable
+    if (selectedYear > currentYear)
+      return;
+
+    // blank year selected
+    if (hasBlankOption && yearSelect.selectedIndex == 0)
+      return;
+
+    //disable past months except the original month
+    var isPastYearSelected = selectedYear < currentYear;
+    var firstValidMonth = isPastYearSelected ? 12 : currentMonth;
+    var firstValidMonthIndex = firstValidMonth + (hasBlankOption ? 1 : 0);
+    var isOriginalYearSelected = selectedYear == originalYear;
+    var originalMonthIndex = isOriginalYearSelected ? originalMonth + (hasBlankOption ? 1 : 0) : -1;
+
+    PxSelectNextAvailable(monthSelect, hasBlankOption, firstValidMonthIndex, originalMonthIndex);
+
+    monthIndex = monthSelect.selectedIndex - (hasBlankOption ? 1 : 0);
+
+    //future time, no need to disable date
+    if (selectedYear > currentYear || (selectedYear == currentYear && monthIndex > currentMonth))
+      return;
+
+    // blank year/month selected
+    if (hasBlankOption && (yearSelect.selectedIndex == 0 || monthSelect.selectedIndex == 0))
+      return;
+
+    //disable past days
+    var isPastMonthSelected = selectedYear < currentYear || (selectedYear == currentYear && monthIndex < currentMonth);
+    var firstValidDay = isPastMonthSelected ? 32 : currentDate;
+    var firstValidDayIndex = hasBlankOption ? firstValidDay : firstValidDay - 1;
+    var isOriginalMonthSelected = (selectedYear == originalYear && monthIndex == originalMonth);
+    var originalDayIndex = isOriginalMonthSelected ? originalDay - (hasBlankOption ? 0 : 1) : -1;
+    PxSelectNextAvailable(daySelect, hasBlankOption, firstValidDayIndex, originalDayIndex);
+
+    selectedDate = daySelect.selectedIndex - (hasBlankOption ? 1 : 0) + 1; //  01 - 31
+    //future time, no need to disable hour
+    if (selectedYear > currentYear ||
+      (selectedYear == currentYear && monthIndex > currentMonth) ||
+      (selectedYear == currentYear && monthIndex == currentMonth && selectedDate > currentDate))
+      return;
+
+    // blank year/month/day selected
+    if (hasBlankOption && (yearSelect.selectedIndex == 0 || monthSelect.selectedIndex == 0 || daySelect.selectedIndex == 0))
+      return;
+
+    //disable past hours
+    var isPastDaySelected = selectedYear < currentYear ||
+      (selectedYear == currentYear && monthIndex < currentMonth) ||
+      (selectedYear == currentYear && monthIndex == currentMonth && selectedDate < currentDate);
+    var firstValidHour = isPastDaySelected ? 24 : currentHour;
+    var firstValidHourIndex = hasBlankOption ? firstValidHour - 1 : firstValidHour;
+    var isOriginalDaySelected = (selectedYear == originalYear && monthIndex == originalMonth && selectedDate == originalDay);
+    var originalHourIndex = isOriginalDaySelected ? originalHour - (hasBlankOption ? 0 : 1) : -1;
+    PxSelectNextAvailable(hourSelect, hasBlankOption, firstValidHourIndex, originalHourIndex);
+
+
+    hourIndex = hourSelect.selectedIndex - (hasBlankOption ? 1 : 0);
+    //future time, no need to disable hour
+    if (selectedYear > currentYear ||
+      (selectedYear == currentYear && monthIndex > currentMonth) ||
+      (selectedYear == currentYear && monthIndex == currentMonth && selectedDate > currentDate) ||
+      (selectedYear == currentYear && monthIndex == currentMonth && selectedDate == currentDate && hourIndex > currentHour))
+      return;
+
+    // blank year/month/dayhour selected
+    if (hasBlankOption && (yearSelect.selectedIndex == 0 || monthSelect.selectedIndex == 0 || daySelect.selectedIndex == 0 || hourSelect.selectedIndex == 0))
+      return;
+
+    //disable past minutes
+    var isPastHourSelected = selectedYear < currentYear ||
+      (selectedYear == currentYear && monthIndex < currentMonth) ||
+      (selectedYear == currentYear && monthIndex == currentMonth && selectedDate < currentDate) ||
+      (selectedYear == currentYear && monthIndex == currentMonth && selectedDate == currentDate && hourIndex < currentHour);
+    var firstValidMin = isPastHourSelected ? 60 : currentMin;
+
+    var firstValidMinIndex = hasBlankOption ? firstValidMin - 1 : firstValidMin;
+    var isOriginalHourSelected = (selectedYear == originalYear && monthIndex == originalMonth && selectedDate == originalDay && hourIndex == originalHour);
+    var originalMinIndex = isOriginalHourSelected ? originalMin - (hasBlankOption ? 0 : 1) : -1;
+
+    PxSelectNextAvailable(minSelect, hasBlankOption, firstValidMinIndex, originalMinIndex);
+
+    // could ignore seconds, not in used
+    return;
+  }
+
+  //day of months checks done, now invalidate any inputs that are into the future.
+  var currentTime = new Date();
+  //add 1 day as selecting the current day actually selects midnight, which can mess up some filters - especially if the page has not got a filter for Time of day.
+  currentTime.setDate(currentTime.getDate() + 1);
+
+  var startYear = 0;
+  var startTime = new Date(currentTime.valueOf());
+  if (maxFromNow > 0) {
+    startTime.setDate(currentTime.getDate() - maxFromNow);
+    startYear = startTime.getFullYear();
+    //remove years older than startYear
+    for (var i = yearSelect.length - 1; i >= 0; i--) {
+      if (parseInt(yearSelect.options[i].value) < startYear) {
+        yearSelect.remove(i);
+      }
+    }
+  }
+
+  var currentYear = currentTime.getFullYear();
+  //assert that if allowFutureInput is false, then the year limit ends at the current year
+  if (allowFutureInput) {
+    return;
+  }
+
+
+  if (selectedYear == currentYear) {
+    var currentMonth = currentTime.getMonth();
+    var firstInvalidMonthIndex = currentMonth + 1 + hasBlankOption;
+
+    for (var i = firstInvalidMonthIndex; i < monthSelect.options.length; ++i)
+      monthSelect.options[i].disabled = true;
+
+    //if the current selectedIndex is invalid, then set it back to the first valid index e.g. if May is selected, but March is the first valid index, then set the control to March
+    monthSelect.selectedIndex = Math.min(firstInvalidMonthIndex - 1, monthIndex + hasBlankOption);
+    monthIndex = monthSelect.selectedIndex - hasBlankOption;
+
+    if (monthIndex == currentMonth) {
+      var firstInvalidDayIndex = currentTime.getDate();
+
+      for (var i = firstInvalidDayIndex; i < daySelect.options.length; ++i)
+        daySelect.options[i].disabled = true;
+
+      daySelect.selectedIndex = Math.min(firstInvalidDayIndex - 1, daySelect.selectedIndex);
+    }
+  }
+
+  if (selectedYear == startYear) {
+    var startMonth = startTime.getMonth();
+    var lastInvalidMonthIndex = startMonth - 1 + hasBlankOption;
+
+    for (var i = (hasBlankOption ? 1 : 0); i <= lastInvalidMonthIndex; ++i)
+      monthSelect.options[i].disabled = true;
+
+    monthSelect.selectedIndex = Math.max(lastInvalidMonthIndex + 1, monthIndex + hasBlankOption);
+    monthIndex = monthSelect.selectedIndex - hasBlankOption;
+
+    if (monthIndex == startMonth) {
+      var lastInvalidDayIndex = startTime.getDate() - 2;
+      for (var i = 0; i <= lastInvalidDayIndex; ++i)
+        daySelect.options[i].disabled = true;
+      daySelect.selectedIndex = Math.max(lastInvalidDayIndex + 1, daySelect.selectedIndex);
+    }
+  }
+}
+
+
+function PxValidateDateRange(startDay, startMonth, startYear, endDay, endMonth, endYear, maxRange, maxRangeFromNow) {
+
+  var startMonthHasBlankOption = ( startMonth.options[0].text.length == 0 ) ? 1 : 0;
+  var intStartMonth = startMonth.selectedIndex - startMonthHasBlankOption;
+  
+   var startTime = new Date( parseInt(startYear.options[startYear.selectedIndex].value),
+                             intStartMonth,
+                             parseInt(startDay.options[startDay.selectedIndex].value) );
+  
+  var endMonthHasBlankOption = ( endMonth.options[0].text.length == 0 ) ? 1 : 0;
+  var intEndMonth = endMonth.selectedIndex - endMonthHasBlankOption;
+  
+  var endTime = new Date( parseInt(endYear.options[endYear.selectedIndex].value),
+                           intEndMonth,
+                           parseInt(endDay.options[endDay.selectedIndex].value) );
+  
+  var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+	
+  var diffDays = Math.round((endTime.getTime() - startTime.getTime())/(oneDay));
+
+  var diffDaysFromNow = Math.round((Date.now() - startTime.getTime()) / (oneDay));
+
+  if (maxRange != null && maxRange > 0) {
+    if (diffDays < 0 || diffDays > maxRange) {
+      startDay.setCustomValidity("Please select valid date range, should be less than " + maxRange + " day" + (maxRange > 1 ? "s" : ""));
+      return;
+    }
+  }
+
+  if (maxRangeFromNow != null && maxRangeFromNow > 0) {
+    if (diffDaysFromNow > maxRangeFromNow) {
+      startDay.setCustomValidity("Please select valid start date , the date range from now should be less than " + maxRangeFromNow + " day" + (maxRangeFromNow > 1 ? "s" : ""));
+      return;
+    }
+  }
+
+  startDay.setCustomValidity("");
+}
+
+// Save the sort order text to the hidden textbox.
+function PxChangeSortOrder(fieldname, sortorder, sortorderfieldid) {
+  var FieldSortReg = new RegExp(fieldname + " +(ASC|DESC),", "gi");
+  var SortOrderElement = $("#" + sortorderfieldid);
+  var OriginalSortOrderText = SortOrderElement.val();
+  var UpdatedSortOrderText = OriginalSortOrderText;
+  if (OriginalSortOrderText.match(FieldSortReg)) {
+    UpdatedSortOrderText = OriginalSortOrderText.replace(FieldSortReg, fieldname + " " + sortorder + ", ");
+  } else {
+    UpdatedSortOrderText += fieldname + " " + sortorder + ",";
+  }
+
+  SortOrderElement.val(UpdatedSortOrderText);
+}
+
+function PxDoNavSubmit2(iid, iidval) {
+  PxSubmitCurrentTab();
+
+  PxAddStat({ "NavSubmit": { "Target": iid, "Data": iidval, "Time": PxTime() } });
+  window.__statsSubmitted = true;
+
+  var Target = document.getElementById('IId');
+  if (Target == null)
+    return;
+  Target.value = iid;
+
+  Target = document.getElementById('IIdVal');
+  if (Target == null)
+    return;
+  Target.value = iidval;
+
+  Target = document.getElementById('IIdValReal');
+  if (Target == null)
+    return;
+  Target.value = 'ok';
+}
+
+function PxDoNavSubmit3(elem, iid, iidval) {
+  PxSubmitCurrentTab();
+
+  var Target = document.getElementById('IId');
+  if (Target == null)
+    return;
+  Target.value = iid;
+
+  Target = document.getElementById('IIdVal');
+  if (Target == null)
+    return;
+  Target.value = iidval;
+
+  document.getElementById('Form1').submit();
+  if (isMicrosoft)
+    $(elem).remove(); //don't ask...
+}
+
+function rowCountSelected() {
+  document.getElementById('Form1').submit();
+}
+
+function rowCountSelectedAjax(url, field, tableId) {
+  PxTriggerSearchWithValidation(url, field, tableId);
+}
+
+function processTableFooterRowInput(keyEvent) {
+  if (keyEvent.keyCode == 13) {
+    document.getElementById('Form1').submit();
+    return false;
+  }
+
+  return NumbersOnly(keyEvent);
+}
+
+function processTableFooterRowInputAjax(keyEvent, url, field, tableId) {
+  if (keyEvent.keyCode == 13) {
+    PxTriggerSearchWithValidation(url, field, tableId);
+    return false;
+  }
+
+  return NumbersOnly(keyEvent);
+}
+
+// Returns a newly instantiated hidden input field. It's ID and Name are set to the 'id'parameter. It's value is the 'value' parameter.
+function PxCreateHiddenInput(id, value) {
+  return $("<input />").attr("id", id).attr("name", id).attr("type", "hidden").attr("value", value);
+}
+
+// Inserts a new hidden input into the page container for every element in additionalValuesToSubmit. The input's id, name and value properties take their value from the name and value property present in each element.
+function PxEmbedAdditionalValues(additionalValuesToSubmit) {
+  $(additionalValuesToSubmit).each(
+    function(index, element) {
+      var input = $(".DpsPageContainer input[name='" + element.name + "']").get(0);
+      if (input === undefined) {
+        PxCreateHiddenInput(element.name, element.value).appendTo($(".DpsPageContainer"));
+      } else {
+        $(input).val(element.value);
+      }
+    });
+}
+
+// key status is stored and used when clicking on records.
+var shiftKeyDown = false;
+var altKeyDown = false;
+var ctrlKeyDown = false;
+
+PxBindEvent(document, 'mousedown', function(ev) {  
+  if (ev.button != 1)
+    return;
+
+  var targ = ev.target || ev.srcElement;
+
+  while (targ && targ.getAttribute("onclickid") == null)
+    targ = targ.parentElement;
+
+  if (!targ)
+    return;
+
+  targ = $(targ);
+  var closestTables = targ.closest("table");
+  if (closestTables.length == 0)
+    return;
+
+  var closestTable = closestTables[0];
+  var cacheShiftKey = shiftKeyDown;
+  shiftKeyDown = true;
+  PxOnClick(closestTable.id, targ.attr("onclickid"));
+  //if onclick fails, set this back
+  shiftKeyDown = cacheShiftKey;
+});
+
+
+window.onfocus = (function(ev) {
+  // reset key status. when we move to a different tab, the state is kept the same, but may change when in a different window.
+  shiftKeyDown = false;
+  altKeyDown = false;
+  var form = document.getElementById("Form1");
+  if (form !== null) {
+    form.removeAttribute("target");
+  }
+});
+
+function PxOnClick(iid, iidval, additionalValuesToSubmit) {
+  if (altKeyDown)
+    return; // ignore clicks if alt key is held down. this helps with highlighting fields.
+
+  var Target = document.getElementById('IId');
+  if (Target == null)
+    return;
+  Target.value = iid;
+  Target = document.getElementById('IIdVal');
+  if (Target == null)
+    return;
+  Target.value = iidval;
+  if (!Target.value || Target.value === "undefined") // when assigning Undefined to the Target.value, Target.value will become string "undefined", so need to leave this check
+    return;
+
+  if (additionalValuesToSubmit !== undefined)
+    PxEmbedAdditionalValues(additionalValuesToSubmit);
+
+  var form = document.getElementById('Form1');
+  if (shiftKeyDown) {
+    form.setAttribute('target', '_blank'); // add target _blank to the form to open in another tab/window.
+  } else {
+    form.removeAttribute('target'); // removes the attribute to make sure we open on the same tab/window.
+  }
+
+  PxSubmitCurrentTab();
+  form.submit();
+}
+
+function PxResetSortOrder(sortOrderObject) {
+
+    // loop on all the SortOrderText of all table having named identify the sortOrderObject
+    PxSelectAll("input[sort-order-object=" + sortOrderObject + "]").forEach(function (node, index) {
+
+        var def = $('#' + node.getAttribute('sort-table-id')).attr('default-sort-order');
+        if (def)
+            node.value = def;
+
+        // For Ajax table, we need to normalize sort order text since default sort order only have column name
+        PxNormalizeSortOrderTex(node.name);
+
+        // table header have search order indicator ASC/DESC on each sortable field, need to reset it
+        var resetHeader = "ResetSortFieldIndicators_" + node.getAttribute('sort-table-id');
+        if (window[resetHeader])
+          window[resetHeader]();
+    });
+
+  PxSubmitSearch(); 
+}
+
+function PxShowMenu(e) {
+  PxHideAll();
+
+  var Target = document.getElementById('IIdMenuShown');
+  if (Target == null)
+    return;
+  Target.value = e;
+  document.getElementById(e).style.display = 'block';
+}
+
+function PxToggleMenu(e) {
+  var Target = document.getElementById('IIdMenuShown');
+  if (Target == null)
+    return;
+  var collapsed = document.getElementById(e).style.display == 'block';
+  Target.value = e;
+  PxHideAll();
+  if (collapsed)
+    document.getElementById(e).style.display = 'none';
+  else
+    document.getElementById(e).style.display = 'block';
+}
+
+function PxHide(e) {
+  document.getElementById(e).style.display = 'none';
+}
+
+var isNN = (navigator.appName.indexOf("Netscape") != -1);
+var filter = (isNN) ? [0, 8, 9] : [0, 8, 9, 13, 16, 17, 18, 37, 38, 39, 40, 46]; //not a good name to give to a global variable...
+
+function IsNumericKey(keycode) {
+  // [48; 57] - nums from the main set of keys, [96; 105] - keypad nums
+  return ((keycode >= 48) && (keycode <= 57)) || ((keycode >= 96) && (keycode <= 105));
+}
+
+function PxNumericKeyDown(event) {
+  var keycode = event.keyCode;
+  if (isNN && event.which != 0)
+    keycode = event.which;
+  // allow bckspc, home, end, tab, left, right, del
+  var filter = [8, 9, 35, 36, 37, 39, 46, 13];
+  if (containsElement(filter, keycode))
+    return true;
+
+  if (event.ctrlKey && keycode == 118) // ctrl-v, for Firefox
+    return true;
+
+  return (IsNumericKey(keycode) && !shiftKeyDown) || event.ctrlKey;
+}
+
+function PxSanitizeNumericValue(elem) {
+  // Does not support negative values
+  var currValue = elem.value;
+  var index = 0;
+  var needReplacement = false;
+  var charCode = 0;
+  if (currValue != null) {
+    for (index = currValue.length - 1; index >= 0; index--) {
+      charCode = currValue.charCodeAt(index);
+      if (IsNumericKey(charCode) == false) {
+        currValue = currValue.substring(0, index);
+        needReplacement = true;
+      }
+    }
+  }
+  if (needReplacement == true)
+    elem.value = currValue;
+}
+
+
+function NumbersOnly(e, allowMinus) {
+  if (arguments.length == 1)
+    allowMinus = false;
+
+  var keyCode = e.keyCode;
+  if (isNN && e.which != 0)
+    keyCode = e.which;
+
+  // allow bckspc, tab, left, right, del
+  filter = [8, 9, 37, 39, 46, 13];
+  if (((keyCode >= 48) && (keyCode <= 57)) || containsElement(filter, keyCode))
+    return true;
+  if (ctrlKeyDown && keyCode == 118) // ctrl-v, for Firefox
+    return true;
+  if (keyCode == 45 && allowMinus)
+    return true;
+  return false;
+}
+
+function NumbersOnlyWithMaxLength(input, e, allowMinus) {
+  if (arguments.length == 1)
+    allowMinus = false;
+
+  var keyCode = e.keyCode;
+
+  if (isNN && e.which != 0) {
+    keyCode = e.which;
+  }
+
+  // allow bckspc, home, end, tab, left, right, del
+  filter = [8, 9, 35, 36, 37, 39, 46, 13];
+  if (containsElement(filter, keyCode))
+    return true;
+
+  if (ctrlKeyDown && keyCode == 118) // ctrl-v, for Firefox
+    return true;
+
+  if (keyCode == 45 && allowMinus)
+    return true;
+    
+  var isNumericKey = (keyCode >= 48) && (keyCode <= 57);
+  if (isNumericKey) {
+    var maxlength = input.getAttribute('maxlength');
+    var valueLength = input.value.length + 1;
+    return (valueLength <= maxlength);
+  }
+  return false;
+}
+
+function IsEnterKey(e) {
+  var keyCode = (isNN) ? e.which : e.keyCode;
+  if (keyCode == 13)
+    return true;
+  return false;
+}
+
+function getIndex(input) {
+  var index = -1, i = 0, found = false;
+  while (i < input.form.length && index == -1)
+    if (input.form[i] == input)
+      index = i;
+    else
+      i++;
+  return index;
+}
+
+function NumbersOnlyPointTabs(input, e) {
+  var keyCode = e.keyCode;
+  if (isNN && e.which != 0)
+    keyCode = e.which;
+  var notTabbed = AutoTabPoint(input, e);
+  if (notTabbed && (((keyCode >= 48) && (keyCode <= 57)) || containsElement(filter, keyCode)))
+    return true;
+  return false;
+}
+
+function MaxLengthTabs(input, e) {
+  //if tabbing via [Tab] key then keep value. If tabbing from maxlength, then clear it.
+  if (e.keyCode == 9)
+    return;
+
+  var maxlength = $(input).attr('maxlength');
+  if (maxlength == input.value.length) {
+    var index = (getIndex(input) + 1) % input.form.length;
+    input.form[index].focus();
+    input.form[index].select();
+  }
+}
+
+function containsElement(arr, ele) {
+  var found = false, index = 0;
+  while (!found && index < arr.length)
+    if (arr[index] == ele)
+      found = true;
+    else
+      index++;
+  return found;
+}
+
+function AutoTabPoint(input, e) {
+  var keyCode = (isNN) ? e.which : e.keyCode;
+  if (keyCode == 46) {
+    var index = (getIndex(input) + 1) % input.form.length;
+    input.form[index].focus();
+    input.form[index].select();
+    return false;
+  }
+  return true;
+}
+
+function AutoTab(input, e) {
+  var len = input.maxLength;
+  var keyCode = (isNN) ? e.which : e.keyCode;
+
+  if (input.value.length >= len && !containsElement(filter, keyCode)) {
+    input.value = input.value.slice(0, len);
+    var index = (getIndex(input) + 1) % input.form.length;
+    input.form[index].focus();
+    input.form[index].select();
+  }
+
+  return true;
+}
+
+function PxChangeAction(actionnam) { document.forms[0].action = actionnam; }
+
+function PxShow(e) {
+  var Target = document.getElementById(e);
+  if (Target == null)
+    return;
+  Target.style.visibility = "visible";
+  Target.style.display = "block";
+}
+
+function PxAskForConfirmation(confirmationText) {
+  return confirm(confirmationText);
+}
+
+function PxAskForConfirmationInputAuditText(buttonElem, confirmationText, action) {
+  if (action == null || action.length == 0)
+    action = "Delete";
+
+  var auditInput = $("[name='AuditReason']");
+  if (auditInput.length == 0) {
+    var formElem = $(buttonElem).closest('form');
+    formElem.append("<input type='hidden' name='AuditReason'></input>");
+  }
+
+  var reason = prompt(confirmationText, "");
+  if (reason != null && reason != "") {
+    var maxLength = 255 - action.length - " Reason: ".length;
+
+    if (reason.length > maxLength) {
+      alert("Message is longer than " + maxLength + " characters.");
+      return false;
+    }
+
+    $("[name='AuditReason']").val(reason);
+    return true;
+  } 
+  return false;
+}
+
+/// a couple of global varaibles to make it a bit easier for the search results popup.
+var searchOptionNoResultsFound = "No search results found";
+var searchOptionMouseHighlighted = false;
+var searchOptionCtrlOn = false;
+var searchOptionPasteOn = false;
+
+function PxAssignPosition(target, assigne, offset) {
+  var x = target.offsetLeft;
+  var y = target.offsetTop + target.offsetHeight;
+
+  var parent = target;
+  while (parent.offsetParent) {
+    parent = parent.offsetParent;
+    x += parent.offsetLeft;
+    y += parent.offsetTop;
+  }
+
+  /* there is a bug this doesnt work in firefox always */
+  assigne.style.left = (x + offset) + "px";
+  assigne.style.top = (y + offset) + "px";
+}
+
+// Checks the dynamically set valid attribute to see if the value in the search is ok.
+function PxCheckSearchValueValid(id) {
+  var searchElement = document.getElementById(id);
+  if (searchElement == null)
+    return false; // doesn't exist, not valid.
+
+  if (searchElement.hasAttribute('data-is-valid')) {
+    var valid = Number(searchElement.getAttribute('data-is-valid')); //TODO I dont get this.
+    searchElement.value = searchElement.value.trim();
+    if (valid == 0 && searchElement.value.length != 0) {
+      searchElement.setCustomValidity('Value you have entered is invalid, please try again.');
+      return false;
+    }
+  }
+  return true;
+}
+
+function PxCheckDroplistValueValid(id) {
+  var target = document.getElementById(id);
+  if (target == null)
+        return false; // doesn't exist, not valid.
+
+  if (target.getAttribute('data-is-valid') == '0' || target.getAttribute('data-invalid-existing') == target.value ) {
+    target.setCustomValidity('Value you have selected is invalid, please try again.');
+    return false;
+  } else {
+    target.setCustomValidity('');
+    return true;
+  }
+}
+
+// group must be selected if droplist or search is not empty and  group name is the reference filter
+function PxCheckGroupSelected(id, itemName) {
+  var referenceFilterElement = document.getElementById(id);
+  if (referenceFilterElement == null)
+    return false;
+
+  var groupElement = PxSelectOne('[name=' + itemName +']:not(span)');
+  //Group is selectable but not selected.
+  if (referenceFilterElement.value && groupElement && !groupElement.value) {
+    referenceFilterElement.setCustomValidity("Value depends on group, please select group first");
+    return false;
+  } else {
+    referenceFilterElement.setCustomValidity("");
+    return true;
+  }
+}
+
+// Checks the selected list option to see if it's valid, before removing the popup.
+function FinalizeSelectedListOption(target, value, EnableFocus) {
+  var targetDiv = document.getElementById(target);
+
+  var divId = target + '_' + "Popup";
+  var existing = document.getElementById(divId);
+
+  var listDivId = target + '_' + "list";
+  var existingList = document.getElementById(listDivId);
+
+  value = value.trim();
+  if (existing != null && existingList != null && !searchOptionMouseHighlighted) {
+    // make sure the input is valid by making sure it has the same value as a child.
+    var inputValid = false;
+
+    // look through the children and see if this value is valid.
+    var length = existingList.children.length;
+    for (var i = 0; i < length; ++i) {
+      if ($(existingList.children[i]).text() === value) // make sure it's case sensitive.
+        inputValid = true;
+    }
+
+    // store classes.
+    var currentClasses = targetDiv.getAttribute('class');
+
+    if (!inputValid && value.length != 0) {
+      // not valid input, highlight error.
+      currentClasses += ' DpsFieldError'; // add the error field.
+      targetDiv.setAttribute('class', currentClasses);
+      targetDiv.setAttribute('data-is-valid', 0); // make sure we set the valid variable for validation.
+      PxTriggerEvent(targetDiv, 'InvalidSearchValue');
+    } else {
+      // remove the dps field error if it exists.
+      var index = currentClasses.indexOf('DpsFieldError');
+      if (index != -1) {
+        var removedError = currentClasses.substring(0, index);
+        targetDiv.setAttribute('class', removedError);
+      }
+
+      // make sure we set the valid variable for validation.
+      targetDiv.setAttribute('data-is-valid', 1);
+    }
+    document.body.removeChild(existing);
+  }
+
+  if (EnableFocus)
+    targetDiv.focus();
+}
+
+
+// Search option selected. Similar to PxOnSelect1, but checks to see if we're valid.
+function PxSearchOptionSelected() {
+	var target = document.getElementById(this.id);
+	var targetName = target.getAttribute("name");
+	if (targetName && window.pxapp)
+		pxapp[targetName] = this.textContent;
+	else
+		target.value = this.textContent;
+
+  searchOptionMouseHighlighted = false; // reset this option so we can remove the popup.
+  FinalizeSelectedListOption(target.id, this.textContent, true); // focus the target element after selection
+  PxTriggerEvent(target, 'SelectValueChanged');
+}
+
+// Catches on changed events from input fields.
+var isDirty = false; //bad name for a global...
+
+function PxInputChanged() {
+	isDirty = true; // keep track if we've modified an input field. we can use during cancelation.
+
+	// apply the DpsModifiedField style to this field. IE8 or older doesn't support getAttribute
+  if (this.getAttribute) { //IE8 or older doesn't support getAttribute
+    var currentClasses = this.getAttribute('class') || ""; // there are some input fileds without css class, for example, radibo button, hidden input
+    if (currentClasses.indexOf("DpsModifiedField") < 0) {
+      currentClasses += ' DpsModifiedField';
+      this.setAttribute('class', currentClasses);
+    }
+  }
+}
+
+PxOnEvent(':input', "change", PxInputChanged);
+
+// Keeps track of if we require cancel confirmation.
+function PxCancelConfirmation() {
+  if (isDirty)
+    return confirm("You have unsaved settings.\r\nAre you sure you want to leave this page?");
+  return true;
+}
+
+function PxGetClipboardData(clipboardEvent) {
+  // In IE the window, rather than the event, contains the clipboardData property. Also unlike other browsers, IE doesn't identify the type of clipboard data via MIME.
+  if (window.clipboardData && window.clipboardData.getData)
+    return window.clipboardData.getData("Text");
+
+  var currentClipboardEvent = clipboardEvent.originalEvent || clipboardEvent;
+  if (currentClipboardEvent && currentClipboardEvent.clipboardData)
+    return currentClipboardEvent.clipboardData.getData("text/plain");
+  return "";
+}
+
+function PxNumericOnlyPasteHandler(clipboardEvent, maxLength, allowMinus) {
+  if (arguments.length <= 2)
+    allowMinus = false;
+
+  var clipboardDataRaw = PxGetClipboardData(clipboardEvent);
+  var prependMinus = allowMinus && clipboardDataRaw.length && clipboardDataRaw[0] == '-';
+  var clipboardData = "";
+  if (prependMinus)
+    clipboardData += '-';
+
+  clipboardData += clipboardDataRaw.replace(/\D/g, "");
+
+  if (arguments.length == 1 || maxLength <= 0)
+    maxLength = clipboardData.length;
+
+  clipboardEvent.target.value = clipboardData.substr(0, maxLength);
+  // Return false to prevent default handler
+  return false;
+}
+
+// Shows the tab which the element is a child of. We also make sure to hide the currently active tab.
+function PxShowTabWithElement(element) {
+  if (element == null || element == undefined)
+    return;
+  var tab = $('#' + element.id).parentsUntil('div.tabberlive').last()[0];
+  PxShowTab(tab);
+}
+
+function PxShowTab(tab) {
+  if (tab && tab.parentElement && tab.parentElement.id) {
+    var tabParent = tab.parentElement;
+    $('#' + tabParent.id).find('li.tabberactive').first()[0].setAttribute('class', ''); // reset the current tab.
+    $('#' + tabParent.id).find('div.tabbertab ').not('div.tabbertabhide').first()[0].setAttribute('class', 'tabbertab tabbertabhide'); // hide the current active tab.
+    tab.setAttribute('class', 'tabbertab '); // show the new active tab.
+    $('#' + tabParent.id).find("a[title='" + tab.children[0].children[0].name + "']").first()[0].parentElement.setAttribute('class', 'tabberactive'); // highlight tab.
+  }
+}
+
+// Checks if there's any invalid elements, then displays the element's tab.
+function PxShowInvalidTab() {
+  if (PxSelectAll('div.tabberlive').length > 0) {
+    var invalidElement = $('#Form1').find('input:invalid,select:invalid,textarea:invalid').first()[0];
+    PxShowTabWithElement(invalidElement);
+  }
+}
+
+function PxCheckIsItemSelected(id) {
+  var element = PxSelectOne("#" + id);
+  if (!element) {
+    return false; // doesn't exist, not valid
+  } 
+  var value = element.value;
+  element.setCustomValidity("");
+  if (value === null || value === undefined) {
+    element.setCustomValidity("Please select an item");
+    return false;
+  }
+  return true;
+}
+
+//for mustselect check
+function PxCheckIsEmptySelected(id) {
+  var element = PxSelectOne("#" + id);
+  if (!element) {
+    return false; // doesn't exist, not valid
+  }
+  var value = element.value;
+  element.setCustomValidity("");
+  if (value == "" && !PxIsElementHidden(element)) {
+    element.setCustomValidity("Please select an valid item");
+    return false;
+  }
+  return true;
+}
+
+function SessionTimeoutWarning(time) {
+  setTimeout(function() {
+    alert("Sorry, your session is now expiring...");
+    location.reload();
+  }, time);
+}
+
+function SessionTimeoutAlert(time, ajaxUrl) {
+  var dialogHtml = '<div id = "myModal" class="modal fade"> \
+    <div class="modal-dialog modal-sm"> \
+      <div class="modal-content"> \
+        <div class="modal-header"> \
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> \
+          <h4 class="modal-title">Session Timeout</h4> \
+        </div> \
+        <div class="modal-body"> \
+         <b> Sorry, your session is now expiring...</b>\
+        </div> \
+        <div class="modal-footer"> \
+          <button type="button" id="okBtn" class="DpsButton1 btn btn-success"><div id="clickedArea">Refresh Session</div></button> \
+        </div> \
+      </div> \
+    </div> \
+    </div> ';
+
+  window.SessionTimeoutTime = time;
+  window.SessionTimeoutTimerId = null;
+  window.SessionTimeoutHandler = function () {
+      PxRefreshLogonSession(ajaxUrl);
+      $('#myModal').modal('hide');
+  };
+  
+
+  // insert dialog to footer
+  var footer = document.getElementsByTagName('footer')[0];
+  if (footer != null) {
+    footer.innerHTML += dialogHtml;
+    StartSessionTimeoutTimer();
+  }
+}
+
+function OpenSessionTimeoutAlert() {
+  var okbtn = PxSelectOne('#okBtn');
+  //rebind event handler since the popup may re-layout.
+  if (okbtn != null) {
+    PxUnBindEvent(okbtn, 'click', window.SessionTimeoutHandler);
+    PxBindEvent(okbtn, 'click', window.SessionTimeoutHandler);
+  }
+
+  $("#myModal").modal('show');
+  //start spinner in 30 seconds
+  window.SessionTimeoutTimerId = setTimeout(function () {
+    document.getElementById('okBtn').disabled = true;
+    var spinnerHtml = '<div class="spinner">';
+    for (var i = 1; i <= 12; ++i) {
+      spinnerHtml += '<div class=' + '"bar' + i + '"' + '></div>';
+    }
+    spinnerHtml += '</div>';
+    document.getElementById('clickedArea').innerHTML = "Logging out ";
+    document.getElementById('clickedArea').innerHTML += spinnerHtml;
+
+    // refresh page in 50 seoncds, at this time session should have expired already.
+    window.SessionTimeoutTimerId = setTimeout(function () {
+      $("#myModal").modal('hide');
+      //the page refresh should not trigger session refresh
+      if (location.search) {
+        if (location.search.startsWith('?r=0') || location.search.endsWith('&r=0'))
+          location.reload();
+        else
+          location.search += '&r=0';
+      } else {
+        location.search = 'r=0';
+      }
+    }, 20000);
+  }, 30000);
+}
+
+function StartSessionTimeoutTimer() {
+  //clear old timer
+  if (window.SessionTimeoutTimerId != null) {
+    clearTimeout(window.SessionTimeoutTimerId);
+    window.SessionTimeoutTimerId = null;
+  }
+
+  window.SessionTimeoutTimerId = setTimeout(OpenSessionTimeoutAlert, window.SessionTimeoutTime);
+
+  console.log("session timeout timer is restarted");
+}
+
+function PxValidateBlankInput() {
+  var value = this.value;
+  if (value.length > 0 && value.trim().length == 0) {
+    this.setCustomValidity("Value must be not empty, please try again.");
+    return false;
+  }
+  return true;
+}
+
+function PxFieldInvalidStyle(panelName) {
+  var defaultValidator = function(){return true;};
+  var inputValidators = { input: PxValidateBlankInput, select: defaultValidator };
+  var currentInputType;
+  for (currentInputType in inputValidators){
+    PxSelectAll("#Form1 " + currentInputType).forEach(function (node) {
+      PxRemoveClass(node, 'DpsFieldError');
+      //unbind blur
+      if (node.PxBlurHandler) {
+        PxUnBindEvent(this, 'blur', node.PxBlurHandler);
+        node.PxBlurHandler = null;
+      }
+    });
+
+    PxSelectAll("#Form1 #" + panelName + " " + currentInputType).forEach(function (node) {
+      PxFieldInvalidStyleHandler.call(node, panelName, inputValidators[currentInputType]);
+    });
+  }
+}
+
+function PxCheckBlankSpace(panelId) {
+  var isValid = true;
+  PxSelectAll("#Form1 #" + panelId + " input").forEach(function (node) {
+    if (!PxValidateBlankInput.call(node, panelId))
+      isValid = false;
+  });
+  return isValid;
+}
+
+function PxValidateForm1() {
+
+  var isCaptchaEnabledDefined = typeof IsCaptchaEnabled != "undefined";
+  var isCaptchaEnabledResult = isCaptchaEnabledDefined && IsCaptchaEnabled();
+
+  var captchaContainer = PxSelectOne('#CaptchaContainer');
+  var isCaptchaHidden = (captchaContainer == null || PxIsElementHidden(captchaContainer))
+   
+  var captchaInputResult = true;
+  if (isCaptchaEnabledDefined && !isCaptchaHidden)
+    captchaInputResult = CheckCaptchaInput();
+
+  if (PxAddStat) PxAddStat({ "validate1": { "Data": "captchaFuncDefined:" + isCaptchaEnabledDefined + " enabled:" + isCaptchaEnabledResult + " check:" + captchaInputResult, "Time": PxTime() } });
+
+  if (isCaptchaEnabledDefined && !captchaInputResult)
+  {
+    return false;
+  }
+  
+  var giftCardAppliedElem = PxSelectOne('[name=GiftCardApplied]');
+  if (!giftCardAppliedElem || !giftCardAppliedElem.value || giftCardAppliedElem.value == "0") {
+    var cardNumber = PxSelectOne('[name=GiftCardNumber]')
+    if(cardNumber)
+        cardNumber.value = '';
+
+    var cardPin = PxSelectOne('[name=GiftCardPIN]');
+    if(cardPin)
+        cardPin.value = '';
+  } 
+  
+  if (!document.getElementById('Form1').checkValidity())
+  {
+    return false;
+  }
+
+  return true;
+}
+
+function PxValidateCaptcha(panelId) {
+  var panel = PxSelectOne("#" + panelId);
+  var form = PxSelectOne("#Form1"); if (!form) {return;}
+  form.setAttribute("_CaptchaCorrect", true);
+  var result = true;
+  var captchaPanel = PxSelectAll("#CaptchaContainer", panel);
+  if (captchaPanel.length > 0 && captchaPanel[0].children.length > 0)
+    result = CheckCaptchaInput();
+  form.setAttribute("_CaptchaCorrect", result);
+}
+
+function PxIsCaptchaIgnoredSubmit() {
+  // clear captcha validation error when click cancel.
+  var elem = PxSelectOne("#IId");
+  if (elem) {
+    var iid = elem.value;
+    var iidElement = document.getElementById(iid);
+    return iidElement && iidElement.formNoValidate;
+  } else {
+    return false;
+  }
+}
+
+function PxIsCaptchaCorrect() {
+  var form = PxSelectOne("#Form1");
+
+  if (form) {
+    if (PxIsCaptchaIgnoredSubmit())
+      form.setAttribute("_CaptchaCorrect", true);
+
+    var isCaptchaCorrect = form.getAttribute("_CaptchaCorrect");
+    return isCaptchaCorrect != "false";
+  }
+
+  return false;
+}
+
+function PxCheckIsPageInframe() {
+  var isInframe = PxIsPageInframe() ? 1 : 0;
+
+  var isInframeElement = PxSelectOne("[name=IsPageInFrame]");
+  if (isInframeElement)
+    isInframeElement.value = isInframe;
+}
+
+function PxIsPageInframe() {
+  try {
+    return window.self !== window.top;
+  } catch (e) {
+    return true;
+  }
+}
+
+function PxFieldInvalidStyleHandler(panelName, additionalValidate) {
+  if (!this.checkValidity() || !additionalValidate.call(this)) {
+    PxAddClass(this, 'DpsFieldError');
+  } else {
+    PxRemoveClass(this, 'DpsFieldError');
+  }
+
+  //unbind blur
+  if (this.PxBlurHandler) {
+    PxUnBindEvent(this, 'blur', this.PxBlurHandler);
+    this.PxBlurHandler = null;
+  }
+
+  var blurHandler = function () {
+    try {
+      window.PxIsBlurValidation = true;
+      PxValidate(panelName);
+      PxFieldInvalidStyleHandler.call(this, panelName, additionalValidate);
+    } finally {
+      window.PxIsBlurValidation = null;
+    }
+  }.bind(this);
+  PxBindEvent(this, 'blur', blurHandler);
+  this.PxBlurHandler = blurHandler;
+}
+
+function PxSetCurrentTab() {
+  if ($('#CurrentTab').length == 0)
+    return;
+
+  var tabName = $('#CurrentTab').val().trim();
+  // E.g. PageConfig_8934_PxPayCustomHosted.txt: 'Copy To' button should use the first tab
+  if ($('input[name=DefaultTab]').length > 0)
+    tabName = $('input[name=DefaultTab]').val();
+
+  var tab = $('#tab1 a.DpsTab[name=\'' + tabName + '\']').parent().parent();
+  // Restore the current active tab if it's the same record
+  if (tab.length > 0)
+    PxShowTab(tab[0]);
+}
+
+function PxSubmitCurrentTab() {
+  if (PxSelectAll('#CurrentTab').length == 0 || PxSelectAll('#tab1').length == 0)
+    return;
+
+  var tabName = $('#tab1').find('li.tabberactive a').first().text().trim();
+  if (tabName != '')
+    $('#CurrentTab').val(tabName);
+}
+
+function PxResetForm() {
+  var elem = PxSelectOne('input.DpsModifiedField'); if (elem) { PxRemoveClass(elem, 'DpsModifiedField');} 
+  isDirty = false;
+}
+
+function PxClearForm() {
+  var elem = PxSelectOne('input.DpsModifiedField'); if (elem) { elem.value = ""; PxRemoveClass(elem, 'DpsModifiedField'); }
+  isDirty = false;
+}
+
+function PxClickAndDisable(e) {
+  var id = e.target.id;
+  var selector = "#" + id;
+  var elem = PxSelectOne(selector);
+
+  if (elem) {
+    if(elem.getAttribute("data_clicked"))
+      e.preventDefault();
+    elem.setAttribute("data_clicked", true);
+  }
+}
+
+function PxCheckForAndHandleSubmission(event) {
+  if (event.which !== 13)
+		return true;
+
+  // Figure out which panel contains the signalling element.
+  var parentPanel = event.target.parentNode;
+  while (parentPanel && !PxMatch(parentPanel, "div.DpsUiPanel")){
+    parentPanel = parentPanel.parentNode;
+  }
+
+  if (!parentPanel) {
+    return true;
+  }
+
+  // Find the first available submit or Ajax Search button contained by the panel.
+  var submitButton;
+  var isAjaxButton = false;
+  if (PxMatch(parentPanel, '.DpsAjaxSearch')) {
+    submitButton = PxSelectOne('button.DpsAjaxSearch:not(.IgnoreMeOnEnterKey)', parentPanel);
+    isAjaxButton = true;
+  } else {
+    submitButton = PxSelectOne('button[type="submit"]:not(.IgnoreMeOnEnterKey)', parentPanel);
+  }
+  // Propogate the event if we couldn't find a suitable button.
+  if (!submitButton) {
+    PxAddStat({ "EnterPressed": { "Target": event.target.name, "Data": "undefined", "Time": PxTime() }});
+    return true;
+  }
+
+  PxAddStat({ "EnterPressed": { "Target": event.target.name, "Data": submitButton.name, "Time": PxTime() }});
+  //when tabs are present, there appears to be some extra logic that causes annoying problems. So remove the IgnoreMeOnEnterKey buttons.
+  //for ajax button it doesn't make sense to remove IgnoreMeOnEnterKey buttons
+  if (!isAjaxButton) {
+    PxSelectAll(".IgnoreMeOnEnterKey", parentPanel).forEach(function (node) {
+      node.parentNode.removeChild(node);
+    });
+  }
+
+  submitButton.click();
+
+  // Don't propogate the event. We don't want the the form trying to submit itself...
+  return false;
+}
+
+PxOnDocumentReady(function () {
+  if (!String.prototype.endsWith) {
+    String.prototype.endsWith = function(pattern) {
+      var d = this.length - pattern.length;
+      return d >= 0 && this.lastIndexOf(pattern) === d;
+    };
+  }
+
+  if (window.location.href.endsWith('from=pxmi2')) {
+      $('#Form1').prepend('<div id="welcome" class="DpsWarningBanner">' +
+      'Welcome to the new Payline. See more about the new Payline, please ' +
+      '<a href="https://www.windcave.com/Products/Payline" target="_blank">download the manual here.</a>' +
+      '<a id="WelcomeClose" href="">Close</a>' +
+      '</div>').on('click', '#welcome #WelcomeClose', function() {
+      $('#welcome').hide();
+      return false;
+    });
+
+    $('#welcome').slideDown('slow');
+    }
+
+    if (window.location.href.endsWith('from=px')) {
+        $('#Form1').prepend('<div id="welcome" class="DpsWarningBanner">' +
+            'Payment Express is now Windcave. To see more about our new brand, please visit ' +
+            '<a href="https://www.windcave.com/" target="_blank"> www.windcave.com</a>' +
+            '<a id="WelcomeClose" href="">Close</a>' +
+            '</div>').on('click', '#welcome #WelcomeClose', function () {
+                $('#welcome').hide();
+                return false;
+            });
+
+        $('#welcome').slideDown('slow');
+    }
+
+  if (typeof window.PxNakedPageButtonClick === "undefined") return;
+  var es = document.getElementsByTagName("button");
+  for (var i = 0; i < es.length; ++i)
+    PxUnBindEvent(es[i], 'click', PxNakedPageButtonClick);
+});
+
+function PxAddStat(value) {
+  // PxStats currently exist only on PxPay page. On all the other cases just the call.
+  var pxstat = document.getElementsByName("PxStats")[0];
+  if (typeof pxstat === "undefined")
+    return;
+  __pxStats.push(value);
+  pxstat.value = JSON.stringify(__pxStats);
+}
+
+function PxAddStatWithTime(value) {
+  var obj = {};
+  obj[value] = { "Time": PxTime() };
+  PxAddStat(obj);
+}
+
+function PxAddFP() {
+  var a = document.getElementsByName("UserDeviceFingerprint")[0];
+  if ("undefined" != typeof a && window.pxClientFingerprint)
+    a.value = window.pxClientFingerprint;
+}
+
+function PxQuickSearchPaddingZero(valueElement) {
+  var val = '0000000000000000' + valueElement.value;
+  var length = 16;
+  if (valueElement.hasAttribute('maxLength')) {
+    var maxLength = valueElement.getAttribute('maxlength');
+    if (maxLength < length)
+      length = maxLength;
+  }
+  valueElement.value = val.slice(-1 * length);
+}
+
+function PxIsQuickSearchInputValid(searchElement) {
+  if (searchElement.value.trim() == '')
+    return false;
+  $("form#Form1 :input").each(function () {
+    this.removeAttribute('required');
+    this.setCustomValidity('');
+  });
+
+  searchElement.setCustomValidity('');
+  if (!searchElement.checkValidity())
+    return false;
+  return true;
+}
+
+function PxQuickSearchOnSubmit(enablePaddingZero, inputId, submitButtonId) {
+  var searchElement = document.getElementById(inputId);
+  if (searchElement == null)
+    return false; 
+
+  if (searchElement.value.trim() == '')
+    return false;
+
+  if (enablePaddingZero)
+    PxQuickSearchPaddingZero(searchElement);
+
+  if (PxIsQuickSearchInputValid(searchElement)) {
+    PxDoNavSubmit2(inputId, searchElement.value);
+  }
+  return true;
+}
+
+function PxSetIconOnElement(target, url, padLeft, size, repeatBackground) {
+  var elementStyle = target.style;
+
+  if (url == null)
+    url = '';
+
+  if (padLeft == null)
+		padLeft = "0px";
+	
+	if(size == null)
+		size = "0px 0px";
+	
+	if(repeatBackground == null)
+		repeatBackground = true;
+	
+	elementStyle.background = "url('" + url + "')";
+	elementStyle.paddingLeft = padLeft;
+	elementStyle.backgroundSize = size;
+	elementStyle.backgroundRepeat = repeatBackground ? "repeat" : "no-repeat";
+}
+
+
+function PxSetElementStyle(element, styleObj) {
+  for (var attribute in styleObj) {
+      element.style[attribute] = styleObj[attribute];
+  }
+}
+
+function PxCreateCardTypeLogo() {
+  var IsMainCssStylePresent = PxIsMainCssPresent();
+  var iconDiv = document.createElement("div");
+  iconDiv.id = "CardTypeLogoContainer";
+
+  if (IsMainCssStylePresent) {
+    PxAddClass(iconDiv, "DpsCardTypeLogoContainer");
+  } else {
+    // IE11 doesn't allow to just assign the style attribute. So need to change individual style components
+    PxSetElementStyle(iconDiv, {
+      display: "inline-block",
+      position: "relative!important",
+      width: "23px",
+      height: "23px",
+      border: "none",
+      "margin-left": "-26px",
+      "z-index": 999,
+      "pointer-events": "none"
+    });
+  }
+
+  var icon = document.createElement("img");
+  icon.id = "CardTypeLogo";
+  icon.alt = "Card Type Logo";
+
+  iconDiv.appendChild(icon);
+  if (IsMainCssStylePresent) {
+    PxAddClass(icon, "DpsCardTypeLogo");
+  } else {
+    PxSetElementStyle(icon, {
+      "max-width": "100%",
+      height: "auto",
+      width: "auto",
+      "pointer-events": "none"
+    });
+  }
+
+  var cardNumber = PxGetElementByName('CardNumber');
+  if (cardNumber && cardNumber.parentNode) {
+      cardNumber.parentNode.insertBefore(iconDiv, cardNumber.nextSibling);
+  }
+  return icon;
+}
+
+function PxSetCardtypeLogo(LogoUrl) {
+  var IsMainCssStylePresent = PxIsMainCssPresent();
+  var cardLogoElement = document.getElementById("CardTypeLogo");
+  if (!cardLogoElement)
+    cardLogoElement = PxCreateCardTypeLogo();
+
+  if (LogoUrl) {
+    cardLogoElement.src = LogoUrl;
+    if (IsMainCssStylePresent)
+      PxRemoveClass(cardLogoElement.parentElement, "DpsCardTypeLogoHidden");
+    else
+      PxSetElementStyle(cardLogoElement.parentElement, {
+        display: "inline-block"
+      });
+  } else {
+    cardLogoElement.src = "";
+    if (IsMainCssStylePresent)
+      PxAddClass(cardLogoElement.parentElement, "DpsCardTypeLogoHidden");
+    else
+      PxSetElementStyle(cardLogoElement.parentElement, {
+        display: "none"
+      });
+  }
+}
+
+function PxOnCurrencyChange(selectedCurrencyTxt, symbolElem, fractionElem, currencyLookupTable) {
+  var currencyObj = currencyLookupTable && currencyLookupTable[selectedCurrencyTxt];
+  if (currencyObj) {
+    if (symbolElem)
+      symbolElem.innerHTML = currencyObj.sym || "";
+    if (fractionElem) {
+      var originalLength = fractionElem.maxLength;
+      var exp = currencyObj.exp;
+      fractionElem.disabled = !exp;
+      //if disalbed keep original maxlength otherwise we can not re-calcuate width correctly when we swich to non-0dp currency.
+      if (!fractionElem.disabled)
+          fractionElem.maxLength = exp;
+
+      // recalculate value(truncate or fill more zero at the end)
+            var expValueStr = fractionElem.value + "0000";
+            expValueStr = expValueStr.substring(0, exp);            
+            fractionElem.value = expValueStr;
+            
+            // recalcuate place holder
+            var placeholderValue= "0000";
+            fractionElem.placeholder = placeholderValue.substring(0, exp);
+
+            // recalcuate width
+			if (exp && originalLength) {
+				// use getComputedStyle as offsetWidth contain border
+				var newWidth = window.getComputedStyle(fractionElem).width.match(/\d+/) / originalLength * exp;
+				if (newWidth) {
+					fractionElem.style = "width:" + newWidth + "px!important;";
+				} else {
+					fractionElem.style = "width:" + exp * 10 + "px!important;"; // just in case it getComputedStyle is not supported < IE8
+				}
+			}
+        }
+    }
+}
+
+
+
+function PxOnYearExpiryChange(yearSelector, monthSelector, startYear, startMonth) {
+
+  var yearSelect = PxSelectOne(yearSelector);
+  var monthSelect = PxSelectOne(monthSelector);
+
+  if (yearSelect && monthSelect) {
+    if (yearSelect.value == startYear) {
+      var selectedMonth = parseInt(monthSelect.value);
+      for (i = 0; i < monthSelect.options.length; i++) {
+        var month = parseInt(monthSelect.options[i].value);
+        if (month < startMonth) {
+          monthSelect.options[i].disabled = true;
+        }
+
+        // if we change the year, we need to re-select the month if it is far in the past
+        if (selectedMonth < startMonth && month == startMonth) {
+          monthSelect.options[i].selected = true;
+        }
+
+      }
+    }
+    else {
+      for (i = 0; i < monthSelect.options.length; i++) {
+        var month = parseInt(monthSelect.options[i].value);
+        if (month > 0) {
+          monthSelect.options[i].disabled = false;
+        }
+      }
+    }
+  }
+
+}
+
+function getDivider(fileSizeUnit) {
+  var divider = 1;
+
+  if (fileSizeUnit == 'KB')
+    divider = 1024;
+  else if (fileSizeUnit == 'MB')
+    divider = 1024 * 1024;
+
+  return divider;
+}
+
+
+function PxOnFileChange(Id, maxFileSize, maxfileSizeUnit, minFileSize, minFileSizeUnit, name, isImage, maxImageWidth, maxImageHeight) {
+
+  if (maxFileSize == 0 && minFileSize == 0)
+    return;
+
+  var maxDivider = getDivider(maxfileSizeUnit);
+  var minDivider = getDivider(minFileSizeUnit)
+
+  if (maxDivider === 1)
+    maxfileSizeUnit = 'Byte';
+
+  if (minDivider === 1)
+    minFileSizeUnit = 'Byte';
+
+  var messagefield = document.getElementById('message_' + Id);
+  messagefield.innerHTML = "";
+  var fileelement = document.getElementById(Id);
+
+  fileelement.setCustomValidity("");
+
+  var maxSizeCheck = function (size) {
+    if (size > maxFileSize) {
+      var origSize = fileelement.files[0].size;
+      var messaging = 'upload file size= ' + (origSize / maxDivider).toFixed(4) + ' ' + maxfileSizeUnit + ' is larger than MaxFileSize= ' + (maxFileSize / maxDivider).toFixed(4) + ' ' + maxfileSizeUnit;
+      messagefield.innerHTML = messaging;
+      fileelement.setCustomValidity(messaging);
+    }
+  };
+
+  var minSizeCheck = function (size) {
+    if (size < minFileSize) {
+      var origSize = fileelement.files[0].size;
+      var messaging = 'upload file size= ' + (origSize / minDivider).toFixed(4) + ' ' + minFileSizeUnit + ' is smaller than MinFileSize= ' + (minFileSize / minDivider).toFixed(4) + ' ' + minFileSizeUnit;
+      messagefield.innerHTML = messaging;
+      fileelement.setCustomValidity(messaging);
+    }
+  };
+
+  var fileSizeCheck = function (size) {
+    if (maxFileSize > 0) {
+      maxSizeCheck(size);
+    }
+
+    if (minFileSize > 0) {
+      minSizeCheck(size);
+    }
+  }
+
+  if (isImage && maxImageWidth && maxImageHeight) {
+    PxPrepareImage(Id, name, maxImageWidth, maxImageHeight, function (success) {
+      if (!success) {
+        fileSizeCheck(fileelement.files[0].size);
+      }else{
+          var scaled = document.getElementById(Id + '_$scaled');
+          var size = parseInt((scaled.value).replace(/=/g,"").length * 0.75);
+          fileSizeCheck(size);
+      }
+    });
+  }
+  else {
+    fileSizeCheck(fileelement.files[0].size);
+  }
+
+}
+
+function PxOnInvalid(element, displayName) {
+    element.setCustomValidity(element.validationMessage.replace("Please fill out this field.", "Please enter a valid " + displayName + "."));
+}
+
+document.onkeydown = (function(ev) {
+  var key;
+  if (window.event) {
+    key = window.event.keyCode;
+    shiftKeyDown = window.event.shiftKey ? true : false;
+    altKeyDown = window.event.altKey ? true : false;
+    ctrlKeyDown = window.event.ctrlKey ? true : false;
+  } else {
+    key = ev.which;
+    shiftKeyDown = ev.shiftKey ? true : false;
+    altKeyDown = ev.altKey ? true : false;
+    ctrlKeyDown = ev.ctrlKey ? true : false;
+  }
+});
+
+document.onkeyup = (function(ev) {
+  var key;
+  if (window.event) {
+    key = window.event.keyCode;
+    shiftKeyDown = window.event.shiftKey ? true : false;
+    altKeyDown = window.event.altKey ? true : false;
+  } else {
+    key = ev.which;
+    shiftKeyDown = ev.shiftKey ? true : false;
+    altKeyDown = ev.altKey ? true : false;
+  }
+});
+if (!window.__pxStats) window.__pxStats = [];
+if (!window.PxTime) window.PxTime = function () { return "" + new Date().getTime(); };
+
+PxAddStatWithTime("JSLoaded");
+PxAddStat({ "UserAgent": { "Data": navigator.userAgent, "Time": PxTime() }});
+
+function getAllSelectors() {
+	var ret = [];
+  for (var i = 0; i < document.styleSheets.length; i++) {
+    try {
+      var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
+      for (var x in rules) {
+        if (typeof rules[x].selectorText == 'string') ret.push(rules[x].selectorText);
+      }
+    } catch (e) {
+      if (e.name == 'SecurityError') {
+        console.log("SecurityError. Can not read rules of style sheet: " + document.styleSheets[i].href);
+      }
+      continue;
+    }
+  }
+  return ret;
+}
+
+function selectorExists(selector) {
+	var selectors = getAllSelectors();
+	for (var i = 0; i < selectors.length; i++) {
+		if (selectors[i] == selector) return true;
+	}
+	return false;
+}
+
+function PxShowOpaqueScreen() {
+  // determin full size of the opaque screen, seems body can be smaller than window and vice versa.
+  var width = document.documentElement.clientWidth;
+  var height = document.documentElement.clientHeight;
+
+  var body = PxSelectOne('body');
+  if (body) {
+    if (body.offsetWidth > width)
+      width = body.offsetWidth;
+    if (body.offsetHeight > height)
+      height = body.offsetHeight;
+
+    var divHtml = PxCreateElement("<div class = 'DpsSubmitOverlay'></div>");
+    divHtml.style.backgroundColor = 'rgba(255, 255, 255, 255)';
+    divHtml.style.opacity = '0.8';
+    divHtml.style.position = 'absolute';
+    divHtml.style.left = '0';
+    divHtml.style.top = '0';
+    divHtml.style.width = width + 'px';
+    divHtml.style.height = height + 'px';
+    body.insertBefore(divHtml, body.firstChild);
+  }
+}
+
+
+function PxHideOpaqueScreen() {
+  PxSelectAll(".DpsSubmitOverlay").forEach(function (node) {
+    node.parentNode.removeChild(node);
+  });
+}
+
+function PxTruncateByMaxBytes(e) {
+
+	var inp = e.target || e.srcElement; // IE8 or older support e.srcElement instead of e.target
+	if (inp.maxLength == 0) {
+		return true;
+	}
+	
+	while (byteLength(inp.value) > inp.maxLength) {
+		inp.value = inp.value.substring(0, inp.value.length - 1); 
+	}
+}
+/**
+ * Count bytes in a string's UTF-8 representation.
+ *
+ * @param   string
+ * @return  int
+ * https:/ / codereview.stackexchange.com / questions / 37512 / count - byte - length - of - string
+ */
+
+function byteLength(normal_val) {
+	// Force string type
+	normal_val = String(normal_val);
+
+	var byteLen = 0;
+	for (var i = 0; i < normal_val.length; i++) {
+		//https://en.wikipedia.org/wiki/UTF-8#Description
+		var c = normal_val.charCodeAt(i);
+		byteLen += c < (1 << 7) ? 1 :
+			c < (1 << 11) ? 2 :
+				c < (1 << 16) ? 3 :
+					c < (1 << 21) ? 4 :
+						c < (1 << 26) ? 5 :
+							c < (1 << 31) ? 6 : Number.NaN;
+	}
+	return byteLen;
+}
+
+function PxHandleUploadFileResponse(responseObj) {
+}
+
+function PxRenderTables(responseObj) {
+  PxOnSearchEnd();
+  var checkResponse = function(Response) {
+    var RecoList = ["DU", "ER", "XX", "99", "DB", "m9", "FT", "FJ" ];
+
+    if (RecoList.indexOf(Response.Reco) > -1) {
+      PxPostNotification("Error " + Response.Reco + ". " + Response.ResponseText + ".", false);
+      return false;
+    } 
+    return true;
+  }
+
+  if(!checkResponse(responseObj))
+    return;
+
+  if (responseObj.TableLists == null)
+    return;
+
+  for (var i = 0; i < responseObj.TableLists.length; i++) {
+    PxRenderTableContent(responseObj.TableLists[i]);
+  }
+}
+
+function PxRenderJsonTableContent(tableInfo) {
+  if (tableInfo.TableType == "AjaxJson" && tableInfo.ListElements.length > 0) {
+    var tableObj = {};
+    for (var index = 0; index < tableInfo.ListElements.length; index++) {
+      var record = tableInfo.ListElements[index];
+      var keys = Object.keys(record);
+      var values = Object.values(record);
+      for (var i = 0; i < keys.length; i++) {
+        if (index == 0)
+          tableObj[keys[i]] = '[' + values[i];
+        else
+          tableObj[keys[i]] += ',' + values[i];
+        if (index == tableInfo.ListElements.length - 1)
+          tableObj[keys[i]] += ']';
+      }
+    }
+    if (tableInfo.TableName != "")
+      window[tableInfo.TableName] = tableObj;
+    else
+      window[tableInfo.ObjectName] = tableObj;
+  }
+}
+
+function PxRenderTableContent(tableInfo) {
+
+    var escapeCSV = function(csvField) {
+        if (!csvField)
+            return "";
+         
+         // replace ,
+        csvField = csvField.replace(",", "-");
+
+        // unescape html
+        var elt = document.createElement("span");
+        elt.innerHTML = csvField;
+
+        return elt.innerText;    
+    }
+
+  var getTableFieldInfo = function (tableElem, tableInfo) {
+    var tableHead = tableElem.getElementsByTagName("thead")[0];
+    var fields = [];
+    $(tableHead.getElementsByTagName("tr")[0]).children("td").each(function() {
+        var spanElement = this.getElementsByTagName("span")[0];
+        if (spanElement != null) {
+            var name = spanElement.id.substring(0, spanElement.id.indexOf("_"));
+            //if name is empty we will keep id as name. Currently empty name will only happen in checkbox
+            if (name == "")
+                name = spanElement.id;
+            fields.push(name);
+        }
+    });
+    return fields
+  }
+
+  var fieldsRenderer = {
+    textinput: function (fieldInfo, name, value) {
+      //textinput field , atrribute: rightaligned
+      var fieldname = fieldInfo.tableName ? (fieldInfo.tableName + "_" + name) : name;
+      var fieldHtml = '<td class="DpsTableCell ' + (fieldInfo.rightaligned == "1" ? 'DpsRight' : '') + '"' + ' colspan="1">';
+      fieldHtml += '<span class="DpsField DpsReadOnlyField" name="' + fieldname + '">' + value + '</span>';
+      fieldHtml += '</td>';
+
+      return fieldHtml;
+    },
+    space: function (fieldInfo, name, value) {
+      //space field, attribute: enableboolimg 
+      var fieldHtml = '<td class="DpsTableCell" colspan="1">';
+      if (fieldInfo.enableboolimg == "1") {
+        fieldHtml += '<div class=' + (value == 1 ? '"DpsTick ' : '"DpsCross ') + ' DpsField"></div>';
+      }
+      else if (fieldInfo.enablecustomcolor == "1") {
+        fieldHtml = '<td class="DpsTableCell DpsCustomColorField" colspan="1" customcolor="' + value + '" >';
+      }
+      else {
+        fieldHtml += '<span class="DpsField DpsReadOnlyField" name="' + name + '">' + value + '</span>';
+      }
+      fieldHtml += '</td>';
+
+      return fieldHtml;
+    },
+    datetime: function(fieldInfo, name, value){
+      //datetime field
+      var fieldHtml = '<td class="DpsTableCell ' + (fieldInfo.rightaligned == "1" ? 'DpsRight' :'') + '"' + ' colspan="1">';
+      fieldHtml += '<span class="DpsField DpsReadOnlyField" name="' + name + '">' + value + '</span>';
+      fieldHtml += '</td>';
+    
+      return fieldHtml;
+    },
+    checkbox: function (fieldInfo, name, value) {
+      //checkbox set its name and id from based on table name and input value .
+      var fieldname = fieldInfo.parentname + "_" + value;
+      var fieldHtml = '<td class="DpsTableCell" colspan="1">';
+      fieldHtml += '<input type="checkbox" id="' + fieldname + '"  name="' + fieldname + '" class="DpsFieldCheckBox">'
+      fieldHtml += '</td>';
+      return fieldHtml;
+    },
+    amount: function (fieldInfo, name, value) {
+      if (window.__PageDetail != null) {
+        if (window.__PageDetail.AmountDecimalPlace != null) {
+          var decimalPlace = parseInt(window.__PageDetail.AmountDecimalPlace);
+          if (!isNaN(decimalPlace) && (decimalPlace >= 0 && decimalPlace <= 4)) {
+            var valueFloat = parseFloat(value);
+            if (!isNaN(valueFloat))
+              value = valueFloat.toFixed(decimalPlace);
+    }
+        }
+
+        if (window.__PageDetail.AmountCurrency != null)
+          value += '(' + window.__PageDetail.AmountCurrency + ')';
+      }
+
+      var fieldHtml = '<td class="DpsTableCell ' + (fieldInfo.rightaligned == "1" ? 'DpsRight' : '') + '"' + ' colspan="1">';
+      fieldHtml += '<span class="DpsField DpsReadOnlyField" name="' + name + '">' + value + '</span>';
+      fieldHtml += '</td>';
+      return fieldHtml;
+    }
+  };
+
+  var renderBody = function (tableInfo) {
+    var fieldsLayout = getTableFieldInfo(tableElem, tableInfo);
+
+    // csv header
+    for (var i = 0; i < fieldsLayout.length; i++) {
+          tableContentCSV += escapeCSV(fieldsLayout[i]) + ",";
+    }
+
+    //Render table content
+    var tableBody = tableElem.getElementsByTagName("tbody")[0];
+   
+    if (tableInfo.ListElements.length > 0) {
+      var tableContentHtml = "";
+      var onClickPagePresent = tableInfo.OnClickPagePresent == "true";
+      for (var index = 0; index < tableInfo.ListElements.length; index++) {
+
+        tableContentCSV += "\n";
+
+        var record = tableInfo.ListElements[index];
+        if (onClickPagePresent)
+          tableContentHtml += '<tr onclickid="' + record["onclickid"] + '">';
+        else
+          tableContentHtml += '<tr>';
+        for (var i = 0; i < fieldsLayout.length; i++) {
+          var fieldMeta = tableInfo.FieldsInfo[fieldsLayout[i]];
+          //renderer may need table name
+          fieldMeta['tableName'] = tableElem.getAttribute("name");
+          //checkbox get value from another field and take the value as elmement's name and id
+          var fieldName = fieldMeta.type != "checkbox" ? fieldsLayout[i] : fieldMeta.valuefromfield;
+          tableContentHtml += fieldsRenderer[fieldMeta.type](fieldMeta, fieldsLayout[i], record[fieldName], record);
+          tableContentCSV += escapeCSV(record[fieldName]) + ",";
+        }
+        tableContentHtml += '</tr>';
+      }
+      tableBody.innerHTML = tableContentHtml;
+      if (onClickPagePresent) {
+        $('#' + tableInfo.TableId + '>tbody>tr[onclickid!=""]:nth-child(n)').on('click', function (e) {
+          PxOnClick($(this).parent().parent().attr('id'), $(this).attr('onclickid'));
+        });
+      }
+    } else {
+        tableBody.innerHTML = ('<tr> <td colspan = ' + fieldsLayout.length + '> <div class="DpsCenter"> No results found. </div> </td></tr>');
+    }
+
+    //set custom color
+    PxSelectAll('.DpsCustomColorField', tableBody).forEach(function (node) {
+      var customColor = node.getAttribute('customcolor');
+      if (customColor) {
+        node.style.backgroundColor = customColor;
+      }
+    });
+  }
+
+  var renderFooter = function(tableInfo, IsEof, IsBof){
+    var RoundTrip = document.getElementById("RoundTrip_" + tableInfo.TableId);
+    if (RoundTrip) {
+      RoundTrip.innerHTML = tableInfo.RoundTripTime + " seconds";
+      if (tableInfo.EnablePayMenuMode)
+        PxAddClass(RoundTrip, "DpsHidden");
+    }
+ 
+    var StartRow = document.getElementById("StartRow_" + tableInfo.TableId);
+    if(StartRow)
+      StartRow.value = tableInfo.StartRowCount;
+ 
+    var PageNumber = document.getElementById("PageNumber_" + tableInfo.TableId);
+    var startRowCount = parseInt(tableInfo.StartRowCount);
+    var rowCount = parseInt(tableInfo.MaxRowCount);
+
+    var SelectRowBox = document.getElementById("footerselect_" + tableInfo.TableId);
+    if (SelectRowBox != null) {
+      SelectRowBox.value = tableInfo.MaxRowCount;
+    }
+
+    if (PageNumber) {
+      // always display page number on table rendering.
+      PxRemoveClass(PageNumber, "DpsVisibilityHidden");
+      if (tableInfo.EnablePayMenuMode && startRowCount == 0)
+        PageNumber.innerHTML = "";
+      else if (!IsEof || !IsBof)
+        PageNumber.innerHTML = "Page Number: " + (Math.floor(startRowCount / rowCount) + 1);
+      else
+        PageNumber.innerHTML = "";
+    }
+    
+    var TotalRecord = document.getElementById("TotalRecordCount_" + tableInfo.TableId);
+    if( typeof(TotalRecord) != 'undefined' && TotalRecord != null) {
+      var total = parseInt(tableInfo.TotalRecordCount);
+      var from = Math.max(1, Math.min(startRowCount, total));
+      var to = Math.min(startRowCount + rowCount, total);
+      TotalRecord.innerHTML = from + ' - ' + to  + ' of ' + total;
+    }
+ 
+  };
+
+  var renderNavigationButton = function(tableInfo, IsEof, IsBof){
+    // render button "First", "Next", "Prev" and "Last"
+      var updateButton = function (name, tableId, enalbe) {
+
+      var button = document.getElementById(name + tableId);
+      if (button == null)
+              return;
+
+      var buttonParent = button.parentElement;
+      if (!tableInfo.EnablePayMenuMode) {
+        buttonParent.classList.remove("DpsHidden");
+        if (enalbe) {
+          button.classList.remove("DpsNavButtonDisabled");
+          button.disabled = false;
+        } else {
+          button.classList.add("DpsNavButtonDisabled");
+          button.disabled = true;
+        }
+      } else {
+        if (enalbe) {
+          //searching state will disable navigation buttons then we need to enable it on ajax response
+          button.classList.remove("DpsNavButtonDisabled");
+          button.disabled = false;
+
+          buttonParent.classList.remove("DpsHidden");
+        } else {
+          buttonParent.classList.add("DpsHidden");
+        }
+      }
+    }
+
+    var hideButton = function (name, tableId) {
+      var button = document.getElementById(name + tableId);
+      if (button == null)
+        return;
+
+      button.parentElement.classList.add("DpsHidden");
+    }
+
+    var negativeScrollable = tableInfo.IsNegativeScrollable == "true";
+
+    if (IsEof && IsBof) {
+        hideButton("First", tableInfo.TableId);
+        hideButton("Prev", tableInfo.TableId);
+        hideButton("Next", tableInfo.TableId);
+        hideButton("Last", tableInfo.TableId);
+    } else {
+        updateButton("First", tableInfo.TableId, !IsBof);
+        updateButton("Prev", tableInfo.TableId, !IsBof);
+        updateButton("Next", tableInfo.TableId, !IsEof);
+        if (negativeScrollable)
+            updateButton("Last", tableInfo.TableId, !IsEof);
+    }
+
+    if (tableInfo.ListElements.length > 0) {
+        updateButton("CSV", tableInfo.TableId, true);
+    }
+    else {
+        hideButton("CSV", tableInfo.TableId);
+      }
+      
+
+  };
+
+  var tableElem = document.getElementById(tableInfo.TableId);
+  if (tableInfo.TableType == "AjaxJson")
+    return PxRenderJsonTableContent(tableInfo);
+  else if (tableElem == null) // table element doesn't exist
+    return;
+
+  //start csv table
+  var tableContentCSV = "";
+
+  //clear footer row input
+  var footerRowInput = document.getElementById('footerinput_' + tableInfo.TableId);
+  if(footerRowInput)
+    footerRowInput.value = '';
+
+  tableInfo.EnablePayMenuMode = tableInfo.EnablePayMenuMode == "true";
+  if (tableInfo.EnablePayMenuMode) {
+    PxRenderMenuOrderTableBody(tableInfo, tableElem);
+  } else {
+    renderBody(tableInfo);
+  }
+
+  var StartRow = parseInt(tableInfo.StartRowCount);
+  var total = parseInt(tableInfo.TotalRecordCount);
+  var IsEof = (isNaN(total) || total == 0) ? (tableInfo.IsEof == "true") : (StartRow + tableInfo.ListElements.length >= total);
+  var IsBof = StartRow == 0 || tableInfo.IsBof == "true";
+  renderFooter(tableInfo, IsEof, IsBof);
+  renderNavigationButton(tableInfo, IsEof, IsBof);
+
+  //trigger ajax table loaded event
+  PxTriggerEvent(tableElem, 'AjaxTableLoaded');
+
+  //add event handler
+  PxOnEvent('#' + tableInfo.TableId + ' input', "change", PxInputChanged);
+  PxOnEvent('#' + tableInfo.TableId + " .DpsTableCell", "mouseenter", function () {
+    PxAddClass(this, "DpsTableCellFirstHoverDone");
+  });
+
+  PxOnEvent('#' + tableInfo.TableId + " .DpsTableCell", "mouseleave", function () {
+    PxAddClass(this, "DpsTableCellFirstHoverDone");
+  });
+
+  
+  var buttonCsv = document.getElementById("CSV" + tableInfo.TableId);
+  if (buttonCsv != null)
+  {
+    buttonCsv.setAttribute("href", "data:text/csv;charset=utf-8," + encodeURIComponent(tableContentCSV));
+  }
+
+  if (tableInfo.EnablePayMenuMode) {
+    PxOnEvent(".DpsItemQuantitySelector", "change", function (item) {
+      //paymenu page specific logic
+      if (window.orderMenuItems != null) {
+        window.orderMenuItems[item.target.name].Quantity = parseInt(item.target.value);
+        if (onPayMenuSelectionChange != null)
+          onPayMenuSelectionChange();
+      }
+    });
+
+    PxOnEvent(".DpsItemQuantitySelectorButton", "click", function (evt) {
+      var item = evt.target;
+      if (item.tagName == "DIV")
+        item = item.parentElement;
+      var fieldName = item.name.substring(item.name.indexOf('_') + 1);
+      var elem = PxSelectOne('#' + fieldName );
+      if (elem != null) {
+        var currentValue = parseInt(elem.value);
+        if (isNaN(currentValue))
+          currentValue = 0;
+        var maxValue = parseInt(elem.max);
+
+        if (item.name.startsWith('plus')) {
+          if (currentValue + 1 <= maxValue)
+            currentValue += 1;
+        } else {
+          if (currentValue - 1 >= 0)
+            currentValue -= 1;
+        }
+        elem.value = currentValue.toString();
+
+        var minusButton = PxSelectOne('[name=minus_' + fieldName + ']');
+        if (currentValue == 0) {
+          PxAddClass(minusButton, "DpsVisibilityHidden");
+          PxAddClass(elem, "DpsVisibilityHidden");
+        } else {
+          PxRemoveClass(minusButton, "DpsVisibilityHidden");
+          PxRemoveClass(elem, "DpsVisibilityHidden");
+        }
+        if (window.orderMenuItems != null) {
+          window.orderMenuItems[elem.name].Quantity = parseInt(elem.value);
+          if (onPayMenuSelectionChange != null)
+            onPayMenuSelectionChange();
+        }
+      }
+    });
+  }
+
+}
+
+function PxOnTableNaviButtonClicked(type, url, field, tableId, defaultRowCount) {
+  var StartRow = document.getElementById("StartRow_" + tableId);
+  var StartRowCount = parseInt(StartRow.value);
+  var SelectRowBox = document.getElementById("footerselect_" + tableId);
+  var MaxRowCount;
+  if (SelectRowBox)
+    MaxRowCount = parseInt(SelectRowBox.options[SelectRowBox.selectedIndex].value);
+  else
+    MaxRowCount = defaultRowCount;
+
+  if (type == "First")
+    StartRow.value = "0";
+  else if(type == "Next")
+    StartRow.value = StartRowCount + MaxRowCount;
+  else if(type == "Prev")
+    StartRow.value = (StartRowCount >= 0) ? Math.max(StartRowCount - MaxRowCount, 0) : (StartRowCount - MaxRowCount);
+  else if(type == "Last")
+    StartRow.value =  MaxRowCount * -1;
+
+  PxTriggerSearchWithValidation(url, field, tableId);
+}
+
+function PxOnTableLoadButtonClicked(url, field, tableId) {
+  PxOnSearchDynamic(url, field, tableId);
+}
+
+function PxOnAjaxTableLoad(ajaxUrl, tableId, enableSearchOnPageLoad, onDemandLoadingMode) {
+  var table = document.getElementById(tableId);
+
+  var menuClick = window.location.href.endsWith('?m=1');
+  // window.performance.navigation is supported by IE 9 or above
+  var pageRefresh = window.performance.navigation.type == window.performance.navigation.TYPE_RELOAD;
+  var pageBackOrForward = window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD;
+
+  if (menuClick && !pageBackOrForward) //user click menu item
+    filterLoad = 1;
+  else  //user press back or forward or page redirect
+    filterLoad = 2;
+
+    if (enableSearchOnPageLoad) {
+        //if search filter exists we will load the table anyway.
+        PxOnSearchDynamic(ajaxUrl, table, '0', filterLoad);
+  } else if (onDemandLoadingMode != 0) {
+    //0 means undefined. 1 means load when table shown, 2 means load on button click
+    PxHandleAjaxTableOnDemandLoading(ajaxUrl, onDemandLoadingMode);
+    } else if (!pageRefresh && (pageBackOrForward || !menuClick)) {
+        //if search filter doesn't exist table will not be loaded on page refresh or menu click
+        PxOnSearchDynamic(ajaxUrl, table, '0', filterLoad);
+    } else if (PxSelectAll(".DpsUiPanel.DpsAjaxSearch").length == 0) {
+        //if there are no search panels we should query table content on page load
+        PxOnSearchDynamic(ajaxUrl, table, '0', filterLoad);
+    } else {
+        // show instructions if we don't do search on page load
+    PxAjaxTableShowInstructions(table, "Please select filters and then click search to see results.");
+  }
+}
+
+function PxAjaxTableShowInstructions(table, text) {
+        var tableBody = table.getElementsByTagName("tbody")[0];
+        if (tableBody != null) {
+            var header = PxSelectOne('thead tr', table);
+            if (header != null) {
+      tableBody.innerHTML = ('<tr> <td colspan = ' + header.children.length + '> <div class="DpsCenter">' + text + '</div> </td></tr>');
+            }
+        }
+    }
+
+function PxHandleAjaxTableOnDemandLoading(ajaxUrl, onDemandLoadingMode) {
+  if (onDemandLoadingMode == 2) {
+    PxSelectAll('table.DpsAjaxTable').forEach(function (table) {
+      PxAjaxTableShowInstructions(table, "Please click load to see results");
+    });
+  } else if (onDemandLoadingMode == 1) {
+    setTimeout(function () {
+      PxSelectAll('table.DpsAjaxTable').forEach(function (table) {
+        if (PxIsInsideHiddenTab(table)) {
+          window["ajaxTableLoaded" + table.id] = false;
+
+          PxOnEvent('.tabbernav', "click", function () {
+            if (!window["ajaxTableLoaded" + table.id] && !PxIsInsideHiddenTab(table)) {
+              window["ajaxTableLoaded" + table.id] = true;
+              PxOnSearchDynamic(ajaxUrl, table, table.id);
+}
+          });
+        } else {
+          PxOnSearchDynamic(ajaxUrl, table, table.id);
+          window["ajaxTableLoaded" + table.id] = true;
+        }
+      });
+    });
+  }
+}
+
+function PxRenderMenuOrderTableBody(tableInfo, tableElem) {
+  var fieldsRenderer = {
+    Name: function ( name, value, record) {
+      var fieldHtml = '<td class="DpsTableCell DpsMenuOrderTableColumn"'  + '"' + ' colspan="1">';
+      fieldHtml += '<span class="DpsField DpsReadOnlyField  PxMenuItemName" name="' + name + '">' + value + '</span>';
+      fieldHtml += '</td>';
+
+      return fieldHtml;
+    },
+    Description: function (name, value, record) {
+      var fieldHtml = '<td class="DpsTableCell DpsMenuOrderTableColumn"' + '"' + ' colspan="1">';
+      fieldHtml += '<span class="DpsField DpsReadOnlyField" name="' + name + '">' + value + '</span>';
+      fieldHtml += '</td>';
+
+      return fieldHtml;
+    },
+    Amount: function (name, value, record) {
+      var formattedAmount = value;
+      if (typeof getFormattedAmount === "function") {
+        formattedAmount = getFormattedAmount(parseFloat(value));
+      }
+      var fieldHtml = '<td class="DpsTableCell DpsMenuOrderTableColumn"'  + '"' + ' colspan="1">';
+      fieldHtml += '<span class="DpsField DpsReadOnlyField" name="' + name + '">' + formattedAmount + '</span>';
+      fieldHtml += '</td>';
+
+      return fieldHtml;
+    },
+    MaxQuantity: function (name, value, record) {
+      //if value is 0 set to default max, 100.
+      var intValue = parseInt(value);
+      if (intValue == 0) {
+        intValue = 100;
+        value = intValue.toString();
+      }
+      var fieldname = record.onclickid;
+      if (window.orderMenuItems != null && window.orderMenuItems[fieldname] == null) {
+        window.orderMenuItems[fieldname] = {};
+        window.orderMenuItems[fieldname].Name = record.Name;
+        window.orderMenuItems[fieldname].MenuGroupName = record.MenuGroupName;
+        window.orderMenuItems[fieldname].Quantity = 0;
+        window.orderMenuItems[fieldname].Amount = parseFloat(parseFloat(record.Amount).toFixed(window.currencyMinorUnits));
+        window.orderMenuItems[fieldname].Id = record.onclickid;
+      }
+
+      var fieldId = record.onclickid;
+      var fieldHtml = '<td class="DpsTableCell DpsMenuOrderTableColumn" colspan="1"><div class="DpsItemQuantityGroupSelector">';
+      var buttonName = "minus_" + fieldId;
+      fieldHtml += '<button type="button" name="' + buttonName + '" class="DpsItemQuantitySelectorButton DpsVisibilityHidden">-</button>'
+      fieldHtml += '<input type="text" class="DpsItemQuantitySelector DpsVisibilityHidden" disabled="disabled" id="' + fieldId + '"  name="' + fieldname + '" max="' + value + '" value="' + window.orderMenuItems[fieldname].Quantity + '" min="0" >'
+      buttonName = "plus_" + fieldId;
+      fieldHtml += '<button type="button" name="' + buttonName + '" class="DpsItemQuantitySelectorButton">+</button>'
+      fieldHtml += '</div></td>';
+
+      return fieldHtml;
+    }
+  };
+
+  var tableHead = tableElem.getElementsByTagName("thead")[0];
+  if (tableHead != null)
+    tableHead.style.display = 'none';
+  var fieldsLayout = ['Name', 'Description', 'Amount', 'MaxQuantity'];
+  //Render table content
+  var tableBody = tableElem.getElementsByTagName("tbody")[0];
+
+  if (tableInfo.ListElements.length > 0) {
+    var tableContentHtml = "";
+    var currentCategory = "";
+    for (var index = 0; index < tableInfo.ListElements.length; index++) {
+      var record = tableInfo.ListElements[index];
+      if (currentCategory != record.MenuGroupName) {
+        tableContentHtml += '<tr ><td colspan="3" class="PxMenuItemGroup DpsMenuOrderTableColumn"><span>' + record.MenuGroupName + '</span></td></tr>';
+        currentCategory = record.MenuGroupName;
+      }
+      tableContentHtml += '<tr>';
+      tableContentHtml += fieldsRenderer['Name']('Name', record.Name, record);
+      tableContentHtml += fieldsRenderer['Amount']('Amount', record.Amount, record);
+      tableContentHtml += fieldsRenderer['MaxQuantity']('MaxQuantity', record.MaxQuantity, record);
+      tableContentHtml += '</tr>';
+
+      tableContentHtml += '<tr><td class="DescriptionRow DpsMenuOrderTableColumn" colspan="3"><span class="DpsField PxMenuItemDescription">' + record.Description + '</span></td></tr>';
+    }
+    tableBody.innerHTML = tableContentHtml;
+  } else {
+    tableBody.innerHTML = ('<tr> <td colspan = ' + fieldsLayout.length + '> <span> No menu found. </span> </td></tr>');
+  }
+}
+
+// Ajax search button can not tirgger native validation UI automatically.
+// We need to trgger the validation UI mannually
+function PxReportValidation() {
+  var form = PxSelectOne('#Form1');
+  if (form) {
+    var tmpSubmit = document.createElement('button');
+    form.appendChild(tmpSubmit);
+    tmpSubmit.click();
+    form.removeChild(tmpSubmit);
+  }
+}
+
+// https://stackoverflow.com/questions/799981/document-ready-equivalent-without-jquery
+function PxOnDocumentReady(handler) {
+  if (handler != null) {
+    var oldIEVersion = isIE10OrOlder();
+    if (document.readyState == "loading") {
+      PxBindEvent(document, "DOMContentLoaded", handler);
+    } else if (document.readyState == "interactive" && oldIEVersion) {
+      //on IE10/9/8  readyState is changed into "interactive" before document is full loaded
+      if (oldIEVersion > 8)
+      PxBindEvent(document, "DOMContentLoaded", handler);
+      else
+        PxBindEvent(document, "readystatechange", function () { if (document.readyState == 'complete') handler(); });
+    } else {
+      handler();
+    }
+  }
+}
+
+//the following selectors are supported in JQuery but not in CSS selector,
+//1. pure numerical id, like '#1234', we need to escape it for CSS selector.
+//2. ':input' selector, we need to convert it into specific input types.
+function PxSelectAll(selector, context) {
+  //escape pure numerical id
+  var idx = selector.indexOf("#");
+  if (idx >= 0 && !isNaN(selector.charAt(idx + 1))) {
+    var escaped = '\\3' + selector.charAt(idx + 1) + ' ';
+    selector = selector.substring(0, idx + 1) + escaped + selector.substring(idx + 2);
+  }
+
+  if (selector.indexOf(":input") != -1) {
+    selector = selector.replace(/:input/g, 'input, textarea, select, button');
+  }
+  // Method "querySelectorAll()" is supported by IE9 and above
+  var contents = (context || document).querySelectorAll(selector);
+  // return array since IE doesn't support forEach on NodeList
+  // use for loop instead of Array.prototype.slice() since it can be supported by more browsers like IE8
+  var arr = [];
+  for (var i = 0; i < contents.length; i++) {
+    arr.push(contents[i]);
+  }
+  return arr;
+}
+
+function PxSelectOne(selector, context) {
+
+  var contents = PxSelectAll(selector, context);
+  if (contents.length == 1) {
+    return contents[0];
+  } else if (contents.length == 0) {
+    console.log("PxSelectOne:no matched elements for selector: " + selector);
+    return null;
+  } else {
+    console.log("PxSelectOne:more than one matchched elements for selector:" + selector);
+    return contents[0];
+  }
+}
+
+function PxMatch(node, selector) {
+  // Make it compatible with some other browsers
+  node.matches = node.matches || node.msMatchesSelector || node.webkitMatchesSelector;
+  if (node.matches)
+    return node.matches(selector || '*');
+  else
+    return false;
+}
+
+//jquery event handler return false to disable event propation.
+//we need to implement the behavior in the event handler
+//https://stackoverflow.com/questions/1357118/event-preventdefault-vs-return-false
+//
+// set useCapture to true to enable event delegation. Not supported in old IE
+function PxBindEvent(node, eventType, handler, useCapture) {
+  var wrapper = function (e) {
+    if (handler.call(this, e) == false) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+  handler.wrapper = wrapper;
+  if (node.addEventListener) {
+    node.addEventListener(eventType, wrapper, useCapture === true);
+  }
+  else if (node.attachEvent) //IE8 and older doesn't support AddEventListener(). We need to use attachEvent()
+    node.attachEvent("on" + eventType, wrapper);
+}
+
+function PxUnBindEvent(node, eventType, handler) {
+  var resultHandler = handler.wrapper;
+
+  if (resultHandler == null) {
+    resultHandler = handler;
+    console.log("wrapper is not avaliable for eventhandler:" + eventType);
+  }
+
+  if (node.removeEventListener)
+    node.removeEventListener(eventType, resultHandler);
+  else if (node.attachEvent) //IE8 and older doesn't support RemoveEventListener(); we need to use detachEvent()
+    node.detachEvent("on" + eventType, resultHandler);
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events
+// Triggering custom events
+function PxTriggerEvent(node, eventType) {
+  var event;
+  // try CustomEvent first, if failed, use old-fashioned way of creating event
+  try {
+    event = new CustomEvent(eventType, { bubbles: true });
+  } catch (e) {
+    if (document.createEvent) { //// IE8 or older doesn't support createEvent()
+      event = document.createEvent('Event');
+      event.initEvent(eventType, true, true);
+    } else {
+      return;
+    }
+  }
+
+  node.dispatchEvent(event)
+}
+
+// the helper function to make auto generated code clear
+function PxOnEvent(selector, eventType, handler) {
+  var eventDict = {};
+  if (typeof eventType == 'string') {
+    // can be multiple events, like 'change keyup'
+    var events = eventType.split(' ');
+    events.forEach(function (eventName) {
+      eventDict[eventName] = handler;
+    });
+  } else if (typeof eventType == "object") {
+    eventDict = eventType;
+  }
+
+  PxSelectAll(selector).forEach(function (node, index) {
+    var keyArr = [];
+    if (Object.keys) {
+      keyArr = Object.keys(eventDict);
+    } else { // IE8 or older doesn't support Object.keys(). 
+      for (var key in eventDict)
+        keyArr.push(key);
+    }
+    keyArr.forEach(function (key, index) {
+      PxBindEvent(node, key, eventDict[key]);
+    });
+  });
+}
+
+function PxRemoveClass(node, className) {
+  var classes = className.split(' ');
+  classes.forEach(function (name) {
+    if (node.classList)
+      node.classList.remove(name);
+    else if(node.className)
+      node.className.replace(new RegExp('\\b' + name + '\\b'), '');
+  });
+}
+
+function PxAddClass(node, className) {
+  var classes = className.split(' ');
+  classes.forEach(function (name) {
+    if (node.classList)
+      node.classList.add(name);
+    else if (node.className)
+      node.className += ' ' + name;
+  });
+}
+
+function PxCreateElement(html) {
+  var parentElement = document.createElement('div');
+  parentElement.innerHTML = html;
+  return parentElement.children[0] ? parentElement.children[0] : null;
+}
+
+// https://stackoverflow.com/questions/950087/how-do-i-include-a-javascript-file-in-another-javascript-file
+// https://stackoverflow.com/questions/538745/how-to-tell-if-a-script-tag-failed-to-load
+function PxGetScript(source, callback) {
+  var script = document.createElement('script');
+
+  script.onload = script.onreadystatechange = function () {
+    if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+      //avoid future loading events from this script(eg, if src changes)
+      script.onload = script.onreadystatechange = null;
+      callback(true);
+    }
+  };
+
+  script.onerror = function () {
+    callback(false);
+  };
+
+  script.src = source;
+
+  document.body.appendChild(script);
+}
+
+// generate random string with CSPRNG(Cryptographically secure pseudorandom number generator)
+// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+function PxGenerateRandomText(length) {
+  var result = '';
+
+  if (length > 0) {
+    var randomArray = new Uint32Array((length - 1) / 8 + 1);
+    var cryptoObj = window.crypto || window.msCrypto;
+    if (cryptoObj) {
+      cryptoObj.getRandomValues(randomArray);
+
+      for (var i = 0; i < randomArray.length; i++) {
+        var randomString = randomArray[i].toString(16);
+        // pad leaing zeros
+        if (randomString.length < 8) {
+          randomString = new Array(8 - randomString.length + 1).join('0') + randomString;
+        }
+        result += randomString;
+      }
+      result = result.substring(0, length);
+    }
+  }
+
+  return result;
+}
+
+function PxNotifyJQueryWarnings(ajaxUrl, id) {
+  if (jQuery && jQuery.migrateWarnings && jQuery.migrateWarnings.length > 0) {
+    try {
+      var message = id + ' : ' + jQuery.migrateWarnings.join('-');
+      var a = JSON.stringify({ "PXMI3JSONAction": "JQueryWarning", "Message": message });
+      PxAjaxPost(ajaxUrl, a);
+    } catch (e) {
+      console.log("Aborting AJAX request: " + e);
+    }
+  }
+}
+
+function PxRefreshLogonSession(ajaxUrl) {
+    try {
+      var message = 'Session Refresh';
+      var a = JSON.stringify({ "PXMI3JSONAction": "SessionRefresh", "Message": message });
+      PxAjaxPost(ajaxUrl, a);
+    } catch (e) {
+      console.log("Aborting AJAX request: " + e);
+    }
+}
+
+// https://davidwalsh.name/query-string-javascript
+function PxGetCurrentUrlParameter(name) {
+	name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+	var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+	var results = regex.exec(location.search);
+	return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+// Following functions are to add the inline spinner animation to text fields
+function PxStartInlineSpinner(elem) {
+  var elem2 = PxSelectOne("div .PxInputInlineSpinner", elem.parentElement);
+  if (!elem2)
+    return;
+
+  var inputId = elem2.getAttribute('for');
+  if (inputId) {
+    var inputElem = PxSelectOne('#' + inputId);
+    if (inputElem != null && inputElem.offsetWidth > 0)
+      elem2.style.width = inputElem.offsetWidth + 'px';
+  }
+
+  PxRemoveClass(elem2, 'PxInputInlineSpinnerHidden');
+}
+
+function PxStopInlineSpinner(elem) {
+  var elem2 = PxSelectOne("div .PxInputInlineSpinner", elem.parentElement);
+  if (!elem2) return;
+  PxAddClass(elem2, 'PxInputInlineSpinnerHidden');
+}
+
+// This is a structure that holds outstanding pending "jobs" for inline spinners
+window.PxInlineSpinner = {};
+
+window.PxBlockingTasks = [];
+window.PxElementsToClearOnSubmission = {};
+
+function FindIndexInArray(arr, pred) {
+  if (arr == null || !pred)
+    return -1;
+
+  var o = Object(arr);
+
+  var len = o.length >>> 0;
+
+  var k = 0;
+
+  while (k < len) {
+    var kValue = o[k];
+    if (pred.call(this, kValue, k, o)) {
+      return k;
+    }
+    k++;
+  }
+
+  return -1;
+}
+
+function PxStartJob(element, jobTitle) {
+    var elemId = element.id;
+    window.PxInlineSpinner[elemId] = window.PxInlineSpinner[elemId] || [];
+    if (window.PxInlineSpinner[elemId].length == 0) {
+        PxStartInlineSpinner(element);
+    }
+    window.PxInlineSpinner[elemId].push(jobTitle);
+}
+
+function PxFinishJob(element, jobTitle) {
+    var elemId = element.id;
+    window.PxInlineSpinner[elemId] = window.PxInlineSpinner[elemId] || [];
+    var index = FindIndexInArray(window.PxInlineSpinner[elemId], function(el) {
+        return el == jobTitle;
+    });
+    if (index >= 0) {
+        window.PxInlineSpinner[elemId].splice(index, 1);
+
+        if (window.PxInlineSpinner[elemId].length == 0)
+            PxStopInlineSpinner(element);
+    }
+}
+
+function PxClearJobs(element) {
+    var elemId = element.id;
+    window.PxInlineSpinner[elemId] = [];
+    PxStopInlineSpinner(element);
+}
+
+function PxIsSubmissionBlocked() {
+    return window.PxBlockingTasks.length > 0;
+}
+
+function PxAddBlockingTask(task) {
+    console.log('Blocking task started: ' + task);
+    window.PxBlockingTasks.push(task);
+}
+
+function PxRemoveBlockingTask(task) {
+    console.log('Blocking task finished: ' + task);
+    var index = FindIndexInArray(window.PxBlockingTasks, function(el) {
+        return el == task;
+    });
+    if (index >= 0) {
+        window.PxBlockingTasks.splice(index, 1);
+    }
+}
+
+function PxIsResizeAvailable() {
+  var elem = document.createElement('canvas');
+  return !!(elem.getContext && elem.getContext('2d') && window.FileReader);
+}
+
+function PxGetFileExtension(fileName) {
+  return fileName.split('.').pop().toLowerCase();
+}
+
+function PxRemoveElemById(id) {
+  var elem = document.getElementById(id);
+  if (elem && elem.parentNode)
+    elem.parentNode.removeChild(elem);
+}
+
+function PxPrepareImage(id, name, maxImageWidth, maxImageHeight, callback) {
+    if (!PxIsResizeAvailable()) {
+        console.log("Feature is not available.");
+        return;
+    }
+
+    if (!maxImageWidth || !maxImageHeight)
+      return;
+
+    var resizableImages = {
+      png: true,
+      jpg: true, jpeg: true,
+      tiff: true, tif: true, pjpeg: true, pjp: true, jfif: true,
+      bmp: true, webp: true
+    }
+
+    var formElem = document.getElementById('Form1');
+    var inputElem = document.getElementById(id);
+    var fileName = inputElem.files[0].name;
+    var fileExtension = PxGetFileExtension(fileName);
+
+    if (!resizableImages[fileExtension]) {
+      // We need to account for the case when user chooses large image that was downscaled, but then changes his mind and chooses another file that is non-scalable.
+      // In that case we need to remove all the downscaling data of previous file
+      PxRemoveElemById(id + '_$scaled');
+      PxRemoveElemById(id + '_$scaled_name');
+      return;
+    }
+
+    var tempElem = document.getElementById(id + '_$scaled');
+    if (!tempElem) {
+        tempElem = document.createElement('input');
+        tempElem.setAttribute('type', 'hidden');
+        tempElem.id = id + '_$scaled';
+        tempElem.name = name + '_$scaled';
+        formElem.appendChild(tempElem);
+    }
+    tempElem.value = '';
+    var tempFilenameElem = document.getElementById(id + '_$scaled_name');
+    if (!tempFilenameElem) {
+        tempFilenameElem = document.createElement('input');
+        tempFilenameElem.setAttribute('type', 'hidden');
+        tempFilenameElem.id = id + '_$scaled_name';
+        tempFilenameElem.name = name + '_$scaled_name';
+        formElem.appendChild(tempFilenameElem);
+    }
+    tempFilenameElem.value = '';
+
+    delete PxElementsToClearOnSubmission[id];
+
+    console.log("PxPrepareImage. Id:" + id + "  Name:" + name);
+    var taskName = "img_resize_" + id;
+    PxAddBlockingTask(taskName);
+
+    PxStartJob(inputElem, "ImageResize");
+
+    PxResizeImage(inputElem, tempElem, tempFilenameElem, maxImageWidth, maxImageHeight, function(success) {
+        PxRemoveBlockingTask(taskName);
+        PxFinishJob(inputElem, "ImageResize");
+        if (callback) callback(success);
+    });
+}
+
+function PxResizeImage(srcElem, targetElem, targetFilenameElem, maxImageWidth, maxImageHeight, onFinish) {
+    var filesToUpload = srcElem.files;
+    var file = filesToUpload[0];
+    
+    var img = document.createElement("img");
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+        img.onerror = function() {
+            console.log("Image loading failed");
+            if (onFinish) onFinish(false);
+        };
+        img.onload = function() {
+          try {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.imageSmoothingEnabled = true;
+
+            var width = img.width;
+            var height = img.height;
+
+            if (width <= maxImageWidth && height <= maxImageHeight) {
+                if (onFinish) onFinish(false);
+                return;
+            }
+
+            var ratioHorz = Math.max(width / maxImageWidth, height / maxImageHeight);
+            width /= ratioHorz;
+            height /= ratioHorz;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            console.log("Image resized. Original dimensions:" + img.width + "x" + img.height + "  New dimensions:" + width + "x" + height);
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            var dataurl = canvas.toDataURL("image/jpeg");
+            targetElem.value = dataurl;
+            targetFilenameElem.value = file.name;
+
+            window.PxElementsToClearOnSubmission[srcElem.id] = 1;
+
+            if (onFinish) onFinish(true);
+          }
+          catch(e) {
+            // IE/Edge does not support catch block without variable name
+            if (onFinish) onFinish(false);
+          }
+        };
+        img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+}
+
+
+function PxCleanupImages() {
+    var keyArr = [];
+    if (Object.keys) {
+      keyArr = Object.keys(window.PxElementsToClearOnSubmission);
+    } else { // IE8 or older doesn't support Object.keys(). 
+      for (var key in window.PxElementsToClearOnSubmission)
+        keyArr.push(key);
+    }
+
+    for (var key in keyArr) {
+        document.getElementById(keyArr[key]).value = '';
+    }
+}
+
+function PxGetLengthOfStringWithLineBreak(value) {
+  //database take line break as two characters but javascript take it as one
+  //we need to count line break as two during max length validation to make sure it can fit in database
+  if (value == null)
+    return 0;
+
+  var length = value.length;
+  var newLines = value.match(/(\n)/g);
+  if (newLines != null) {
+    length += newLines.length;
+  }
+  return length;
+}
+
+function PxIsElementHidden(elem) {
+    if (elem.offsetParent == null)
+        return true;
+    //if elem is not element will throw an error
+    try {
+        var computedStyles = getComputedStyle(elem);
+        if (computedStyles.getPropertyValue('visibility') == 'hidden')
+            return true;
+    } catch (e) {
+        return false;
+    }
+
+    return false;
+}
+
+// this function is to abstract the common pattern that target item listens on event of source item if predicate return true
+// if the event is triggered, the eventHandler will be called. 
+// the eventHanlder will look like function(eventSource, eventTarget)
+function PxBindItemOnEvent(sourceSelector, event, targetSelector, eventHandler, predicate) {
+  if (predicate != null && !predicate())
+    return;
+
+  var source = PxSelectOne(sourceSelector);
+  var target = PxSelectOne(targetSelector);
+  if (source != null && target != null) {
+    var handler = function () {
+      eventHandler(source, target);
+    };
+
+    PxBindEvent(source, event, handler);
+  }
+}
+
+function PxValidateBlankDateTime(Id, DateTimeName, rangePrefix) {
+  var elem = PxSelectOne("#" + Id);
+  if (!elem)
+    return true;
+
+  var HasBlank = false;
+  var HasNonBlank = false;
+  PxSelectAll("select", elem.parentElement).forEach(function (node, index) {
+    if (!PxIsElementHidden(node)) {
+      if (node.value != "")
+        HasNonBlank = true;
+      else
+        HasBlank = true;
+    }
+  });
+
+  //rangePrefix can be ""(non range) or "Start" or "End"
+  if (rangePrefix) {
+    //we record the blank status for start and end in global variables
+    window[DateTimeName + rangePrefix + "AllBlank"] = HasBlank && !HasNonBlank;
+  }
+
+  if (HasBlank && HasNonBlank) {
+    elem.setCustomValidity('Can not partially input values, please input all of them or leave all blank');
+    return false;
+  }
+
+  // here it means the inputs are all blank or all non-blank
+  // for range with allowBlank=1 we don't allow partial blank, for example, start range blank and end range non-blank 
+  if (rangePrefix) {
+    var startName = DateTimeName + "StartAllBlank";
+    var endName = DateTimeName + "EndAllBlank";
+    if (window[startName] != null && window[endName] != null) {
+      // both start and end have been checked
+      var IsPartialInputForRange = window[startName] != window[endName];
+      window[startName] = null;
+      window[endName] = null;
+
+      if (IsPartialInputForRange) {
+        elem.setCustomValidity('please input all of them or leave all blank for both start and end ');
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function PxHandleEntitiesInput(text) {
+  return text.replace(/[<>&'"]/g, function (c) {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+    }
+  });
+}
+
+function PxHasInvalidInputValue(text) {
+  var invalidInputPatterns = [/<.*>/];
+
+  for (var i = 0; i < invalidInputPatterns.length; i++) {
+    if (invalidInputPatterns[i].test(text))
+      return true;
+  }
+
+  return false;
+}
+
+function PxSearchFilterValidation(searchButton) {
+  if (searchButton == null)
+    return;
+
+  var IsBlankFilter = true;
+  var FirstVisibleInput = null;
+  PxSelectAll('input, select', searchButton.parentElement).forEach(function (node, index) {
+    if (PxIsElementHidden(node))
+      return;
+
+    if (FirstVisibleInput == null)
+      FirstVisibleInput = node;
+
+    if (node.value)
+      IsBlankFilter = false;
+  });
+
+  if (IsBlankFilter) {
+    if (FirstVisibleInput) {
+      FirstVisibleInput.setCustomValidity('please input any valid filter values before start searching');
+      FirstVisibleInput.reportValidity();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function PxOnSearchWithFilterCheck(url, searchButton, tableId) {
+  if (!PxSearchFilterValidation(searchButton))
+    return;
+
+  PxOnSearchTriggered(url, searchButton, tableId);
+}
+
+function PxSendErrorLog(url, source, message) {
+  try {
+    var a = JSON.stringify({ "PXMI3JSONAction": "LogError", "source": source, "message": message });
+    PxAjaxPost(url, a);
+  } catch (e) {
+    console.log("Aborting AJAX request: " + e);
+  }
+}
+
+
+function PxSetInlineError(elemId, message) {
+  var errorElem = document.getElementById('error_' + elemId);
+  var errorElemContainer = document.getElementById('error_' + elemId + '_container');
+  if (!errorElemContainer || !errorElem)
+    return;
+
+  if (message) {
+      PxRemoveClass(errorElemContainer, 'DpsHidden');
+      errorElem.innerText = message;
+  } else {
+      PxAddClass(errorElemContainer, 'DpsHidden');
+      errorElem.innerText = '';
+  }
+}
+
+
+function PxSetupInlineErrorEx(errorId, elemIds, elementName) {
+  var errorElem = document.getElementById('error_' + errorId);
+  var errorElemContainer = document.getElementById('error_' + errorId + '_container');
+  if (!errorElemContainer || !errorElem)
+    return;
+
+  for (var i = 0; i < elemIds.length; ++i) {
+    var elem = document.getElementById('' + elemIds[i]);
+    if (!elem && elementName) {
+      foundElements = document.getElementsByName(elementName);
+      if (foundElements && foundElements.length > 0)
+        elem = foundElements[0];
+    }
+    if (!elem) {
+      continue;
+    }
+
+    if (!elem.checkValidity() || elem.validationMessage != '') {
+      PxRemoveClass(errorElemContainer, 'DpsHidden');
+      errorElem.innerText = elem.validationMessage;
+
+      if (!window.PxIsBlurValidation && !window.PxInvalidInputFocused) {
+        window.PxInvalidInputFocused = true;
+        elem.focus();
+      }
+      return;
+    }
+  }
+  PxAddClass(errorElemContainer, 'DpsHidden');
+  errorElem.innerText = '';
+}
+
+
+function PxSetupInlineError(id, elementName) {
+  PxSetupInlineErrorEx(id, [id], elementName);
+}
+
+function PxStartButtonSpinner(button) {
+  var spinnerHTML = '<div class=\"spinner\">';
+  for (i = 1; i <= 12; i++) {
+    spinnerHTML += '<div class=\"bar' + i.toString() + '\"></div>';
+  }
+  spinnerHTML += '</div>'
+
+  var innerDiv = PxSelectOne('div', button);
+  if (innerDiv) {
+    innerDiv.innerHTML = spinnerHTML + innerDiv.innerHTML;
+  }
+
+  PxAddClass(button, 'noIcon');
+}
+
+function PxStopButtonSpinner(button) {
+  var spinnerDiv = PxSelectOne(".spinner", button);
+
+  if (spinnerDiv) {
+    spinnerDiv.parentNode.removeChild(spinnerDiv);
+  }
+
+  PxRemoveClass(button, 'noIcon');
+}
+
+function PxCollapsePanel(id) {
+    var content = document.getElementById(id + '_collapse_content');
+    if (!content)
+        return;
+    if (content.style.maxHeight)
+      content.style.maxHeight = null;
+
+    var collapseButton = document.getElementById(id + '_collapse_button');
+    PxRemoveClass(collapseButton, 'DpsUiPanelCollapseButtonActive');
+}
+
+function PxExpandPanel(id, maxHeight) {
+    var content = document.getElementById(id + '_collapse_content');
+    if (!content)
+        return;
+    content.style.maxHeight = "" + (maxHeight || 350) + "px";
+    PxAddClass(this, 'DpsUiPanelCollapseButtonActive');
+}
+
+function PxDisableCollapsing(id, disableExpanded) {
+    if (disableExpanded)
+        PxExpandPanel(id);
+    else
+        PxCollapsePanel(id);
+
+    var collapseButton = document.getElementById(id + '_collapse_button');
+    if (!collapseButton)
+        return;
+
+    collapseButton.disabled = true;
+    PxRemoveClass(collapseButton, "DpsUiPanelCollapseButtonActive");
+    PxAddClass(collapseButton, "DpsUiPanelCollapseButtonDisabled");
+}
+
+function PxEnableCollapsing(id) {
+    var collapseButton = document.getElementById(id + '_collapse_button');
+    if (!collapseButton)
+        return;
+
+    collapseButton.disabled = false;
+    var content = document.getElementById(id + '_collapse_content');
+    if (content.style.maxHeight)
+        PxAddClass(collapseButton, "DpsUiPanelCollapseButtonActive");
+
+    PxRemoveClass(collapseButton, "DpsUiPanelCollapseButtonDisabled");
+}
+
+function PxTriggerSearchWithValidation(url, field, tableId) {
+  if (searchPanelInfo.searchButtonId) {
+    var PanelName = searchPanelInfo.searchPanelName;
+    var SearchButton = PxSelectOne("#" + searchPanelInfo.searchButtonId);
+    if (SearchButton != null) {
+      PxValidate(PanelName);
+      if (!PxValidateForm1() || !PxCheckBlankSpace(PanelName)) {
+        PxFieldInvalidStyle(PanelName);
+        PxReportValidation();
+        return;
+      }
+
+      if (SearchButton.hasAttribute('requirefiltercheck')) {
+        if (!PxSearchFilterValidation(SearchButton))
+          return;
+      }
+    }
+  }
+
+  PxOnSearchTriggered(url, field, tableId);
+}
+
+function PxOnSearchTriggered(url, field, tableId, filterLoad) {
+    PxOnSearchStart(tableId, field);
+    PxOnSearchDynamic(url, field, tableId, filterLoad);
+}
+
+function PxOnSearchStart(tableId, searchElement) {
+    var StartSearchingForTable = function (tableId) {
+        //disable button
+        var disableButton = function (name, tableId) {
+            var button = PxSelectOne("#" + name + tableId);
+            if (button == null)
+                return;
+
+            button.classList.add("DpsNavButtonDisabled");
+            button.disabled = true;
+        };
+        disableButton("First", tableId);
+        disableButton("Prev", tableId);
+        disableButton("Next", tableId);
+        disableButton("Last", tableId);
+
+
+        //disalbe navigation input
+      setTimeout(function () {
+        var footerinput = PxSelectOne("#footerinput_" + tableId);
+        if (footerinput)
+          footerinput.disabled = true;
+
+        var footerselect = PxSelectOne("#footerselect_" + tableId);
+        if (footerselect)
+          footerselect.disabled = true;
+      });
+    };
+
+    if (window.AjaxTableSearchingElement)
+        return;
+
+    window.AjaxTableSearchingElement = searchElement;
+    window.AjaxTableSearchingId = tableId;
+
+    if (window.AjaxTableSearchingElement.tagName == "BUTTON") {
+        PxStartButtonSpinner(window.AjaxTableSearchingElement);
+        window.AjaxTableSearchingElement.disabled = true;
+    }
+
+    if (window.AjaxTableSearchingId && window.AjaxTableSearchingId != "0") {
+        StartSearchingForTable(window.AjaxTableSearchingId);
+        if (searchPanelInfo.searchButtonId) {
+            var searchButton = PxSelectOne('#' + searchPanelInfo.searchButtonId);
+            if (searchButton)
+                searchButton.disabled = true;
+        }
+    } else {
+        PxSelectAll("table.DpsAjaxTable").forEach(function (node) {
+            StartSearchingForTable(node.id);
+        });
+    }
+}
+
+function PxOnSearchEnd() {
+    var StopSearchingForTable = function (tableId) {
+        //enable navigation input
+        var footerinput = PxSelectOne("#footerinput_" + tableId);
+        if (footerinput)
+            footerinput.disabled = false;
+
+        var footerselect = PxSelectOne("#footerselect_" + tableId);
+        if (footerselect)
+            footerselect.disabled = false;
+    }
+
+    if (!window.AjaxTableSearchingElement)
+      return;
+
+    if (window.AjaxTableSearchingElement.tagName == "BUTTON") {
+      PxStopButtonSpinner(window.AjaxTableSearchingElement);
+      window.AjaxTableSearchingElement.disabled = false;
+    }
+
+    if (window.AjaxTableSearchingId && window.AjaxTableSearchingId != "0") {
+        StopSearchingForTable(window.AjaxTableSearchingId);
+        if (searchPanelInfo.searchButtonId) {
+            var searchButton = PxSelectOne('#' + searchPanelInfo.searchButtonId);
+            if (searchButton)
+                searchButton.disabled = false;
+        }
+    } else {
+        PxSelectAll("table.DpsAjaxTable").forEach(function (node) {
+            StopSearchingForTable(node.id);
+        });
+    }
+
+    window.AjaxTableSearchingElement = null;
+    window.AjaxTableSearchingId = null;
+}
+
+window.NotificationQueue = [];
+window.IsDisplayingNotification = false;
+
+function PxInitNotificationElements() {
+  var popupElem = PxSelectOne('#DpsErrorPopup');
+  if (popupElem) {
+    PxOnEvent('.DpsErrorPopupClose', 'click', function () {
+      $(popupElem).hide();
+      window.IsDisplayingNotification = false;
+      PxTriggerEvent(document, 'notificationAvaliable');
+    })
+  }
+}
+
+function PxHandleNotifications() {
+  if (window.NotificationQueue.length == 0)
+    return;
+
+  if (window.IsDisplayingNotification)
+    return;
+
+  var notification = window.NotificationQueue.splice(0, 1)[0];
+  var messageElem = notification.success ? PxSelectOne('#DpsNotificationPopupMessage') : PxSelectOne('#DpsErrorPopupMessage');
+  var popupElem = notification.success ? PxSelectOne('#DpsNotificationPopup') : PxSelectOne('#DpsErrorPopup');
+
+  if (popupElem == null || messageElem == null)
+    return;
+
+  window.IsDisplayingNotification = true;
+  messageElem.innerHTML = notification.message;
+  if (notification.success) {
+    $(popupElem).fadeIn(1000, function () {
+      $(this).delay(1000).fadeOut(1000, function () {
+        window.IsDisplayingNotification = false;
+        PxTriggerEvent(document, 'notificationAvaliable');
+      });
+    })
+  } else {
+    $(popupElem).show();
+  }
+}
+
+PxBindEvent(document, 'notificationAvaliable', function (evt) {
+  PxHandleNotifications();
+});
+
+function PxPostNotification(message, isSuccess) {
+  window.NotificationQueue.push({ "message": message, "success": isSuccess });
+  PxTriggerEvent(document, 'notificationAvaliable');
+}
+
+function PxHanldeAjaxUpdateResponse(responseObj) {
+  var button = document.getElementById(responseObj.UiItemId);
+  if (button == null)
+    return;
+
+  if (responseObj.message) {
+    PxPostNotification(responseObj.message, responseObj.success == "1");
+
+    PxStopButtonSpinner(button);
+    button.disalbed = false;
+  }
+}
+
+function PxOnUpdateTriggered(url, button) {
+  PxStartButtonSpinner(button);
+  button.disalbed = true;
+
+  PxOnUpdateDynamic(url, button);
+}
+
+function PxGetElementByName(name) {
+  return PxSelectOne('[name=' + name + '], [data-name=' + name + ']') ;
+}
+
+function PxFindInArray(arr, arrItem) {
+    if (!arr)
+        return -1;
+    var index = 0;
+    for (var item in arr) {
+        if (arr[item] === arrItem)
+            return index;
+        index++;
+    }
+    return -1;
+}
+
+function PxHideRadioPanel(radioInfo) {
+    if (!radioInfo)
+        return;
+    if (radioInfo.hidden)
+        return;
+    radioInfo.hidden = true;
+
+    if (radioInfo.owner)
+        RemoveContent(radioInfo.owner);
+
+    var functionName = 'Remove' + radioInfo.name + 'Content';
+    if (window[functionName])
+        window[functionName]();
+}
+
+function PxShowRadioPanel(radioInfo) {
+    if (!radioInfo)
+        return;
+    if (!radioInfo.hidden)
+        return;
+    radioInfo.hidden = false;
+
+    for (var index in radioInfo.visible) {
+        var radioName = radioInfo.visible[index];
+        var container = document.querySelector('#container_' + radioName);
+        if (container)
+            container.classList.remove('DpsHidden');
+    }
+
+    if (radioInfo.visible.length > 1 && radioInfo.owner)
+        InsertContent(radioInfo.owner);
+
+    if (radioInfo.active && PxFindInArray(radioInfo.visible, radioInfo.active) >= 0) {
+        var inp = document.querySelector('#container_' + radioInfo.active + ' input[id=' + radioInfo.active + ']');
+        if (inp)
+            inp.click();
+    }
+}
+
+function PxUpdateRadioSelectorVisibility(radioInfo, expectedToAppear) {
+    if (!radioInfo || !radioInfo.owner)
+        return;
+    var visibleCount = radioInfo.visible.length;
+    if (expectedToAppear)
+        visibleCount = visibleCount + expectedToAppear;
+    if (visibleCount > 1)
+        InsertContent(radioInfo.owner);
+    else
+        RemoveContent(radioInfo.owner);
+}
+
+function PxSetActiveRadioButton(radioInfo, button) {
+    if (!radioInfo)
+        return;
+    if (PxFindInArray(radioInfo.visible, button) == -1)
+        return;
+    radioInfo.active = button;
+    if (radioInfo.hidden)
+        return;
+
+    var inp = document.querySelector('#container_' + radioInfo.active + ' input[id=' + radioInfo.active + ']');
+    if (inp)
+        inp.click();
+}
+
+function PxHideRadioButtons(radioInfo, buttons) {
+    if (!radioInfo)
+        return;
+    if (!buttons || buttons.length == 0)
+        return;
+    
+    for (var btnIndex in buttons) {
+        var btnName = buttons[btnIndex];
+        var availIndex = PxFindInArray(radioInfo.available, btnName);
+        var visibleIndex = PxFindInArray(radioInfo.visible, btnName);
+        if (availIndex == -1 || visibleIndex == -1)
+            continue;
+        var btnPanel = radioInfo.panels[btnName];
+        if (btnPanel)
+            RemoveContent(btnPanel);
+        var container = document.querySelector('#container_' + btnName);
+        if (container)
+            container.classList.add('DpsHidden');
+        radioInfo.visible.splice(visibleIndex, 1);
+    }
+
+    if (radioInfo.hidden)
+        return;
+
+    if (radioInfo.visible.length < 2 && radioInfo.owner)
+        RemoveContent(radioInfo.owner);
+
+    var activeIndex = PxFindInArray(radioInfo.visible, radioInfo.active);
+    if (radioInfo.visible.length > 0 && activeIndex == -1) {
+        PxSetActiveRadioButton(radioInfo, radioInfo.visible[0]);
+    }
+    if (radioInfo.visible.length == 0)
+        radioInfo.hidden = true;
+}
+
+function PxShowRadioButtons(radioInfo, buttons) {
+    if (!radioInfo)
+        return;
+    if (!buttons || buttons.length == 0)
+        return;
+
+    var lastVisibleCount = radioInfo.visible.length;
+    for (var btnIndex in buttons) {
+        var btnName = buttons[btnIndex];
+        var availIndex = PxFindInArray(radioInfo.available, btnName);
+        var visibleIndex = PxFindInArray(radioInfo.visible, btnName);
+        if (availIndex == -1 || visibleIndex >= 0)
+            continue;
+        radioInfo.visible.push(btnName);
+
+        if (!radioInfo.active)
+            radioInfo.active = btnName;
+    }
+
+    if (radioInfo.hidden)
+        return;
+
+    for (var btnIndex in radioInfo.visible) {
+        var btnName = radioInfo.visible[btnIndex];
+        var container = document.querySelector('#container_' + btnName);
+        if (container)
+            container.classList.remove('DpsHidden');
+    }
+    if (radioInfo.visible.length > 1 && lastVisibleCount < 2 && radioInfo.owner)
+        InsertContent(radioInfo.owner);
+
+    var activeIndex = PxFindInArray(radioInfo.visible, radioInfo.active);
+    if (radioInfo.visible.length > 0 || activeIndex == -1) {
+        var itemToActivate = radioInfo.visible[0];
+        if (activeIndex == -1)
+            radioInfo.active = itemToActivate;
+        else
+            itemToActivate = radioInfo.active;
+
+        var inp = document.querySelector('#container_' + itemToActivate + ' input[id=' + itemToActivate + ']');
+        if (inp)
+            inp.click();
+    }
+}
+
+function PxGetVisibleRadioButtonsCount(radioInfo) {
+    if (!radioInfo || !radioInfo.visible || radioInfo.hidden)
+        return 0;
+    return radioInfo.visible.length;
+}
+
+function PxIsMainCssPresent() {
+  if (PxSelectOne('link#Css1'))
+    return true;
+
+  return false;
+}
+
+function addPhoneStaticPrefix(name) {
+  var phonePrefixSelect = document.getElementsByName(name)[0];
+  if (phonePrefixSelect) {
+    phonePrefixSelect.add(new Option('Afghanistan(+93)', '+93'));
+    phonePrefixSelect.add(new Option('Albania(+355)', '+355'));
+    phonePrefixSelect.add(new Option('Algeria(+213)', '+213'));
+    phonePrefixSelect.add(new Option('American Samoa(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Andorra(+376)', '+376'));
+    phonePrefixSelect.add(new Option('Angola(+244)', '+244'));
+    phonePrefixSelect.add(new Option('Anguilla(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Antarctica(+672)', '+672'));
+    phonePrefixSelect.add(new Option('Antigua And Barbuda(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Argentina(+54)', '+54'));
+    phonePrefixSelect.add(new Option('Armenia(+374)', '+374'));
+    phonePrefixSelect.add(new Option('Aruba(+297)', '+297'));
+    phonePrefixSelect.add(new Option('Australia(+61)', '+61'));
+    phonePrefixSelect.add(new Option('Austria(+43)', '+43'));
+    phonePrefixSelect.add(new Option('Azerbaijan(+994)', '+994'));
+    phonePrefixSelect.add(new Option('Bahamas(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Bahrain(+973)', '+973'));
+    phonePrefixSelect.add(new Option('Bangladesh(+880)', '+880'));
+    phonePrefixSelect.add(new Option('Barbados(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Belarus(+375)', '+375'));
+    phonePrefixSelect.add(new Option('Belgium(+32)', '+32'));
+    phonePrefixSelect.add(new Option('Belize(+501)', '+501'));
+    phonePrefixSelect.add(new Option('Benin(+229)', '+229'));
+    phonePrefixSelect.add(new Option('Bermuda(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Bhutan(+975)', '+975'));
+    phonePrefixSelect.add(new Option('Bolivia(+591)', '+591'));
+    phonePrefixSelect.add(new Option('Bosnia And Herzegowina(+387)', '+387'));
+    phonePrefixSelect.add(new Option('Botswana(+267)', '+267'));
+    phonePrefixSelect.add(new Option('Brazil(+55)', '+55'));
+    phonePrefixSelect.add(new Option('British Indian Ocean Territory(+246)', '+246'));
+    phonePrefixSelect.add(new Option('Brunei Darussalam(+673)', '+673'));
+    phonePrefixSelect.add(new Option('Bulgaria(+359)', '+359'));
+    phonePrefixSelect.add(new Option('Burkina Faso(+226)', '+226'));
+    phonePrefixSelect.add(new Option('Burundi(+257)', '+257'));
+    phonePrefixSelect.add(new Option('Cambodia(+855)', '+855'));
+    phonePrefixSelect.add(new Option('Cameroon(+237)', '+237'));
+    phonePrefixSelect.add(new Option('Canada(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Cape Verde(+238)', '+238'));
+    phonePrefixSelect.add(new Option('Cayman Islands(+1)', '+1'));
+    phonePrefixSelect.add(new Option('Central African Republic(+236)', '+236'));
+    phonePrefixSelect.add(new Option('Chad(+235)', '+235'));
+    phonePrefixSelect.add(new Option('Chile(+56)', '+56'));
+    phonePrefixSelect.add(new Option('China(+86)', '+86'));
+    phonePrefixSelect.add(new Option('Christmas Island(+61)', '+61'));
+    phonePrefixSelect.add(new Option('Cocos (Keeling) Islands(+61)', '+61'));
+    phonePrefixSelect.add(new Option('Colombia(+57)', '+57'));
+    phonePrefixSelect.add(new Option('Comoros(+269)', '+269'));
+    phonePrefixSelect.add(new Option('Congo(+242)', '+242'));
+    phonePrefixSelect.add(new Option('Cook Islands(+682)', '+682'));
+    phonePrefixSelect.add(new Option('Costa Rica(+506)', '+506'));
+    phonePrefixSelect.add(new Option("Cote d'Ivoire(+225)", "+225"));
+    phonePrefixSelect.add(new Option("Croatia(+385)", "+385"));
+    phonePrefixSelect.add(new Option("Cuba(+53)", "+53"));
+    phonePrefixSelect.add(new Option("Cyprus(+357)", "+357"));
+    phonePrefixSelect.add(new Option("Czech Republic(+420)", "+420"));
+    phonePrefixSelect.add(new Option("Denmark(+45)", "+45"));
+    phonePrefixSelect.add(new Option("Djibouti(+253)", "+253"));
+    phonePrefixSelect.add(new Option("Dominica(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Dominican Republic(+1)", "+1"));
+    phonePrefixSelect.add(new Option("East Timor(+670)", "+670"));
+    phonePrefixSelect.add(new Option("Ecuador(+593)", "+593"));
+    phonePrefixSelect.add(new Option("Egypt(+20)", "+20"));
+    phonePrefixSelect.add(new Option("El Salvador(+503)", "+503"));
+    phonePrefixSelect.add(new Option("Equatorial Guinea(+240)", "+240"));
+    phonePrefixSelect.add(new Option("Eritrea(+291)", "+291"));
+    phonePrefixSelect.add(new Option("Ethiopia(+251)", "+251"));
+    phonePrefixSelect.add(new Option("Falkland Islands (Malvinas)(+500)", "+500"));
+    phonePrefixSelect.add(new Option("Faroe Islands(+298)", "+298"));
+    phonePrefixSelect.add(new Option("Fiji(+679)", "+679"));
+    phonePrefixSelect.add(new Option("Finland(+358)", "+358"));
+    phonePrefixSelect.add(new Option("France(+33)", "+33"));
+    phonePrefixSelect.add(new Option("France, Metropolitan(+33)", "+33"));
+    phonePrefixSelect.add(new Option("French Guiana(+594)", "+594"));
+    phonePrefixSelect.add(new Option("French Polynesia(+689)", "+689"));
+    phonePrefixSelect.add(new Option("French Southern Territories(+262)", "+262"));
+    phonePrefixSelect.add(new Option("Gabon(+241)", "+241"));
+    phonePrefixSelect.add(new Option("Gambia(+220)", "+220"));
+    phonePrefixSelect.add(new Option("Georgia(+995)", "+995"));
+    phonePrefixSelect.add(new Option("Germany(+49)", "+49"));
+    phonePrefixSelect.add(new Option("Ghana(+233)", "+233"));
+    phonePrefixSelect.add(new Option("Gibraltar(+350)", "+350"));
+    phonePrefixSelect.add(new Option("Greece(+30)", "+30"));
+    phonePrefixSelect.add(new Option("Greenland(+299)", "+299"));
+    phonePrefixSelect.add(new Option("Grenada(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Guadeloupe(+590)", "+590"));
+    phonePrefixSelect.add(new Option("Guam(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Guatemala(+502)", "+502"));
+    phonePrefixSelect.add(new Option("Guinea(+224)", "+224"));
+    phonePrefixSelect.add(new Option("Guinea-Bissau(+245)", "+245"));
+    phonePrefixSelect.add(new Option("Guyana(+592)", "+592"));
+    phonePrefixSelect.add(new Option("Haiti(+509)", "+509"));
+    phonePrefixSelect.add(new Option("Heard And McDonald Islands(+61)", "+61"));
+    phonePrefixSelect.add(new Option("Holy See (Vatican City State)(+39)", "+39"));
+    phonePrefixSelect.add(new Option("Honduras(+504)", "+504"));
+    phonePrefixSelect.add(new Option("Hong Kong(+852)", "+852"));
+    phonePrefixSelect.add(new Option("Hungary(+36)", "+36"));
+    phonePrefixSelect.add(new Option("Iceland(+354)", "+354"));
+    phonePrefixSelect.add(new Option("India(+91)", "+91"));
+    phonePrefixSelect.add(new Option("Indonesia(+62)", "+62"));
+    phonePrefixSelect.add(new Option("Iran (Islamic Republic Of)(+98)", "+98"));
+    phonePrefixSelect.add(new Option("Iraq(+964)", "+964"));
+    phonePrefixSelect.add(new Option("Ireland(+353)", "+353"));
+    phonePrefixSelect.add(new Option("Israel(+972)", "+972"));
+    phonePrefixSelect.add(new Option("Italy(+39)", "+39"));
+    phonePrefixSelect.add(new Option("Jamaica(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Japan(+81)", "+81"));
+    phonePrefixSelect.add(new Option("Jordan(+962)", "+962"));
+    phonePrefixSelect.add(new Option("Kazakhstan(+7)", "+7"));
+    phonePrefixSelect.add(new Option("Kenya(+254)", "+254"));
+    phonePrefixSelect.add(new Option("Kiribati(+686)", "+686"));
+    phonePrefixSelect.add(new Option("Korea, Democratic People's Republic Of(+850)", "+850"));
+    phonePrefixSelect.add(new Option("Korea, Republic Of(+82)", "+82"));
+    phonePrefixSelect.add(new Option("Kuwait(+965)", "+965"));
+    phonePrefixSelect.add(new Option("Kyrgyzstan(+996)", "+996"));
+    phonePrefixSelect.add(new Option("Lao People's Democratic Republic(+856)", "+856"));
+    phonePrefixSelect.add(new Option("Latvia(+371)", "+371"));
+    phonePrefixSelect.add(new Option("Lebanon(+961)", "+961"));
+    phonePrefixSelect.add(new Option("Lesotho(+266)", "+266"));
+    phonePrefixSelect.add(new Option("Liberia(+231)", "+231"));
+    phonePrefixSelect.add(new Option("Libyan Arab Jamahiriya(+218)", "+218"));
+    phonePrefixSelect.add(new Option("Liechtenstein(+423)", "+423"));
+    phonePrefixSelect.add(new Option("Lithuania(+370)", "+370"));
+    phonePrefixSelect.add(new Option("Luxembourg(+352)", "+352"));
+    phonePrefixSelect.add(new Option("Macau(+853)", "+853"));
+    phonePrefixSelect.add(new Option("Macedonia, The Former Yugoslav Republic Of(+389)", "+389"));
+    phonePrefixSelect.add(new Option("Madagascar(+261)", "+261"));
+    phonePrefixSelect.add(new Option("Malawi(+265)", "+265"));
+    phonePrefixSelect.add(new Option("Malaysia(+60)", "+60"));
+    phonePrefixSelect.add(new Option("Maldives(+960)", "+960"));
+    phonePrefixSelect.add(new Option("Mali(+223)", "+223"));
+    phonePrefixSelect.add(new Option("Malta(+356)", "+356"));
+    phonePrefixSelect.add(new Option("Marshall Islands(+692)", "+692"));
+    phonePrefixSelect.add(new Option("Martinique(+596)", "+596"));
+    phonePrefixSelect.add(new Option("Mauritania(+222)", "+222"));
+    phonePrefixSelect.add(new Option("Mauritius(+230)", "+230"));
+    phonePrefixSelect.add(new Option("Mayotte(+262)", "+262"));
+    phonePrefixSelect.add(new Option("Mexico(+52)", "+52"));
+    phonePrefixSelect.add(new Option("Micronesia, Federated States Of(+691)", "+691"));
+    phonePrefixSelect.add(new Option("Moldova, Republic Of(+373)", "+373"));
+    phonePrefixSelect.add(new Option("Monaco(+377)", "+377"));
+    phonePrefixSelect.add(new Option("Mongolia(+976)", "+976"));
+    phonePrefixSelect.add(new Option("Montserrat(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Morocco(+212)", "+212"));
+    phonePrefixSelect.add(new Option("Mozambique(+258)", "+258"));
+    phonePrefixSelect.add(new Option("Myanmar(+95)", "+95"));
+    phonePrefixSelect.add(new Option("Namibia(+264)", "+264"));
+    phonePrefixSelect.add(new Option("Nauru(+674)", "+674"));
+    phonePrefixSelect.add(new Option("Nepal(+977)", "+977"));
+    phonePrefixSelect.add(new Option("Netherlands(+31)", "+31"));
+    phonePrefixSelect.add(new Option("Netherlands Antilles(+599)", "+599"));
+    phonePrefixSelect.add(new Option("New Caledonia(+687)", "+687"));
+    phonePrefixSelect.add(new Option("New Zealand(+64)", "+64", false, true));
+    phonePrefixSelect.add(new Option("Nicaragua(+505)", "+505"));
+    phonePrefixSelect.add(new Option("Niger(+227)", "+227"));
+    phonePrefixSelect.add(new Option("Nigeria(+234)", "+234"));
+    phonePrefixSelect.add(new Option("Niue(+683)", "+683"));
+    phonePrefixSelect.add(new Option("Norfolk Island(+672)", "+672"));
+    phonePrefixSelect.add(new Option("Northern Mariana Islands(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Norway(+47)", "+47"));
+    phonePrefixSelect.add(new Option("Oman(+968)", "+968"));
+    phonePrefixSelect.add(new Option("Pakistan(+92)", "+92"));
+    phonePrefixSelect.add(new Option("Palau(+680)", "+680"));
+    phonePrefixSelect.add(new Option("Panama(+507)", "+507"));
+    phonePrefixSelect.add(new Option("Papua New Guinea(+675)", "+675"));
+    phonePrefixSelect.add(new Option("Paraguay(+595)", "+595"));
+    phonePrefixSelect.add(new Option("Peru(+51)", "+51"));
+    phonePrefixSelect.add(new Option("Philippines(+63)", "+63"));
+    phonePrefixSelect.add(new Option("Pitcairn(+64)", "+64"));
+    phonePrefixSelect.add(new Option("Poland(+48)", "+48"));
+    phonePrefixSelect.add(new Option("Portugal(+351)", "+351"));
+    phonePrefixSelect.add(new Option("Puerto Rico(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Qatar(+974)", "+974"));
+    phonePrefixSelect.add(new Option("Reunion(+262)", "+262"));
+    phonePrefixSelect.add(new Option("Romania(+40)", "+40"));
+    phonePrefixSelect.add(new Option("Russian Federation(+7)", "+7"));
+    phonePrefixSelect.add(new Option("Rwanda(+250)", "+250"));
+    phonePrefixSelect.add(new Option("Saint Kitts And Nevis(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Saint Lucia(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Saint Vincent And The Grenadines(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Samoa(+685)", "+685"));
+    phonePrefixSelect.add(new Option("San Marino(+378)", "+378"));
+    phonePrefixSelect.add(new Option("Sao Tome And Principe(+239)", "+239"));
+    phonePrefixSelect.add(new Option("Saudi Arabia(+966)", "+966"));
+    phonePrefixSelect.add(new Option("Senegal(+221)", "+221"));
+    phonePrefixSelect.add(new Option("Seychelles(+248)", "+248"));
+    phonePrefixSelect.add(new Option("Sierra Leone(+232)", "+232"));
+    phonePrefixSelect.add(new Option("Singapore(+65)", "+65"));
+    phonePrefixSelect.add(new Option("Slovakia (Slovak Republic)(+421)", "+421"));
+    phonePrefixSelect.add(new Option("Slovenia(+386)", "+386"));
+    phonePrefixSelect.add(new Option("Solomon Islands(+677)", "+677"));
+    phonePrefixSelect.add(new Option("Somalia(+252)", "+252"));
+    phonePrefixSelect.add(new Option("South Africa(+27)", "+27"));
+    phonePrefixSelect.add(new Option("South Georgia And The South Sandwich Islands(+500)", "+500"));
+    phonePrefixSelect.add(new Option("Spain(+34)", "+34"));
+    phonePrefixSelect.add(new Option("Sri Lanka(+94)", "+94"));
+    phonePrefixSelect.add(new Option("St. Helena(+290)", "+290"));
+    phonePrefixSelect.add(new Option("St. Pierre And Miquelon(+508)", "+508"));
+    phonePrefixSelect.add(new Option("Sudan(+249)", "+249"));
+    phonePrefixSelect.add(new Option("Suriname(+597)", "+597"));
+    phonePrefixSelect.add(new Option("Svalbard And Jan Mayen Islands(+47)", "+47"));
+    phonePrefixSelect.add(new Option("Swaziland(+268)", "+268"));
+    phonePrefixSelect.add(new Option("Sweden(+46)", "+46"));
+    phonePrefixSelect.add(new Option("Switzerland(+41)", "+41"));
+    phonePrefixSelect.add(new Option("Syrian Arab Republic(+963)", "+963"));
+    phonePrefixSelect.add(new Option("Taiwan, Province Of China(+886)", "+886"));
+    phonePrefixSelect.add(new Option("Tajikistan(+992)", "+992"));
+    phonePrefixSelect.add(new Option("Tanzania, United Republic Of(+255)", "+255"));
+    phonePrefixSelect.add(new Option("Thailand(+66)", "+66"));
+    phonePrefixSelect.add(new Option("Togo(+228)", "+228"));
+    phonePrefixSelect.add(new Option("Tokelau(+690)", "+690"));
+    phonePrefixSelect.add(new Option("Tonga(+676)", "+676"));
+    phonePrefixSelect.add(new Option("Trinidad And Tobago(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Tunisia(+216)", "+216"));
+    phonePrefixSelect.add(new Option("Turkey(+90)", "+90"));
+    phonePrefixSelect.add(new Option("Turkmenistan(+993)", "+993"));
+    phonePrefixSelect.add(new Option("Turks And Caicos Islands(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Tuvalu(+688)", "+688"));
+    phonePrefixSelect.add(new Option("Uganda(+256)", "+256"));
+    phonePrefixSelect.add(new Option("Ukraine(+380)", "+380"));
+    phonePrefixSelect.add(new Option("United Arab Emirates(+971)", "+971"));
+    phonePrefixSelect.add(new Option("United Kingdom(+44)", "+44"));
+    phonePrefixSelect.add(new Option("United States(+1)", "+1"));
+    phonePrefixSelect.add(new Option("United States Minor Outlying Islands(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Uruguay(+598)", "+598"));
+    phonePrefixSelect.add(new Option("Uzbekistan(+998)", "+998"));
+    phonePrefixSelect.add(new Option("Vanuatu(+678)", "+678"));
+    phonePrefixSelect.add(new Option("Venezuela(+58)", "+58"));
+    phonePrefixSelect.add(new Option("Vietnam(+84)", "+84"));
+    phonePrefixSelect.add(new Option("Virgin Islands (British)(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Virgin Islands (U.S.)(+1)", "+1"));
+    phonePrefixSelect.add(new Option("Wallis And Futuna Islands(+681)", "+681"));
+    phonePrefixSelect.add(new Option("Western Sahara(+212)", "+212"));
+    phonePrefixSelect.add(new Option("Yemen(+967)", "+967"));
+    phonePrefixSelect.add(new Option("Zaire(+243)", "+243"));
+    phonePrefixSelect.add(new Option("Zambia(+260)", "+260"));
+    phonePrefixSelect.add(new Option("Zimbabwe(+263)", "+263"));
+  }
+}

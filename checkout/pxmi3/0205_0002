@@ -1,0 +1,2815 @@
+/* Start: PageConfig_0205_PXCOM_STANDARDDISPLAY_0002 CSS */
+/* master style sheet */
+/* clear browser margins */
+
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    height: 100%;
+}
+.wrapper {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -22px;
+}
+.push {
+    height: 22px;
+    display: block;
+}
+/* default font */
+/* clear header padding, margins */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+/* normalise all text elements */
+
+p,
+th,
+td,
+blockquote,
+q,
+acronym,
+abbr,
+a,
+input,
+select,
+ul,
+ol,
+textarea {
+    margin: 0;
+    padding: 0;
+}
+/* some spice for special elements */
+
+blockquote {
+    margin: 1.25em;
+    padding: 1.25em
+}
+q {
+    font-style: italic;
+}
+acronym {
+    border-bottom: 1px dashed;
+}
+/* set defaults for these */
+
+small {
+    font-size: .85em;
+}
+big {
+    font-size: 1.2em;
+}
+/*link defaults */
+
+a,
+a:link,
+a:visited,
+a:active,
+a:hover {
+    text-decoration: none;
+}
+/* ensure no borders on img elements */
+
+img {
+    border: none;
+}
+tbody {
+    margin: 0;
+    padding: 0;
+}
+textarea {
+    min-width: 400px;
+    height: 100px;
+    max-height: 400px;
+}
+form {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+/* ensure labels show as clickable */
+
+label {
+    cursor: pointer;
+}
+.clear {
+    clear: both;
+}
+.blockCenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* remember to set width */
+
+.bold {
+    font-weight: bold;
+}
+.italic {
+    font-style: italic;
+}
+.underline {
+    text-decoration: underline;
+}
+.noindent {
+    margin-left: 0;
+    padding-left: 0;
+}
+/* ensure these inherit like other elements */
+
+button,
+input,
+select,
+textarea,
+a {
+    font-size: 100%;
+    color: inherit;
+}
+
+.DpsRegularTextWeight {
+    font-weight: normal;
+}
+.DpsBoldText {
+    font-weight: bold;
+}
+.DpsItalicText {
+    font-style: italic;
+}
+.DpsHidden {
+    display: none;
+}
+.DpsVisibilityHidden {
+    visibility: hidden;
+}
+.DpsUppercase {
+    text-transform: uppercase;
+}
+.DpsSrHidden {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.DpsLeft {
+    text-align: left !important;
+}
+.DpsRight {
+    text-align: right !important;
+}
+.DpsCenter {
+    text-align: center !important;
+}
+.DpsFloatLeft {
+    float: left;
+}
+.DpsFloatRight {
+    float: right;
+}
+
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Page Titles */
+
+.DpsUiPageTitle1 {
+    position: static;
+    padding-bottom: 6px;
+    background-color: #ed1c24;
+    color: White;
+    background-position: 0px 0px;
+    padding-top: 20px;
+    background-repeat: no-repeat;
+}
+.DpsUiPageTitle2 {
+    position: static;
+    background-color: #262a2f;
+    color: White;
+    padding-left: 13px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: auto;
+}
+.DpsTitleSessionInfo {
+    color: #fff;
+    float: right;
+    word-wrap: break-word;
+    font-size: 10px;
+    padding: 10px 10px 10px 0px;
+}
+label {
+    display: inline;
+    max-width: none;
+    margin-bottom: 0;
+    font-weight: normal;
+    white-space: pre-wrap;
+}
+p {
+    white-space: pre-wrap;
+}
+.DpsUiPanelFooter {
+    background-color: #efefef;
+    border-top: 1px solid #e4e4e4;
+    padding: 20px;
+    color: #333;
+    font-size: 11px;
+}
+
+/* set fieldset bgc to same as panel divs. helps panels look right as field sets refuse to position totally inside them */
+
+fieldset {
+    display: block;
+    background-color: #F4F4F4;
+}
+.DpsReadOnlyField {
+    color: #666666;
+}
+.DpsRequiredFieldMarker {
+    color: #ff0000;
+}
+
+.table {
+    overflow: auto;
+    border: 1px solid #e3e3e3;
+    background-color: white;
+    margin-bottom: 0px; /*we often stick associated stuff right under table*/
+}
+
+.table tbody tr:hover th,
+.table tbody tr:hover span, 
+.table tbody tr:hover label {
+    color: #FFFFFF;
+}
+.table tbody tr:hover {
+    background-color: #262a2f;
+    border: 1px solid #262a2f;
+    cursor: pointer;
+}
+
+.table td.DpsTableCell {
+    border-right: 1px solid rgba(0, 0, 0, .075);
+}
+.table thead {
+	background-color: #4f555e;
+	border-width: medium;
+	color: White;
+}
+.table tbody td:last-of-type {
+    border-right: none;
+}
+.table input {
+    vertical-align: middle !important;
+	margin: 0px;
+}
+.table tfoot {
+    text-align: right;
+    padding: 2px 5px 2px 5px;
+    background-color: #4f555e;
+    cursor: default;
+
+}
+.table tfoot div {
+    padding-left: 10px;
+    float: right;
+}
+.table tfoot span {
+    color: white;
+}
+.table td{
+    max-width: 400px;
+}
+.DpsTableContainer {
+    overflow-x:auto;
+}
+
+/* these for special case bind the style by value of the data */
+.DpsColourGreen {
+    background-color: #33ff33
+}
+.DpsColourRed {
+    background-color: #FF6633
+}
+.DpsColourYellow {
+    background-color: #ffff33
+}
+.DpsBody {
+    background-color: #f7f7f7;
+    text-decoration: none;
+    font-size: 9pt;
+    line-height: 18px;
+}
+.DpsGroupHeader {
+    margin: 10px 0px 0px !important;
+    padding: 0px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+.DpsTextError {
+    color: #a94442;
+}
+.DpsFieldErrorCaptcha {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    padding: 10px;
+    margin:10px 0 30px 0;
+    border: 1px solid #ebccd1;
+    border-radius: 4px;
+    display: block;
+}
+/* tick used to show true values in UiTypeBoolean */
+
+.DpsTick {
+    background-image: url(/pxmi/images/y1.gif);
+    background-repeat: no-repeat;
+    padding: 0px 0px 0px 0px !important;
+    /* had to define the width/height of the image here. setting as auto didn't work. */
+    
+    width: 11px;
+    height: 11px;
+    /* the following makes sure it's centered horizontally. */
+    
+    margin-left: auto;
+    margin-right: auto;
+}
+/* cross used to show false values in UiTypeBoolean */
+
+.DpsCross {
+    background-image: url(/pxmi/images/n1.gif);
+    background-repeat: no-repeat;
+    padding: 0px 0px 0px 0px !important;
+    /* had to define the width/height of the image here. setting as auto didn't work. */
+    
+    width: 11px;
+    height: 11px;
+    /* the following makes sure it's centered horizontally. */
+    
+    margin-left: auto;
+    margin-right: auto;
+}
+.DpsCheckBox {
+    border-bottom: 1px solid white;
+}
+.DpsFieldCheckBox {
+    outline: 1px solid #d7d7d7;
+    border: none;
+    width: 12px;
+    height: 12px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -o-appearance: none;
+}
+.DpsFieldCheckBox:focus {
+    width: 12px;
+    height: 12px;
+}
+.DpsFieldCheckBox:checked {
+    background-image: url(/pxmi/images/y1.gif);
+    background-repeat: no-repeat;
+}
+    
+.DpsField {
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 5px 1px 5px 5px;
+}
+
+.DpsTextAreaShort {
+    min-width: 250px;
+}
+
+select.DpsField {
+    border: 1px solid #d7d7d7;
+    border-radius: 0px;
+    background-color: #ffffff;
+}
+span.DpsField {
+    max-width: 350px;
+}
+
+span.DpsReadOnlyFormattedField{
+    white-space:pre-wrap;
+}
+
+textarea.DpsField {
+    white-space: pre-wrap;
+    overflow: scroll;
+}
+
+.DpsFieldAmountFraction {
+    max-width: 46px;
+}
+.DpsReadOnlyTextBox{
+    width:450px!important;
+    display:block;
+    white-space: pre;           /* CSS 2.0 */
+    white-space: pre-wrap;      /* CSS 2.1 */
+    white-space: pre-line;      /* CSS 3.0 */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: -moz-pre-wrap; /* Mozilla */
+    white-space: -hp-pre-wrap;  /* HP Printers */
+    word-wrap: break-word;      /* IE 5+ */
+}
+.DpsIconClose {
+    font-weight: bold;
+    font-size: 20pt;
+}
+.DpsTableCell {
+    white-space: nowrap;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.DpsTableCellLegend {
+    text-align: left;
+    white-space: nowrap;
+}
+fieldset {
+    position: static;
+    border: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 0;
+    background-color: transparent;
+}
+
+.DpsUiPanel {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 0px;
+    padding: 5px 10px;
+    position: static;
+    display: block;
+}
+
+.row .DpsUiPanel {
+    margin-top: auto !important;
+    margin-left: auto !important;
+}
+
+.DpsUiPanelLogon .DpsLayoutTable {
+    width: 100%;
+    margin: 20px 0 20px 0;
+}
+
+.DpsUiPanelLogon .DpsTextError {
+    color: #a94442;
+    background-color: #f2dede;
+    display: block;
+    padding: 10px;
+    border: 1px solid #ebccd1;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.DpsUiPanelLogon label {
+    display: none;
+}
+
+.DpsUiPanelLogon td {
+    min-width: 0px;
+}
+
+.DpsUiPanelLogon .DpsTableCellLegend {
+    padding-left: 0px;
+    padding-right: 0px;
+    overflow: hidden;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.DpsUiPanelLogon .DpsButton1 {
+    margin: 5px 0 0 0;
+}
+
+.DpsUiPanel .DpsUiPanelTop {
+    border-bottom: 1px solid #dee4ed;
+    text-align:center;
+}
+.DpsUiPanelBottom h2 {
+    display: none;
+}
+
+.DpsUiPanelLegend {
+    color: #4f555e;
+    font-size: 24px;
+    line-height: 1.5em;
+    padding: 0 0 10px 0;
+}
+
+.DpsTextWrapper {
+    display: inline;
+}
+
+/* Menu */
+.DpsMenuContainer {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    background-color: #262a2f;
+    height: 1000px;
+    display: table-cell;
+    position: static;
+    left: 0px;
+    margin-top: 10px;
+    margin-left: 10px;
+    vertical-align: top;
+    width: 768px;
+}
+.DpsMenuContainer > div {
+    min-height: 1000px;
+    width: 100% !important;
+
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    margin-top: 10px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    padding: 0;
+    position: static;
+    display: block;
+}
+.DpsMenuLink {
+    cursor: pointer;
+    color: #ffffff;
+    display: block;
+    font-size: 14px;
+}
+.DpsMenuLink:hover {
+    color: #E53935;
+    transition: color 0.5s ease;
+}
+.DpsMenuLinkDisabled {
+    color: grey;
+}
+.DpsMenuLinkSingle {
+    cursor: pointer;
+    color: #ffffff;
+    display: block;
+    font-size: 14px;
+}
+.DpsMenuLinkSingle:hover {
+    color: #E53935;
+}
+.DpsMenuGroup {
+    cursor: pointer;
+    color: #b1bbc7;
+    border-bottom: 1px solid #373c43;
+    border-left: 2px solid #262a2f;
+    padding: 10px 10px 10px 10px;
+    font-size: 14px;
+    width: 100%;
+    margin: 0;
+}
+
+.DpsMenuGroup:hover {
+    background-color: #32373e;
+    border-left: 2px solid #fff;
+    transition: background 0.5s ease;
+}
+.DpsMenuGroup .DpsMenuItem {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.DpsMenuItem {
+    padding: 10px 10px 10px 20px;
+    background-color: #262a2f;
+    border-left: 1px solid #262a2f;
+}
+.DpsMenuItem:hover {
+    padding: 10px 10px 10px 20px;
+    background-image: url(/pxmi/images/nav-arrow.png);
+    background-repeat: no-repeat;
+    background-position: 5px 13px;
+    background-color: #32373e;
+    color: #E53935;
+}
+.DpsMenuItemSelected {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 10px 10px 10px 21px;
+    background-image: url(/pxmi/images/nav-down-arrow.png);
+    background-repeat: no-repeat;
+    background-position: 4px 14px;
+}
+.DpsMenuItemSelected a {
+    color: #E53935;
+    cursor: initial;
+}
+.DpsMenuItemSingle {
+    color: #fff;
+    border-bottom: 1px solid #33383f;
+    background-color: #262a2f;
+    padding: 10px 10px 10px 12px;
+    font-size: 14px;
+    border-left: 2px solid #262a2f;
+    cursor: pointer;
+}
+.DpsMenuItemSingle:hover {
+    color: #E53935;
+    background-color: #32373e;
+    border-left: 2px solid #fff;
+    transition: background 0.5s ease;
+    transition: background 0.5s ease-out;
+}
+
+/* button */
+
+/* Remove standard blue border / outline that bootstrap creates in chrome */
+button:focus {
+    outline: none !important;
+}
+
+.DpsButton1 {
+    background-color: #E53935;
+    border-color: #e2211d;
+    color: #ffffff;
+    font-size: 14px;
+    margin-top: 15px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    line-height: 20px;
+    cursor: pointer;
+    padding: 10px 16px 10px 16px;
+}
+.DpsButton1:focus {
+    background-color: #E53935;
+    border-color: #e2211d;
+}
+/* Note: a:hover MUST come after a:link and a:visited in the CSS definition in order to be effective! a:active MUST come after a:hover in the CSS definition in order to be effective!*/
+.DpsButton1:visited {
+    background-color: #E53935;
+}
+.DpsButton1:hover {
+    transition: background-color 0.5s ease;
+    background-color: #a91319;
+    border-color: #e2211d;
+}
+.DpsButton1:active {
+    background-color: #E53935 !important;
+    border-color: #e2211d !important;
+    position: relative;
+    top: 1px;
+}
+.DpsButton1:disabled {
+    background-color: #262a2f !important;
+    border-color: #262a2f !important;
+}
+
+
+
+.DpsNavButtonDisabled {
+    background-color: lightgrey;
+}
+.DpsNavButtonDisabled:hover {
+    background-color: #d3d3d3 !important;
+}
+.DpsQuickSearchButton {
+    background-image: url('/pxmi/images/search-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    background-position: 6px 5px;
+    margin-top: 5px;
+    padding: 15px 24px 15px 10px;
+}
+.DpsButton1IsLink {
+    display: inline-block;
+}
+.DpsButton1IsLink:hover {
+    /*display: inline-block; makes the button move? */
+    color:#fff;
+}
+
+/* small 'View' button on referenced records */
+.DpsNavigateButton {
+    background-color: #eee;
+    color: #141414 !important;
+    border: 1px solid #c0c0c0 !important;
+    border-radius: 1px;
+    padding: 5px 10px 5px 10px;
+    transition: background 0.5s ease;
+    font-size: 11px;
+}
+.DpsNavigateButton:hover {
+    background-color: #cecece;
+    border: 1px solid #c0c0c0;
+}
+
+/* forgot password looks like a link */
+.DpsForgotPasswordButton {
+    background-color: #fff;
+    color: #141414;
+    padding: 12px 35px;
+    font-size: 13px;
+    transition: all 0.3s ease-out;
+    width: 100%;
+    border-style: none;
+    box-shadow: none;
+}
+.DpsForgotPasswordButton:focus {
+    background-color: #fff;
+    color: #141414;
+}
+/* Note: a:hover MUST come after a:link and a:visited in the CSS definition in order to be effective! a:active MUST come after a:hover in the CSS definition in order to be effective!*/
+.DpsForgotPasswordButton:visited {
+    background-color: #fff;
+    color: #141414;
+}
+.DpsForgotPasswordButton:hover {
+    background-color: #fff;
+    color: #141414;
+}
+.DpsForgotPasswordButton:active {
+    background-color: #fff !important;
+    color: #141414 !important;
+    box-shadow: none;
+}
+.DpsForgotPasswordButton:disabled {
+    background-color: #fff !important;
+}
+
+
+/*custom icons for buttons*/
+
+button[name=Search].noIcon {
+    padding: 6px 0px;
+    padding-right: 20px;
+    /*makes sure button is not resized*/
+    padding: 10px 16px 10px 8px !important;
+}
+
+button[name=Search]:not(.noIcon) {
+    background-image: url('/pxmi/images/search-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    /*needs to be > .DpsButton1?? because the spinner icon 20px wide and it gets injected into the descendent's DIV elements innerHTML. 
+		TBH switching the background icon with a spinner gif would be much simpler and precise*/
+    background-position: 8px 9px;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Back] {
+    background-image: url('/pxmi/images/back-arrow-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 7px 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name*=Add]:not(.noIcon) {
+    background-image: url('/pxmi/images/add-icon-v2-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 13% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name*=AddBulkInvoices]:not(.noIcon) {
+    background-image: url('/pxmi/images/add-icon-v2-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 7% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name*=BulkAdd]:not(.noIcon) {
+    background-image: url('/pxmi/images/add-icon-v2-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 7% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name*=AddBulkStock]:not(.noIcon) {
+    background-image: url('/pxmi/images/add-icon-v2-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 7% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name*=BulkAddResults]:not(.noIcon) {
+    background-image: url('/pxmi/images/add-icon-v2-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 5% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name*=AddEditSources]:not(.noIcon) {
+    background-image: url('/pxmi/images/add-icon-v2-sm.png');
+    background-size: 19px 19px;
+    background-position: 6% 45%;
+    padding: 10px 15px 10px 30px !important;
+}
+button[name^=BulkUpdate] {
+    background-image: url('/pxmi/images/update-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 7% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name^=Clear] {
+    background-image: url('/pxmi/images/cancel-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 8% 47%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name^=BulkUploadResults] {
+    background-image: url('/pxmi/images/update-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 6% 45%;
+    padding: 10px 16px 10px 30px !important;
+}
+button[name=Update] {
+    background-image: url('/pxmi/images/update-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 10% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Delete] {
+    background-image: url('/pxmi/images/delete-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 10% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Cancel] {
+    background-image: url('/pxmi/images/cancel-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    background-position: 12% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Refresh] {
+    background-image: url('/pxmi/images/refresh-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 17px 17px;
+    background-position: 10% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Reset] {
+    background-image: url('/pxmi/images/refresh-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 7% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name^=Apply] {
+    background-image: url('/pxmi/images/apply-button-sm.png');
+    background-repeat: no-repeat;
+    background-size: 19px 19px;
+    background-position: 10% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Copy] {
+    background-image: url('/pxmi/images/copy-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    background-position: 14% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+
+button[id*="Next"].noIcon,
+button[id*="Prev"].noIcon,
+button[id*="Last"].noIcon,
+button[id*="First"].noIcon
+{
+    /*makes sure button is not resized*/
+    padding: 10px 16px 10px 8px !important;
+}
+
+button[id*="Next"]:not(.noIcon) {
+    background-image: url('/pxmi/images/next-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    background-position: 14% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[id*="Prev"]:not(.noIcon) {
+    background-image: url('/pxmi/images/prev-button-sm.png');
+    background-repeat: no-repeat;
+    background-size: 22px 22px;
+    background-position: 14% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[id*="Last"]:not(.noIcon) {
+    background-image: url('/pxmi/images/last-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    background-position: 14% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[id*="First"]:not(.noIcon) {
+    background-image: url('/pxmi/images/first-icon-sm.png');
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    background-position: 14% 45%;
+    padding: 10px 16px 10px 28px !important;
+}
+button[name=Audit] {
+    padding: 10px 16px 10px 16px !important;
+}
+
+.DpsSortImageSorted {
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 2px;
+    padding-left: 0px;
+}
+.DpsSortPriority1 {
+    -webkit-filter: saturate(100);
+}
+.DpsSortPriority2 {
+    -webkit-filter: saturate(100);
+    Opacity: 0.8;
+}
+.DpsSortPriority3 {
+    -webkit-filter: saturate(100);
+    Opacity: 0.6;
+}
+.DpsSortPriority4 {
+    -webkit-filter: saturate(100);
+    Opacity: 0.4;
+}
+.DpsSortPriority5 {
+    Opacity: 1;
+}
+.DpsSortPriority6 {
+    Opacity: 0.8;
+}
+.DpsSortPriority7 {
+    Opacity: 0.4;
+}
+.DpsExtraLongField {
+    width: 250px;
+}
+
+div.spinner {
+    position: relative;
+    width: 20px;
+    height: 0px;
+    left: inherit;
+    display: inline-block;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+div.spinner div {
+    width: 2px;
+    height: 5px;
+    background: #fff;
+    position: absolute;
+    left: 6px;
+    top: -8px;
+    opacity: 0;
+    -moz-border-radius: 50px;
+    -webkit-animation: fade 1s linear infinite;
+    -webkit-border-radius: 50px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    -moz-animation: fade 1s linear infinite;
+    -ms-animation: fade 1s linear infinite;
+    -ms-border-radius: 50px;
+    -o-border-radius: 50px;
+    padding: 0;
+    margin: 0;
+}
+div.spinner div.bar1 {
+    -webkit-transform: rotate(0deg) translate(0, -142%);
+    -moz-transform: rotate(0deg) translate(0, -142%);
+    -webkit-animation-delay: 0s;
+    -moz-animation-delay: 0s;
+    -o-transform: rotate(0deg) translate(0, -142%);
+    -ms-transform: rotate(0deg) translate(0, -142%);
+    -o-animation-delay: 0s;
+    -ms-animation-delay: 0s;
+}
+div.spinner div.bar2 {
+    -webkit-transform: rotate(30deg) translate(0, -142%);
+    -moz-transform: rotate(30deg)translate(0, -142%);
+    -webkit-animation-delay: -0.9167s;
+    -moz-animation-delay: -0.9167s;
+    -o-transform: rotate(30deg) translate(0, -142%);
+    -ms-transform: rotate(30deg) translate(0, -142%);
+    -o-animation-delay: -0.9167s;
+    -ms-animation-delay: -0.9167s;
+}
+div.spinner div.bar3 {
+    -webkit-transform: rotate(60deg) translate(0, -142%);
+    -moz-transform: rotate(60deg)translate(0, -142%);
+    -webkit-animation-delay: -0.833s;
+    -moz-animation-delay: -0.833s;
+    -o-transform: rotate(60deg)translate(0, -142%);
+    -ms-transform: rotate(60deg)translate(0, -142%);
+    -o-animation-delay: -0.833s;
+    -ms-animation-delay: -0.833s;
+}
+div.spinner div.bar4 {
+    -webkit-transform: rotate(90deg) translate(0, -142%);
+    -moz-transform: rotate(90deg)translate(0, -142%);
+    -webkit-animation-delay: -0.75s;
+    -moz-animation-delay: -0.75s;
+    -o-transform: rotate(90deg)translate(0, -142%);
+    -ms-transform: rotate(90deg)translate(0, -142%);
+    -o-animation-delay: -0.75s;
+    -ms-animation-delay: -0.75s;
+}
+div.spinner div.bar5 {
+    -webkit-transform: rotate(120deg) translate(0, -142%);
+    -moz-transform: rotate(120deg)translate(0, -142%);
+    -webkit-animation-delay: -0.667s;
+    -moz-animation-delay: -0.667s;
+    -o-transform: rotate(120deg) translate(0, -142%);
+    -ms-transform: rotate(120deg) translate(0, -142%);
+    -o-animation-delay: -0.667s;
+    -ms-animation-delay: -0.667s;
+}
+div.spinner div.bar6 {
+    -webkit-transform: rotate(150deg) translate(0, -142%);
+    -moz-transform: rotate(150deg)translate(0, -142%);
+    -webkit-animation-delay: -0.5833s;
+    -moz-animation-delay: -0.5833s;
+    -o-transform: rotate(150deg) translate(0, -142%);
+    -ms-transform: rotate(150deg) translate(0, -142%);
+    -o-animation-delay: -0.5833s;
+    -ms-animation-delay: -0.5833s;
+}
+div.spinner div.bar7 {
+    -webkit-transform: rotate(180deg) translate(0, -142%);
+    -moz-transform: rotate(180deg)translate(0, -142%);
+    -webkit-animation-delay: -0.5s;
+    -moz-animation-delay: -0.5s;
+    -o-transform: rotate(180deg) translate(0, -142%);
+    -ms-transform: rotate(180deg) translate(0, -142%);
+    -o-animation-delay: -0.5s;
+    -ms-animation-delay: -0.5s;
+}
+div.spinner div.bar8 {
+    -webkit-transform: rotate(210deg) translate(0, -142%);
+    -moz-transform: rotate(210deg)translate(0, -142%);
+    -webkit-animation-delay: -0.41667s;
+    -moz-animation-delay: -0.41667s;
+    -o-transform: rotate(210deg) translate(0, -142%);
+    -ms-transform: rotate(210deg) translate(0, -142%);
+    -o-animation-delay: -0.41667s;
+    -ms-animation-delay: -0.41667s;
+}
+div.spinner div.bar9 {
+    -webkit-transform: rotate(240deg) translate(0, -142%);
+    -moz-transform: rotate(240deg)translate(0, -142%);
+    -webkit-animation-delay: -0.333s;
+    -moz-animation-delay: -0.333s;
+    -o-transform: rotate(240deg) translate(0, -142%);
+    -ms-transform: rotate(240deg) translate(0, -142%);
+    -o-animation-delay: -0.333s;
+    -ms-animation-delay: -0.333s;
+}
+div.spinner div.bar10 {
+    -webkit-transform: rotate(270deg) translate(0, -142%);
+    -moz-transform: rotate(270deg)translate(0, -142%);
+    -webkit-animation-delay: -0.25s;
+    -moz-animation-delay: -0.25s;
+    -o-transform: rotate(270deg) translate(0, -142%);
+    -ms-transform: rotate(270deg) translate(0, -142%);
+    -o-animation-delay: -0.25s;
+    -ms-animation-delay: -0.25s;
+}
+div.spinner div.bar11 {
+    -webkit-transform: rotate(300deg) translate(0, -142%);
+    -moz-transform: rotate(300deg)translate(0, -142%);
+    -webkit-animation-delay: -0.1667s;
+    -moz-animation-delay: -0.1667s;
+    -o-transform: rotate(300deg) translate(0, -142%);
+    -ms-transform: rotate(300deg) translate(0, -142%);
+    -o-animation-delay: -0.1667s;
+    -ms-animation-delay: -0.1667s;
+}
+div.spinner div.bar12 {
+    -webkit-transform: rotate(330deg) translate(0, -142%);
+    -moz-transform: rotate(330deg)translate(0, -142%);
+    -webkit-animation-delay: -0.0833s;
+    -moz-animation-delay: -0.0833s;
+    -o-transform: rotate(330deg) translate(0, -142%);
+    -ms-transform: rotate(330deg) translate(0, -142%);
+    -o-animation-delay: -0.0833s;
+    -ms-animation-delay: -0.0833s;
+}
+@keyframes fade {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.25;
+    }
+}
+@-webkit-keyframes fade {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.25;
+    }
+}
+@-moz-keyframes fade {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+div.labeled {
+    position: relative;
+    font-size: 12px;
+    margin: 0;
+    background: #fff;
+    padding: 0;
+    display: inline-block;
+    color: #c00;
+    line-height: 18px;
+    -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+    -webkit-border-radius: 1em;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(1, #ccc));
+}
+div.labeled div.spinner {
+    float: left;
+    vertical-align: top;
+    width: 100px;
+    height: 100px;
+    margin: 0;
+    padding: 0;
+}
+div.labeled div.spinner div {
+    background: #c00;
+}
+
+/* warning banner shows long top of screen. no bootstrap equiv? */
+
+.DpsWarningBanner {
+    color: #9F6000;
+    background-color: #FEEFB3;
+    padding: 5px 10px 5px 50px;
+    text-align: center !important;
+}
+.DpsWarningBanner a {
+    color: #0769ad;
+}
+.DpsWarningBanner a:hover {
+    text-decoration: underline;
+}
+.DpsWarningBanner #WelcomeClose {
+    float: right;
+    margin-right: 20px;
+}
+
+
+.DpsTab {
+    width: 80px;
+    height: 10px;
+}
+/* Pay Now Form */
+#Paynow h1, #PaynowResult h1{
+    margin: 0 0 20px 2px;
+    border-bottom: 1px solid #dadada;
+}
+#Paynow #PayNowSecondaryMessage {
+    font-size: 15px;
+    color: #31708f;
+    display: block;
+    margin: 0 0 20px 0;
+    text-align: center;
+}
+#Paynow #ShowAddCardMessage {
+    background-color: #d9edf7;
+    border: 1px solid #bcdff1;
+    color: #31708f;
+    border-radius: 2px;
+    padding: 10px;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: block;
+}
+#Paynow select.DpsDropList {
+    padding: 0 5px 0 5px !important;
+    height: 37px;
+    border-radius: 2px !important;
+}
+#Paynow input[type="text"],
+#Paynow input[type="select"],
+#Paynow input[type="tel"] {
+    border: 1px solid #d5d5d5;
+    height: 37px;
+    border-radius: .10rem!important;
+}
+#Paynow input[type="text"]:focus,
+#Paynow input[type="select"]:focus,
+#Paynow input[type="tel"]:focus {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+#Paynow #CaptchaContainer {
+    margin: 0 auto;
+    margin-top: 20px;
+}
+/* Dps Field */
+.DpsField {
+    text-align: left;
+}
+.DpsFieldError {
+    border: 1px solid #ebccd1 !important;
+}
+:-moz-ui-invalid {
+    box-shadow: none;
+}
+input.DpsField {
+    border: 1px solid #d7d7d7;
+    border-radius: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 5px;
+}
+select.DpsFieldDateDay,
+select.DpsFieldDateMonth,
+select.DpsFieldDateYear,
+select.DpsFieldDateHour,
+select.DpsFieldDateMin,
+select.DpsFieldDateSec {
+    min-width: 50px !important;
+    height:36px;
+    padding: 0px;
+}
+td.DpsGroupHeader {
+    line-height: 50px;
+}
+.DpsFieldChar2 {
+    width: 50px;
+}
+.DpsFieldChar4 {
+    width: 70px;
+}
+.DpsFieldChar6 {
+    width: 150px;
+}
+/* Specific css for Amount */
+
+.DpsFieldChar6.DpsAmount {
+    width: 89px;
+}
+.DpsFieldChar8 {
+    width: 150px;
+}
+.DpsFieldChar10 {
+    width: 150px;
+}
+.DpsFieldChar20 {
+    width: 150px;
+}
+.DpsFieldChar30 {
+    width: 150px;
+}
+.DpsFieldChar40 {
+    width: 150px;
+}
+.DpsFieldChar50 {
+    width: 150px;
+}
+.DpsFieldChar60 {
+    width: 150px;
+}
+.DpsFieldChar70 {
+    width: 150px;
+}
+.DpsFieldChar80 {
+    width: 150px;
+}
+.DpsFieldChar90 {
+    width: 150px;
+}
+.DpsFieldChar100 {
+    width: 150px;
+}
+
+.DpsFieldCharExtraLarge100 {
+    width: 275px !important;
+}
+
+/* the following is used to overwrite DpsFieldChar for the newer layout. */
+
+.DpsFieldCharLarge2 {
+    width: 80px;
+}
+.DpsFieldCharLarge4 {
+    width: 100px;
+}
+.DpsFieldCharLarge6 {
+    width: 170px;
+}
+.DpsFieldCharLarge8 {
+    width: 170px;
+}
+.DpsFieldCharLarge10 {
+    width: 170px;
+}
+.DpsFieldCharLarge20 {
+    width: 225px;
+}
+.DpsFieldCharLarge30 {
+    width: 225px;
+}
+.DpsFieldCharLarge40 {
+    width: 225px;
+}
+.DpsFieldCharLarge50 {
+    width: 225px;
+}
+.DpsFieldCharLarge50 {
+    width: 225px;
+}
+.DpsFieldCharLarge60 {
+    width: 225px;
+}
+.DpsFieldCharLarge70 {
+    width: 225px;
+}
+.DpsFieldCharLarge80 {
+    width: 225px;
+}
+.DpsFieldCharLarge90 {
+    width: 225px;
+}
+.DpsFieldCharLarge100 {
+    width: 225px;
+}
+.DpsFieldAmountCurrency {
+    /*text-align: right; bad for drop list*/
+    min-width: 45px !important;
+}
+
+.DpsPopupBox {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #F4F4F4;
+    position: absolute;
+    border: thin solid grey;
+    z-index: 100;
+    visibility: visible;
+    display: block;
+}
+.DpsPopupTitleBar {
+    cursor: pointer;
+    position: static;
+    display: block;
+    margin: 5px;
+    color: red;
+    font-size: small;
+    font-weight: bold;
+    text-decoration: none;
+}
+.DpsPopupTitleBarClose {
+    display: block;
+    float: right;
+}
+.DpsPopupTable {
+    background-color: #FFF;
+    border: 1px solid Gray;
+    margin: 5px;
+    padding: 2px;
+}
+.DpsPopupTableHeader .DpsPopupTableHeader:hover DpsPopupTableCell {
+    cursor: pointer;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.DpsPopupTableCell:hover {
+    background-color: black;
+    color: white;
+}
+
+td {
+    min-width: 50px;
+    max-width: 900px;
+    /* TODO max-width causes issues when buttons in single td*/
+}
+.DpsTableCell {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+
+
+.DpsTableCellLegend {
+    padding-left: 5px;
+    padding-right: 10px;
+    overflow: hidden;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.DpsUiPanelTimeout {
+    padding: 30px;
+    background-color: #fff;
+    max-width: 500px;
+    margin: 0 auto;
+    margin-top: 30px;
+    border: 1px solid #dadada;
+    border-bottom: 3px solid #919aa4;
+}
+
+
+/* DpsUiPanels Flat Design */
+
+.DpsUiPanelFlat, .DpsUiPanelException {
+    padding: 30px !important;
+    background-color: #fff;
+    max-width: 460px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #dadada;
+    border-bottom: 3px solid #919aa4;
+}
+
+/* Wider panel for forms with labels etc */
+.DpsUiPanelFlatWide {
+    padding: 10px;
+    background-color: #fff;
+    max-width: 650px;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom:10px;
+    border: 1px solid #dadada;
+    border-bottom: 3px solid #919aa4; 
+}
+.DpsUiPanelFlat h1 {    
+    text-align:center;
+}
+.DpsUiPanelFlatText {
+    font-size:13px;
+    text-align:center;
+    margin:5px 0 10px 0;
+    display:block;
+}
+.DpsUiPanelFlatInput {
+   -webkit-appearance: none;
+    border: 1px solid #d5d5d5;
+    background-clip: padding-box;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .19s, -webkit-box-shadow ease-in-out .19s;
+    -o-transition: border-color ease-in-out .19s, box-shadow ease-in-out .19s;
+    transition: border-color ease-in-out .19s, box-shadow ease-in-out .19s;
+    border-radius: .10rem!important;
+    font-size: 12px;
+    margin: 5px;
+}
+
+.DpsUiPanelFlatButton {
+    padding: 12px 35px;
+    border-color: #b2312e;
+    border-radius: 2px;
+    border-bottom-style: solid;
+    display: block;
+    width: 100%;
+    background-image: none !important;
+    text-align: center;
+}
+
+.DpsUiPanelFlat .DpsReadOnlyField{
+    /*display:block; prevents tables label/text showing in line together */
+    white-space: pre;           /* CSS 2.0 */
+    white-space: pre-wrap;      /* CSS 2.1 */
+    white-space: pre-line;      /* CSS 3.0 */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: -moz-pre-wrap; /* Mozilla */
+    white-space: -hp-pre-wrap;  /* HP Printers */
+    word-wrap: break-word;      /* IE 5+ */
+}
+.DpsUiPanelFlat .DpsTableCell{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+/* Remove padding on chrome for autofill */
+.DpsUiPanelFlat input:-webkit-autofill,
+.DpsUiPanelFlat input:-webkit-autofill,
+.DpsUiPanelFlat input:-webkit-autofill:hover,
+.DpsUiPanelFlat input:-webkit-autofill:focus,
+.DpsUiPanelFlat input:-webkit-autofill:active {
+ -webkit-padding-start: 8px !important;
+}
+
+/* Input Icons */
+.DpsUiPanelNameIcon {
+    background: url(/pxmi/images/user-login.png);
+    background-position: 10px 14px;
+    background-repeat: no-repeat;
+}
+.DpsUiPanelPasswordIcon {
+    background: url(/pxmi/images/password-login.png);
+    background-position: 12px 14px;
+    background-repeat: no-repeat;
+}
+.DpsUiPanelEmailIcon {
+    background: url(/pxmi/images/email-login.png);
+    background-position: 10px 17px;
+    background-repeat: no-repeat;
+}
+.DpsUiPanelTradingNameIcon {
+    background: url(/pxmi/images/tradingname-icon.png);
+    background-position: 11px 16px;
+    background-repeat: no-repeat;
+}
+.DpsUiPanelPhoneIcon {
+    background: url(/pxmi/images/phone-icon.png);
+    background-position: 10px 17px;
+    background-repeat: no-repeat;
+}
+.DpsUiPanelFlat .DpsUiPanelNameIcon,
+.DpsUiPanelFlat .DpsUiPanelPasswordIcon,
+.DpsUiPanelFlat .DpsUiPanelEmailIcon,
+.DpsUiPanelFlat .DpsUiPanelTradingNameIcon,
+.DpsUiPanelFlat .DpsUiPanelPhoneIcon{
+    padding: 15px 5px 15px 35px !important;
+    margin: 2px 0 2px 0;
+    border-radius: 0px;
+    width: 100%;
+}
+
+
+.DpsUiPanelFlatTextBox{
+    -webkit-appearance: none;
+    border: 1px solid #d5d5d5;
+    background-clip: padding-box;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .19s, -webkit-box-shadow ease-in-out .19s;
+    -o-transition: border-color ease-in-out .19s, box-shadow ease-in-out .19s;
+    transition: border-color ease-in-out .19s, box-shadow ease-in-out .19s;
+    border-radius: .10rem!important;
+    font-size: 12px;
+    margin:5px 0 0 0;
+}
+
+.DpsUiPanelFlat .alert-info{
+    font-size:12px!important;
+}
+
+.DpsUiPanelFlat .DpsFieldLegend {
+    font-size: 13px;
+}
+.DpsUiPanelFlat .DpsInlineLink {
+    font-size: 12px;
+    color: #de0033;
+}
+.DpsUiPanelFlat .DpsLogonSubtext{
+    font-size: 12px;
+}
+.DpsUiPanelBackButton{
+    width:398px;
+}
+
+/* This is for the password reset URL / Check your email */
+.DpsUiPanelFlatCheckPwd .DpsField{
+    width: 100%;
+}
+
+/* Apply Form for New Merchant */
+.DpsApplyScreen{
+    padding:10px;
+}
+.DpsApplyScreen h1{
+    text-align:center;
+}
+.DpsApplyScreen .DpsUiPanelFlatButton{
+    max-width:300px;
+    margin:0 auto;
+    margin-top:10px;
+}
+
+/* Direct Debit Form */
+.DpsDDForm{
+    padding:10px;
+}
+.DpsDDForm h1{
+    text-align:center;
+}
+
+.DpsDDForm #TermsAndConditions{
+    font-size:12px!important;
+}
+
+.DpsDDForm .DpsGroupHeader{
+    font-size:12px!important;
+    margin-bottom:5px!important;
+}
+
+.DpsDDForm .DpsTableCell{
+    padding-left:5px;
+    padding-right:0;
+}
+.DpsDDForm .DpsLegalNoticeLink{
+    font-size:12px!important;
+}
+
+.DpsDDformNote{
+    padding-top:10px;
+    font-size:12px;
+    display:inline-block;
+}
+.DpsDDFormButton{
+    background-color: #e53935;
+    padding: 12px 35px;
+    border-bottom: 2px solid #b2312e;
+    display: block;
+    width: 50%;
+    margin:0 auto;
+    margin-top:20px;
+    margin-bottom:20px;
+    font-size: 14px;
+}
+
+.DpsDDFormButton:hover{
+    border-bottom: 2px solid #b2312e;
+}
+
+/* Sign Up */
+.DpsUiPanelSignUp {
+    margin-bottom: 20px;
+}
+.DpsUiPanelSignUp .DpsLayoutTable {
+    width: 100%;
+    margin: 10px 0 20px 0;
+}
+.DpsUiPanelSignUp .DpsField {
+    padding: 15px 5px 15px 10px;
+    margin: 2px 0 2px 0;
+    width: 100%;
+}
+.DpsUiPanelSignUp .DpsFieldPhoneCountryPrefix {
+    width: 47% !important;
+}
+
+.DpsUiPanelSignUp .DpsFieldPhoneNumber {
+    width: 52% !important;
+} 
+.DpsSignUpButton {
+    padding: 12px 35px;
+    border-bottom: 2px solid #b2312e;
+    display: block;
+    width: 100%;
+    font-size: 14px;
+    background-image: none!important;
+    margin:0 0 0 0;
+    text-align:center;
+}
+.DpsSignUpButton:hover {
+    background-color: #cc3632;
+    border-bottom: 2px solid #a12b28;
+}
+
+
+/* captcha */
+
+#CaptchaContainerContainer {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#CaptchaContainer {
+    display: inline-block;
+}
+
+/* Change Password */
+.DpsPasswordStrengthRules{
+    text-align:center;
+    display:block;
+}
+.DpsPasswordStrengthRulesItems{
+    padding-bottom:10px;
+    color:#e53935;
+}
+
+/* Enquiry Form */
+
+/* Note Temp fix until label can be removed from all UI types */
+
+.DpsUiPanelFlatEnquiry textarea{
+    min-width: 100%;
+    height: auto;
+}
+.DpsUiPanelFlatEnquiry .DpsLayoutTable{
+    width:100%;
+}
+
+.DpsUiPanelFlatEnquiry select {
+    height: 50px;
+    margin: 5px 0 0 0;
+    width: 100%;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+#EnquirySecondaryMessage{
+    text-align:center;
+    display:block;
+    font-size:13px;
+    padding:0 0 10px 0;
+}
+#EnquirySecondaryMessage a{
+    color:#e53935;
+}
+
+
+/* Copy to clipboard generate pxpay session */
+.DpsCopyToClipBoard {
+    background-color: #E53935;
+    padding: 10px 10px 10px 35px;
+    margin-top: 10px;
+    display: inline-block;
+    color: #fff;
+    cursor: copy;
+    border-radius: 2px;
+    transition: background-color 0.5s ease;
+    background-image: url(/pxmi/images/copy-icon-sm.png);
+    background-repeat: no-repeat;
+    background-size: 21px 21px;
+    background-position: 8px 9px;
+}
+.DpsCopyToClipBoard:hover {
+    background-color: #a91319;
+}
+
+
+
+.DpsLogonAccount {
+    display: block;
+    text-align: center;
+}
+.DpsAccountText {
+    margin-left: 30px;
+}
+.DpsSubheaderLogon {
+    font-weight: normal;
+}
+/* seperate panel for the copy right text, shown on the logon page */
+
+.DpsUiPanelCopyright {
+    text-align: center;
+}
+
+.DpsLegalNoticeLink {
+    color: #de0033;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.DpsUIPanelLegalNoticePage {
+    max-width: 1200px;
+}
+
+.DpsUIPanelLegalNoticeParagraph {
+    padding-bottom: 20px;
+    white-space: normal;
+    text-align: justify;
+}
+.DpsUiPanelLogonResult {
+    position: absolute;
+    left: 300px;
+    top: 320px;
+}
+
+.DpsPageContainer {
+    display: table-cell;
+    position: static;
+ 
+    max-width: 1600px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    background-color: white;
+    border: 1px solid lightgrey;
+    padding: 20px;
+    border-radius: 2px;
+}
+/* End: PageConfig_0208_BROWSER_STANDARD_0002.CSS */
+/* $Id: example.css,v 1.5 2006/03/27 02:44:36 pat Exp $ */
+/*--------------------------------------------------
+  REQUIRED to hide the non-active tab content.
+  But do not hide them in the print stylesheet!
+  --------------------------------------------------*/
+
+.tabberlive .tabbernav {
+    width: 100%;
+    /* TODO Use this wide enough to set the minimum width of the tab layout */
+    
+    min-width: 460px;
+}
+.tabberlive .tabbertabhide {
+    display: none;
+}
+/*--------------------------------------------------
+  .tabber = before the tabber interface is set up
+  .tabberlive = after the tabber interface is set up
+  --------------------------------------------------*/
+
+.tabberlive {
+    margin-top: 1em;
+}
+/*--------------------------------------------------
+  ul.tabbernav = the tab navigation list
+  li.tabberactive = the active tab
+  --------------------------------------------------*/
+
+ul.tabbernav {
+    margin: 0;
+    padding: 4px 0;
+    border-bottom: 1px solid #E8E7E7;
+    background-color: transparent;
+    font-size: inherit;
+    text-decoration: none;
+    width: 200px;
+}
+ul.tabbernav li {
+    list-style: none;
+    margin: 0;
+    display: inline;
+}
+ul.tabbernav li a {
+    background-color: #686E77;
+    padding: 6px;
+    margin-left: 3px;
+    border-bottom: 0px;
+    text-decoration: none;
+    border-radius: 2px 2px 0px 0;
+}
+ul.tabbernav li a:link {
+    color: #fff
+}
+ul.tabbernav li a:visited {
+    color: green;
+}
+ul.tabbernav li a:hover {
+    color: #FFFFFF;
+    background: #383d45;
+}
+ul.tabbernav li.tabberactive a {
+    color: #000;
+    background-color: #fff;
+    border: 1px solid #e3e3e3;
+    border-bottom: 1px solid #fff;
+}
+ul.tabbernav li.tabberactive a:hover {
+    color: #000;
+    background: white;
+    border-bottom: 1px solid white;
+}
+ul.tabbernav li a {
+    padding: 6px 2px 6px 2px;
+}
+/*--------------------------------------------------
+  .tabbertab = the tab content
+  Add style only after the tabber interface is set up (.tabberlive)
+  --------------------------------------------------*/
+
+.tabberlive .tabbertab {
+    padding: 5px;
+    border: 1px solid #e3e3e3;
+    border-top: 0;
+    min-height: 460px;
+    height: 100%;
+    background-color: white;
+    margin-bottom: 20px;
+    /* If you don't want the tab size changing whenever a tab is changed
+    you can set a fixed height */
+    /* If you set a fix height set overflow to auto and you will get a
+    scrollbar when necessary */
+    /* overflow:auto; */
+}
+/* If desired, hide the heading since a heading is provided by the tab */
+
+.tabberlive .tabbertab > h2 {
+    display: none;
+}
+.tabberlive .tabbertab > h3 {
+    display: none;
+}
+
+/* Example of using an ID to set different styles for the tabs on the page */
+
+.tabberlive#tab1 {} .tabberlive#tab2 {} .tabberlive#tab2 .tabbertab {
+    height: 200px;
+    overflow: auto;
+}
+a.info {
+    position: relative;
+    /*this is the key*/
+    
+    z-index: 24;
+    background-color: #ccc;
+    color: #000;
+    text-decoration: none
+}
+a.info:hover {
+    z-index: 25;
+    background-color: #ff0
+}
+a.info span {
+    display: none
+}
+a.info:hover span {
+    /*the span will display just on :hover state*/
+    
+    display: block;
+    position: absolute;
+    top: 2em;
+    left: 2em;
+    width: 15em;
+    border: 1px solid #0cf;
+    background-color: #cff;
+    color: #000;
+    text-align: center
+}
+.DpsSearchPopupBox {
+    max-width: 600px;
+    min-width: 300px;
+    position: absolute;
+    background-color: white;
+    border: solid;
+    border-width: 1px;
+    border-color: lightgrey;
+}
+.DpsSearchList li {
+    list-style: none;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.DpsSearchList li:hover {
+    background-color: lightgrey;
+}
+
+.DpsSearchList li[data-selected="1"] {
+    background-color: lightgrey;
+}
+
+/* Needed to hide the "numeric spinners" shown on "number" inputs. */
+/* Firefox */
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+/*ToDo: I think the above CSS is not needed, but it might be needed for some mobile PxPay stuff. So basically for now just !important it out for spinboxes (maybe should remove in the future).*/
+.DpsSpinBox {
+    -moz-appearance: none !important;
+}
+/* WebKit & Opera */
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.DpsModifiedField {
+    background-color: #ffffea;
+}
+.DpsExtraLongField {
+    width: 250px;
+}
+
+/* Status Buttons CRM */
+.DpsCustomerStatus, 
+.DpsOverdueInvoices, 
+#IsCorporateLogo, 
+#IsRefuseServiceLogo{
+    float:left;
+    margin:0 3px 0 0;
+}
+
+
+/* DpsErrorMessage Pop-Up */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: visible;
+    opacity: 0;
+    transition: all 1s ease;
+    visibility: visible;
+    opacity: 1;
+    z-index: 9999999;
+}
+.DpsErrorPopupCircle {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    margin: 0 auto;
+    color: #262a2f;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    top: 10px;
+}
+.DpsErrorPopupText {
+    margin-top: 13px;
+    display: block;
+}
+.DpsHeaderPopup {
+    height: 60px;
+    width: 100%;
+    background-color: #262a2f;
+    z-index:9999;
+}
+.DpsErrorPopup {
+    margin: 10px auto;
+    color: #262a2f;
+    background-color: #f7f7f7;
+    width: 80%;
+    top: 150px;
+    position: relative;
+    transition: all 5s ease-in-out;
+}
+.DpsErrorPopup .DpsErrorPopupClose {
+    transition: all 200ms;
+    font-size: 15px;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 2px;
+    background-color: #e53935;
+    display: block;
+    padding: 8px 5px 8px 5px;
+    text-align: center;
+    width: 100px;
+    margin:0 auto;
+    font-size:12px;
+}
+.DpsErrorPopup .DpsErrorPopupClose:hover {
+    background-color: #ab151c;
+}
+.DpsErrorPopup .content{
+    padding:0 0 20px 0;
+}
+.DpsErrorPopup .content p {
+    margin: 0 auto;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    padding:10px;
+    margin-top: 20px;
+    text-align: center;
+}
+/* DpsNotification Pop-Up */
+
+.DpsNotificationPopup {
+    color: #4CAF50;
+    background-color: #fff;
+    border: 1px solid #eeeded;
+    border-bottom: 2px solid #41464d;
+    border-radius: 6px;
+    width: 90%;
+    padding-left: 55px;
+    padding-right: 20px;
+    padding-bottom: 25px;
+    top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    height: auto;
+    position: fixed;
+    opacity: inherit;
+    filter: inherit;
+    -moz-animation-name: dropNotification;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease-out;
+    -moz-animation-duration: 0.9s;
+    -webkit-animation-name: dropNotification;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-out;
+    -webkit-animation-duration: 0.9s;
+    animation-name: dropNotification;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-out;
+    animation-duration: 0.9s;
+    -webkit-box-shadow: 0px 0px 19px -1px rgba(192, 192, 192, 0.34);
+    -moz-box-shadow: 0px 0px 19px -1px rgba(192, 192, 192, 0.34);
+    box-shadow: 0px 0px 19px -1px rgba(192, 192, 192, 0.34);
+}
+.DpsNotificationPopup .content p {
+    margin: 0 auto;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 25px;
+    text-align: center;
+}
+@-moz-keyframes dropNotification {
+    0% {
+        -moz-transform: translateY(-80px);
+    }
+    100% {
+        -moz-transform: translateY(0);
+    }
+}
+@-webkit-keyframes dropNotification {
+    0% {
+        -webkit-transform: translateY(-80px);
+    }
+    100% {
+        -webkit-transform: translateY(0);
+    }
+}
+@keyframes dropNotification {
+    0% {
+        transform: translateY(-80px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+.DpsNotificationPopupText {
+    margin-top: 15px;
+    display: block;
+}
+.DpsNotificationPopupOverlay {
+    display: none;
+}
+.DpsNotificationTick {
+    float: left;
+    background-color: #4CAF50;
+    color: #fff;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    display: block;
+    position: absolute;
+    top: 19px;
+    left: 25px;
+    opacity: inherit;
+    filter: inherit;
+}
+.DpsNotificationTick:before {
+    content: '\2713';
+    padding: 10px;
+    line-height: 30px;
+}
+.DpsNotificationTick p {
+    margin: 0;
+    padding: 0;
+    margin-top: -30px;
+}
+
+
+/* Bootstrap vertical navigation */
+
+.navbar {
+    margin-bottom: 0px;
+}
+.navbar-default {
+    background-color: #262a2f;
+    border: 0;
+    border-top: 1px solid #373c43;
+    color: #fff;
+    z-index: 9999;
+}
+.navbar-default .navbar-brand {
+    color: #fff;
+    font-size: 14px;
+}
+.navbar-default .navbar-brand:hover {
+    color: #fff;
+}
+.navbar-default .navbar-toggle {
+    border: 0;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background: #fff;
+}
+
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+    border: none;
+}
+fieldset {
+    margin: 0;
+    padding: 0;
+}
+
+/* Footer */
+
+footer {
+    text-align: center;
+}
+
+/* Inline spinner styling */
+
+.PxInputInlineSpinner {
+  display: block;
+  position: absolute;
+  height: 10px;
+  pointer-events: none;
+  margin-left: 5px;
+  margin-top: -20px;
+}
+
+.PxInputInlineSpinnerInterm {
+  position: absolute;
+  right: 10px;
+}
+
+.PxInputInlineSpinnerHidden {
+  display: none !important;
+}
+
+.PxInputInlineSpinnerCommon {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: 0px;
+  border-radius: 50%;
+  border: 2px solid;
+}
+
+.PxInputInlineSpinnerBG {
+  border-color: #ccc;
+}
+
+.PxInputInlineSpinnerArc {
+  animation: PxInputInlineSpinner 0.9s linear infinite;
+  border-color: #66afe9 transparent transparent transparent;
+}
+
+@keyframes PxInputInlineSpinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Inline spinner styling ends */
+
+
+.DpsInlineValidationText {
+    white-space: pre-line;
+    font-size: 12px;
+    color: #ee1c25;
+}
+
+.DpsCardTypeLogoContainer {
+    display: inline-block;
+    position: relative !important;
+    width: 23px;
+    height: 23px;
+    border: none;
+    margin-left: -26px;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.DpsCardTypeLogo {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    pointer-events: none;
+}
+
+.DpsCardTypeLogoHidden {
+    display: none;
+}
+
+.DpsUnderline {
+    text-decoration: underline !important;
+}
+
+@media (min-width: 0px) {
+
+    .DpsUiPageTitle1 {
+        background-image: url(/pxmi/images/logo-mobile.png);
+        height: 60px;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneCountryPrefix {
+        width: 20% !important;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneNumber {
+        width: 78% !important;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    /* Reduce space between columns */
+    .wrapper .col-lg-2 {
+        padding-left: 15px;
+        padding-right: 5px;
+    }
+    .wrapper .col-lg-10 {
+        padding-left: 10px;
+        padding-right: 5px;
+    }
+    /* Bootstrap Navigation */
+
+    .navbar-default {
+        background-color: #262a2f;
+        border: 0;
+        border-top: none;
+        border-radius: 0;
+        max-width: 100%;
+        z-index: 0;
+    }
+    .sidebar-nav .navbar .navbar-collapse {
+        padding: 0;
+        max-height: none;
+    }
+    .sidebar-nav .navbar ul {
+        float: none;
+    }
+    .sidebar-nav .navbar ul:not {
+        display: block;
+    }
+    .sidebar-nav .navbar li {
+        float: none;
+        display: block;
+    }
+    .sidebar-nav .navbar li a {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    /* Removes Bootstrap Margin that creates a scroll bar */
+
+    .row {
+        margin-right: 0;
+    }
+    .DpsMenuContainer {
+        max-width: 100%;
+    }
+
+    .DpsUiPanelLegend {
+        font-size: 18px;
+        font-weight: 400;
+    }
+
+    .DpsUiPageTitle1 {
+        background-image: url(/pxmi/images/logo.png);
+        height: 100px;
+    }
+    .DpsTitleSessionInfo {
+        margin-top: -10px;
+    }
+
+    .PxPaymentManagerTitle {
+        font-size: 14px;
+        padding-left: 30px;
+    }
+    .DpsHomeIcon {
+        height: 15px;
+        filter: invert(100%); /*make icon white.*/
+    }
+
+    .DpsSmoothButton {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
+    .DpsErrorPopup {
+        margin: 10px auto;
+        color: #262a2f;
+        background-color: #f7f7f7;
+        width: 20%;
+        top: 200px;
+        min-height: 180px;
+        position: relative;
+        transition: all 5s ease-in-out;
+        -webkit-box-shadow: -2px 7px 42px -8px rgba(0,0,0,0.85);
+        -moz-box-shadow: -2px 7px 42px -8px rgba(0,0,0,0.85);
+        box-shadow: -2px 7px 42px -8px rgba(0,0,0,0.85);
+    }
+
+    .DpsNotificationPopup {
+        width: 30%;
+    }
+
+
+    .DpsUiPanelLogon .DpsLogonSubtext,
+    .DpsUiPanelLogon .DpsInlineLink {
+        font-size: 13px;
+    }
+    .DpsSignUpSelect {
+        margin: 0;
+        padding: 0;
+    }
+    .DpsAccountText {
+        margin-left: 45px;
+    }
+    .DpsSubheaderLogon {
+        font-size: 18px;
+    }
+
+    .DpsApplyScreen {
+        padding: 30px;
+    }
+
+    .DpsDDForm {
+        padding: 30px;
+    }
+    .DpsDDForm .DpsGroupHeader {
+        font-size: 16px !important;
+    }
+
+    .DpsCustomerStatus {
+        position: absolute;
+        top: 18px;
+        left: 799px;
+    }
+    .DpsOverdueInvoices {
+        position: absolute;
+        top: 18px;
+        left: 624px;
+        float: none;
+        margin: 0;
+    }
+    .DpsDDUKLogo {
+        position: relative;
+        left: 27px;
+        margin: 0
+    }
+
+    .DpsDDLogo {
+        position: relative;
+        width:200px;
+        float: none;
+        margin: 0
+    }
+    /* Corporate Logo & Refuse Service needs its own positioning */
+    #IsCorporateLogo {
+        position: absolute;
+        top: 18px;
+        left: 290px;
+        float: none;
+        margin: 0;
+    }
+    #RefuseServiceLogo {
+        position: absolute;
+        top: 18px;
+        left: 445px;
+        float: none;
+        margin: 0;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneCountryPrefix {
+        width: 42% !important;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneNumber {
+        width: 57% !important;
+    }
+ 
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+
+    .DpsUiPanelQuickSearch {
+        /* layout hack not ideal */
+        max-width: 320px;
+        position: absolute !important; /*override panel norm*/
+        right: 40px;
+    }
+
+    .DpsUiPanelNoLabelQuickSearch {
+        /* layout hack not ideal */
+        max-width: 243px;
+        position: absolute !important; /*override panel norm*/
+        right: 40px;
+    }
+
+    .DpsUiPanelLegend {
+        font-size: 24px;
+        font-weight: normal;
+    }
+
+    ul.tabbernav li a {
+        padding: 6px;
+    }
+
+    .DpsLayoutTable .DpsTableCell {
+        min-width: 220px;
+    }
+
+    .DpsFileAnimation {
+        width: 220px;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneCountryPrefix {
+        width: 42% !important;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneNumber {
+        width: 57% !important;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+
+    /* Adjust width on columns */
+    .col-lg-10 {
+        width: 86.33333333%;
+    }
+    .col-lg-2 {
+        width: 13.66666667%;
+    }
+    .DpsUiPanelSignUp .DpsFieldPhoneCountryPrefix {
+        width: 42% !important;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneNumber {
+        width: 57% !important;
+    }
+}
+
+
+@media (min-width: 1900px) {
+
+
+    .DpsUiPanelQuickSearch {
+        max-width: 320px;
+        /* layout hack not ideal */
+        position: absolute !important; /*override panel norm*/
+        right: 60px;
+    }
+
+    .DpsUiPanelNoLableQuickSearch {
+        max-width: 241px;
+        /* layout hack not ideal */
+        position: absolute !important; /*override panel norm*/
+        right: 60px;
+    }
+    .DpsUiPanelSignUp .DpsFieldPhoneCountryPrefix {
+        width: 42% !important;
+    }
+
+    .DpsUiPanelSignUp .DpsFieldPhoneNumber {
+        width: 57% !important;
+    }
+
+}
+
+    /*Can't figure out nice way to do this. Canvases are quite hacky in HTML5: http://stackoverflow.com/questions/1664785/resize-html5-canvas-to-fit-window
+The hack is to just generate the CSS using a look in javascript:
+
+for(var i = 0; i < 5000; i += 20)
+    document.write("\n@media (min-width: " + i + "px) { .DpsBreakdownCanvas { width:" + Math.floor(i * 0.42) + "px; height:" + Math.floor(i * 0.3) + "px; }}");
+
+*/
+@media (min-width: 0px) { .DpsBreakdownCanvas { width:0px; height:0px; }} @media (min-width: 20px) { .DpsBreakdownCanvas { width:8px; height:6px; }} @media (min-width: 40px) { .DpsBreakdownCanvas { width:16px; height:12px; }} @media (min-width: 60px) { .DpsBreakdownCanvas { width:25px; height:18px; }} @media (min-width: 80px) { .DpsBreakdownCanvas { width:33px; height:24px; }} @media (min-width: 100px) { .DpsBreakdownCanvas { width:42px; height:30px; }} @media (min-width: 120px) { .DpsBreakdownCanvas { width:50px; height:36px; }} @media (min-width: 140px) { .DpsBreakdownCanvas { width:58px; height:42px; }} @media (min-width: 160px) { .DpsBreakdownCanvas { width:67px; height:48px; }} @media (min-width: 180px) { .DpsBreakdownCanvas { width:75px; height:54px; }} @media (min-width: 200px) { .DpsBreakdownCanvas { width:84px; height:60px; }} @media (min-width: 220px) { .DpsBreakdownCanvas { width:92px; height:66px; }} @media (min-width: 240px) { .DpsBreakdownCanvas { width:100px; height:72px; }} @media (min-width: 260px) { .DpsBreakdownCanvas { width:109px; height:78px; }} @media (min-width: 280px) { .DpsBreakdownCanvas { width:117px; height:84px; }} @media (min-width: 300px) { .DpsBreakdownCanvas { width:126px; height:90px; }} @media (min-width: 320px) { .DpsBreakdownCanvas { width:134px; height:96px; }} @media (min-width: 340px) { .DpsBreakdownCanvas { width:142px; height:102px; }} @media (min-width: 360px) { .DpsBreakdownCanvas { width:151px; height:108px; }} @media (min-width: 380px) { .DpsBreakdownCanvas { width:159px; height:114px; }} @media (min-width: 400px) { .DpsBreakdownCanvas { width:168px; height:120px; }} @media (min-width: 420px) { .DpsBreakdownCanvas { width:176px; height:126px; }} @media (min-width: 440px) { .DpsBreakdownCanvas { width:184px; height:132px; }} @media (min-width: 460px) { .DpsBreakdownCanvas { width:193px; height:138px; }} @media (min-width: 480px) { .DpsBreakdownCanvas { width:201px; height:144px; }} @media (min-width: 500px) { .DpsBreakdownCanvas { width:210px; height:150px; }} @media (min-width: 520px) { .DpsBreakdownCanvas { width:218px; height:156px; }} @media (min-width: 540px) { .DpsBreakdownCanvas { width:226px; height:162px; }} @media (min-width: 560px) { .DpsBreakdownCanvas { width:235px; height:168px; }} @media (min-width: 580px) { .DpsBreakdownCanvas { width:243px; height:174px; }} @media (min-width: 600px) { .DpsBreakdownCanvas { width:252px; height:180px; }} @media (min-width: 620px) { .DpsBreakdownCanvas { width:260px; height:186px; }} @media (min-width: 640px) { .DpsBreakdownCanvas { width:268px; height:192px; }} @media (min-width: 660px) { .DpsBreakdownCanvas { width:277px; height:198px; }} @media (min-width: 680px) { .DpsBreakdownCanvas { width:285px; height:204px; }} @media (min-width: 700px) { .DpsBreakdownCanvas { width:294px; height:210px; }} @media (min-width: 720px) { .DpsBreakdownCanvas { width:302px; height:216px; }} @media (min-width: 740px) { .DpsBreakdownCanvas { width:310px; height:222px; }} @media (min-width: 760px) { .DpsBreakdownCanvas { width:319px; height:228px; }} @media (min-width: 780px) { .DpsBreakdownCanvas { width:327px; height:234px; }} @media (min-width: 800px) { .DpsBreakdownCanvas { width:336px; height:240px; }} @media (min-width: 820px) { .DpsBreakdownCanvas { width:344px; height:246px; }} @media (min-width: 840px) { .DpsBreakdownCanvas { width:352px; height:252px; }} @media (min-width: 860px) { .DpsBreakdownCanvas { width:361px; height:258px; }} @media (min-width: 880px) { .DpsBreakdownCanvas { width:369px; height:264px; }} @media (min-width: 900px) { .DpsBreakdownCanvas { width:378px; height:270px; }} @media (min-width: 920px) { .DpsBreakdownCanvas { width:386px; height:276px; }} @media (min-width: 940px) { .DpsBreakdownCanvas { width:394px; height:282px; }} @media (min-width: 960px) { .DpsBreakdownCanvas { width:403px; height:288px; }} @media (min-width: 980px) { .DpsBreakdownCanvas { width:411px; height:294px; }} @media (min-width: 1000px) { .DpsBreakdownCanvas { width:420px; height:300px; }} @media (min-width: 1020px) { .DpsBreakdownCanvas { width:428px; height:306px; }} @media (min-width: 1040px) { .DpsBreakdownCanvas { width:436px; height:312px; }} @media (min-width: 1060px) { .DpsBreakdownCanvas { width:445px; height:318px; }} @media (min-width: 1080px) { .DpsBreakdownCanvas { width:453px; height:324px; }} @media (min-width: 1100px) { .DpsBreakdownCanvas { width:462px; height:330px; }} @media (min-width: 1120px) { .DpsBreakdownCanvas { width:470px; height:336px; }} @media (min-width: 1140px) { .DpsBreakdownCanvas { width:478px; height:342px; }} @media (min-width: 1160px) { .DpsBreakdownCanvas { width:487px; height:348px; }} @media (min-width: 1180px) { .DpsBreakdownCanvas { width:495px; height:354px; }} @media (min-width: 1200px) { .DpsBreakdownCanvas { width:504px; height:360px; }} @media (min-width: 1220px) { .DpsBreakdownCanvas { width:512px; height:366px; }} @media (min-width: 1240px) { .DpsBreakdownCanvas { width:520px; height:372px; }} @media (min-width: 1260px) { .DpsBreakdownCanvas { width:529px; height:378px; }} @media (min-width: 1280px) { .DpsBreakdownCanvas { width:537px; height:384px; }} @media (min-width: 1300px) { .DpsBreakdownCanvas { width:546px; height:390px; }} @media (min-width: 1320px) { .DpsBreakdownCanvas { width:554px; height:396px; }} @media (min-width: 1340px) { .DpsBreakdownCanvas { width:562px; height:402px; }} @media (min-width: 1360px) { .DpsBreakdownCanvas { width:571px; height:408px; }} @media (min-width: 1380px) { .DpsBreakdownCanvas { width:579px; height:414px; }} @media (min-width: 1400px) { .DpsBreakdownCanvas { width:588px; height:420px; }} @media (min-width: 1420px) { .DpsBreakdownCanvas { width:596px; height:426px; }} @media (min-width: 1440px) { .DpsBreakdownCanvas { width:604px; height:432px; }} @media (min-width: 1460px) { .DpsBreakdownCanvas { width:613px; height:438px; }} @media (min-width: 1480px) { .DpsBreakdownCanvas { width:621px; height:444px; }} @media (min-width: 1500px) { .DpsBreakdownCanvas { width:630px; height:450px; }} @media (min-width: 1520px) { .DpsBreakdownCanvas { width:638px; height:456px; }} @media (min-width: 1540px) { .DpsBreakdownCanvas { width:646px; height:462px; }} @media (min-width: 1560px) { .DpsBreakdownCanvas { width:655px; height:468px; }} @media (min-width: 1580px) { .DpsBreakdownCanvas { width:663px; height:474px; }} @media (min-width: 1600px) { .DpsBreakdownCanvas { width:672px; height:480px; }} @media (min-width: 1620px) { .DpsBreakdownCanvas { width:680px; height:486px; }} @media (min-width: 1640px) { .DpsBreakdownCanvas { width:688px; height:492px; }} @media (min-width: 1660px) { .DpsBreakdownCanvas { width:697px; height:498px; }} @media (min-width: 1680px) { .DpsBreakdownCanvas { width:705px; height:504px; }} @media (min-width: 1700px) { .DpsBreakdownCanvas { width:714px; height:510px; }} @media (min-width: 1720px) { .DpsBreakdownCanvas { width:722px; height:516px; }} @media (min-width: 1740px) { .DpsBreakdownCanvas { width:730px; height:522px; }} @media (min-width: 1760px) { .DpsBreakdownCanvas { width:739px; height:528px; }} @media (min-width: 1780px) { .DpsBreakdownCanvas { width:747px; height:534px; }} @media (min-width: 1800px) { .DpsBreakdownCanvas { width:756px; height:540px; }} @media (min-width: 1820px) { .DpsBreakdownCanvas { width:764px; height:546px; }} @media (min-width: 1840px) { .DpsBreakdownCanvas { width:772px; height:552px; }} @media (min-width: 1860px) { .DpsBreakdownCanvas { width:781px; height:558px; }} @media (min-width: 1880px) { .DpsBreakdownCanvas { width:789px; height:564px; }} @media (min-width: 1900px) { .DpsBreakdownCanvas { width:798px; height:570px; }} @media (min-width: 1920px) { .DpsBreakdownCanvas { width:806px; height:576px; }} @media (min-width: 1940px) { .DpsBreakdownCanvas { width:814px; height:582px; }} @media (min-width: 1960px) { .DpsBreakdownCanvas { width:823px; height:588px; }} @media (min-width: 1980px) { .DpsBreakdownCanvas { width:831px; height:594px; }} @media (min-width: 2000px) { .DpsBreakdownCanvas { width:840px; height:600px; }} @media (min-width: 2020px) { .DpsBreakdownCanvas { width:848px; height:606px; }} @media (min-width: 2040px) { .DpsBreakdownCanvas { width:856px; height:612px; }} @media (min-width: 2060px) { .DpsBreakdownCanvas { width:865px; height:618px; }} @media (min-width: 2080px) { .DpsBreakdownCanvas { width:873px; height:624px; }} @media (min-width: 2100px) { .DpsBreakdownCanvas { width:882px; height:630px; }} @media (min-width: 2120px) { .DpsBreakdownCanvas { width:890px; height:636px; }} @media (min-width: 2140px) { .DpsBreakdownCanvas { width:898px; height:642px; }} @media (min-width: 2160px) { .DpsBreakdownCanvas { width:907px; height:648px; }} @media (min-width: 2180px) { .DpsBreakdownCanvas { width:915px; height:654px; }} @media (min-width: 2200px) { .DpsBreakdownCanvas { width:924px; height:660px; }} @media (min-width: 2220px) { .DpsBreakdownCanvas { width:932px; height:666px; }} @media (min-width: 2240px) { .DpsBreakdownCanvas { width:940px; height:672px; }} @media (min-width: 2260px) { .DpsBreakdownCanvas { width:949px; height:678px; }} @media (min-width: 2280px) { .DpsBreakdownCanvas { width:957px; height:684px; }} @media (min-width: 2300px) { .DpsBreakdownCanvas { width:966px; height:690px; }} @media (min-width: 2320px) { .DpsBreakdownCanvas { width:974px; height:696px; }} @media (min-width: 2340px) { .DpsBreakdownCanvas { width:982px; height:702px; }} @media (min-width: 2360px) { .DpsBreakdownCanvas { width:991px; height:708px; }} @media (min-width: 2380px) { .DpsBreakdownCanvas { width:999px; height:714px; }} @media (min-width: 2400px) { .DpsBreakdownCanvas { width:1008px; height:720px; }} @media (min-width: 2420px) { .DpsBreakdownCanvas { width:1016px; height:726px; }} @media (min-width: 2440px) { .DpsBreakdownCanvas { width:1024px; height:732px; }} @media (min-width: 2460px) { .DpsBreakdownCanvas { width:1033px; height:738px; }} @media (min-width: 2480px) { .DpsBreakdownCanvas { width:1041px; height:744px; }} @media (min-width: 2500px) { .DpsBreakdownCanvas { width:1050px; height:750px; }} @media (min-width: 2520px) { .DpsBreakdownCanvas { width:1058px; height:756px; }} @media (min-width: 2540px) { .DpsBreakdownCanvas { width:1066px; height:762px; }} @media (min-width: 2560px) { .DpsBreakdownCanvas { width:1075px; height:768px; }} @media (min-width: 2580px) { .DpsBreakdownCanvas { width:1083px; height:774px; }} @media (min-width: 2600px) { .DpsBreakdownCanvas { width:1092px; height:780px; }} @media (min-width: 2620px) { .DpsBreakdownCanvas { width:1100px; height:786px; }} @media (min-width: 2640px) { .DpsBreakdownCanvas { width:1108px; height:792px; }} @media (min-width: 2660px) { .DpsBreakdownCanvas { width:1117px; height:798px; }} @media (min-width: 2680px) { .DpsBreakdownCanvas { width:1125px; height:804px; }} @media (min-width: 2700px) { .DpsBreakdownCanvas { width:1134px; height:810px; }} @media (min-width: 2720px) { .DpsBreakdownCanvas { width:1142px; height:816px; }} @media (min-width: 2740px) { .DpsBreakdownCanvas { width:1150px; height:822px; }} @media (min-width: 2760px) { .DpsBreakdownCanvas { width:1159px; height:828px; }} @media (min-width: 2780px) { .DpsBreakdownCanvas { width:1167px; height:834px; }} @media (min-width: 2800px) { .DpsBreakdownCanvas { width:1176px; height:840px; }} @media (min-width: 2820px) { .DpsBreakdownCanvas { width:1184px; height:846px; }} @media (min-width: 2840px) { .DpsBreakdownCanvas { width:1192px; height:852px; }} @media (min-width: 2860px) { .DpsBreakdownCanvas { width:1201px; height:858px; }} @media (min-width: 2880px) { .DpsBreakdownCanvas { width:1209px; height:864px; }} @media (min-width: 2900px) { .DpsBreakdownCanvas { width:1218px; height:870px; }} @media (min-width: 2920px) { .DpsBreakdownCanvas { width:1226px; height:876px; }} @media (min-width: 2940px) { .DpsBreakdownCanvas { width:1234px; height:882px; }} @media (min-width: 2960px) { .DpsBreakdownCanvas { width:1243px; height:888px; }} @media (min-width: 2980px) { .DpsBreakdownCanvas { width:1251px; height:894px; }} @media (min-width: 3000px) { .DpsBreakdownCanvas { width:1260px; height:900px; }} @media (min-width: 3020px) { .DpsBreakdownCanvas { width:1268px; height:906px; }} @media (min-width: 3040px) { .DpsBreakdownCanvas { width:1276px; height:912px; }} @media (min-width: 3060px) { .DpsBreakdownCanvas { width:1285px; height:918px; }} @media (min-width: 3080px) { .DpsBreakdownCanvas { width:1293px; height:924px; }} @media (min-width: 3100px) { .DpsBreakdownCanvas { width:1302px; height:930px; }} @media (min-width: 3120px) { .DpsBreakdownCanvas { width:1310px; height:936px; }} @media (min-width: 3140px) { .DpsBreakdownCanvas { width:1318px; height:942px; }} @media (min-width: 3160px) { .DpsBreakdownCanvas { width:1327px; height:948px; }} @media (min-width: 3180px) { .DpsBreakdownCanvas { width:1335px; height:954px; }} @media (min-width: 3200px) { .DpsBreakdownCanvas { width:1344px; height:960px; }} @media (min-width: 3220px) { .DpsBreakdownCanvas { width:1352px; height:966px; }} @media (min-width: 3240px) { .DpsBreakdownCanvas { width:1360px; height:972px; }} @media (min-width: 3260px) { .DpsBreakdownCanvas { width:1369px; height:978px; }} @media (min-width: 3280px) { .DpsBreakdownCanvas { width:1377px; height:984px; }} @media (min-width: 3300px) { .DpsBreakdownCanvas { width:1386px; height:990px; }} @media (min-width: 3320px) { .DpsBreakdownCanvas { width:1394px; height:996px; }} @media (min-width: 3340px) { .DpsBreakdownCanvas { width:1402px; height:1002px; }} @media (min-width: 3360px) { .DpsBreakdownCanvas { width:1411px; height:1008px; }} @media (min-width: 3380px) { .DpsBreakdownCanvas { width:1419px; height:1014px; }} @media (min-width: 3400px) { .DpsBreakdownCanvas { width:1428px; height:1020px; }} @media (min-width: 3420px) { .DpsBreakdownCanvas { width:1436px; height:1026px; }} @media (min-width: 3440px) { .DpsBreakdownCanvas { width:1444px; height:1032px; }} @media (min-width: 3460px) { .DpsBreakdownCanvas { width:1453px; height:1038px; }} @media (min-width: 3480px) { .DpsBreakdownCanvas { width:1461px; height:1044px; }} @media (min-width: 3500px) { .DpsBreakdownCanvas { width:1470px; height:1050px; }} @media (min-width: 3520px) { .DpsBreakdownCanvas { width:1478px; height:1056px; }} @media (min-width: 3540px) { .DpsBreakdownCanvas { width:1486px; height:1062px; }} @media (min-width: 3560px) { .DpsBreakdownCanvas { width:1495px; height:1068px; }} @media (min-width: 3580px) { .DpsBreakdownCanvas { width:1503px; height:1074px; }} @media (min-width: 3600px) { .DpsBreakdownCanvas { width:1512px; height:1080px; }} @media (min-width: 3620px) { .DpsBreakdownCanvas { width:1520px; height:1086px; }} @media (min-width: 3640px) { .DpsBreakdownCanvas { width:1528px; height:1092px; }} @media (min-width: 3660px) { .DpsBreakdownCanvas { width:1537px; height:1098px; }} @media (min-width: 3680px) { .DpsBreakdownCanvas { width:1545px; height:1104px; }} @media (min-width: 3700px) { .DpsBreakdownCanvas { width:1554px; height:1110px; }} @media (min-width: 3720px) { .DpsBreakdownCanvas { width:1562px; height:1116px; }} @media (min-width: 3740px) { .DpsBreakdownCanvas { width:1570px; height:1122px; }} @media (min-width: 3760px) { .DpsBreakdownCanvas { width:1579px; height:1128px; }} @media (min-width: 3780px) { .DpsBreakdownCanvas { width:1587px; height:1134px; }} @media (min-width: 3800px) { .DpsBreakdownCanvas { width:1596px; height:1140px; }} @media (min-width: 3820px) { .DpsBreakdownCanvas { width:1604px; height:1146px; }} @media (min-width: 3840px) { .DpsBreakdownCanvas { width:1612px; height:1152px; }} @media (min-width: 3860px) { .DpsBreakdownCanvas { width:1621px; height:1158px; }} @media (min-width: 3880px) { .DpsBreakdownCanvas { width:1629px; height:1164px; }} @media (min-width: 3900px) { .DpsBreakdownCanvas { width:1638px; height:1170px; }} @media (min-width: 3920px) { .DpsBreakdownCanvas { width:1646px; height:1176px; }} @media (min-width: 3940px) { .DpsBreakdownCanvas { width:1654px; height:1182px; }} @media (min-width: 3960px) { .DpsBreakdownCanvas { width:1663px; height:1188px; }} @media (min-width: 3980px) { .DpsBreakdownCanvas { width:1671px; height:1194px; }} @media (min-width: 4000px) { .DpsBreakdownCanvas { width:1680px; height:1200px; }} @media (min-width: 4020px) { .DpsBreakdownCanvas { width:1688px; height:1206px; }} @media (min-width: 4040px) { .DpsBreakdownCanvas { width:1696px; height:1212px; }} @media (min-width: 4060px) { .DpsBreakdownCanvas { width:1705px; height:1218px; }} @media (min-width: 4080px) { .DpsBreakdownCanvas { width:1713px; height:1224px; }} @media (min-width: 4100px) { .DpsBreakdownCanvas { width:1722px; height:1230px; }} @media (min-width: 4120px) { .DpsBreakdownCanvas { width:1730px; height:1236px; }} @media (min-width: 4140px) { .DpsBreakdownCanvas { width:1738px; height:1242px; }} @media (min-width: 4160px) { .DpsBreakdownCanvas { width:1747px; height:1248px; }} @media (min-width: 4180px) { .DpsBreakdownCanvas { width:1755px; height:1254px; }} @media (min-width: 4200px) { .DpsBreakdownCanvas { width:1764px; height:1260px; }} @media (min-width: 4220px) { .DpsBreakdownCanvas { width:1772px; height:1266px; }} @media (min-width: 4240px) { .DpsBreakdownCanvas { width:1780px; height:1272px; }} @media (min-width: 4260px) { .DpsBreakdownCanvas { width:1789px; height:1278px; }} @media (min-width: 4280px) { .DpsBreakdownCanvas { width:1797px; height:1284px; }} @media (min-width: 4300px) { .DpsBreakdownCanvas { width:1806px; height:1290px; }} @media (min-width: 4320px) { .DpsBreakdownCanvas { width:1814px; height:1296px; }} @media (min-width: 4340px) { .DpsBreakdownCanvas { width:1822px; height:1302px; }} @media (min-width: 4360px) { .DpsBreakdownCanvas { width:1831px; height:1308px; }} @media (min-width: 4380px) { .DpsBreakdownCanvas { width:1839px; height:1314px; }} @media (min-width: 4400px) { .DpsBreakdownCanvas { width:1848px; height:1320px; }} @media (min-width: 4420px) { .DpsBreakdownCanvas { width:1856px; height:1326px; }} @media (min-width: 4440px) { .DpsBreakdownCanvas { width:1864px; height:1332px; }} @media (min-width: 4460px) { .DpsBreakdownCanvas { width:1873px; height:1338px; }} @media (min-width: 4480px) { .DpsBreakdownCanvas { width:1881px; height:1344px; }} @media (min-width: 4500px) { .DpsBreakdownCanvas { width:1890px; height:1350px; }} @media (min-width: 4520px) { .DpsBreakdownCanvas { width:1898px; height:1356px; }} @media (min-width: 4540px) { .DpsBreakdownCanvas { width:1906px; height:1362px; }} @media (min-width: 4560px) { .DpsBreakdownCanvas { width:1915px; height:1368px; }} @media (min-width: 4580px) { .DpsBreakdownCanvas { width:1923px; height:1374px; }} @media (min-width: 4600px) { .DpsBreakdownCanvas { width:1932px; height:1380px; }} @media (min-width: 4620px) { .DpsBreakdownCanvas { width:1940px; height:1386px; }} @media (min-width: 4640px) { .DpsBreakdownCanvas { width:1948px; height:1392px; }} @media (min-width: 4660px) { .DpsBreakdownCanvas { width:1957px; height:1398px; }} @media (min-width: 4680px) { .DpsBreakdownCanvas { width:1965px; height:1404px; }} @media (min-width: 4700px) { .DpsBreakdownCanvas { width:1974px; height:1410px; }} @media (min-width: 4720px) { .DpsBreakdownCanvas { width:1982px; height:1416px; }} @media (min-width: 4740px) { .DpsBreakdownCanvas { width:1990px; height:1422px; }} @media (min-width: 4760px) { .DpsBreakdownCanvas { width:1999px; height:1428px; }} @media (min-width: 4780px) { .DpsBreakdownCanvas { width:2007px; height:1434px; }} @media (min-width: 4800px) { .DpsBreakdownCanvas { width:2016px; height:1440px; }} @media (min-width: 4820px) { .DpsBreakdownCanvas { width:2024px; height:1446px; }} @media (min-width: 4840px) { .DpsBreakdownCanvas { width:2032px; height:1452px; }} @media (min-width: 4860px) { .DpsBreakdownCanvas { width:2041px; height:1458px; }} @media (min-width: 4880px) { .DpsBreakdownCanvas { width:2049px; height:1464px; }} @media (min-width: 4900px) { .DpsBreakdownCanvas { width:2058px; height:1470px; }} @media (min-width: 4920px) { .DpsBreakdownCanvas { width:2066px; height:1476px; }} @media (min-width: 4940px) { .DpsBreakdownCanvas { width:2074px; height:1482px; }} @media (min-width: 4960px) { .DpsBreakdownCanvas { width:2083px; height:1488px; }} @media (min-width: 4980px) { .DpsBreakdownCanvas { width:2091px; height:1494px; }}
+
+    .DpsUiPanelBreakdown h2, .DpsUiPanelBreakdown h1 {
+        font-weight: 400;
+        line-height: 30px;
+    }
+
+    .DpsUiPanelBreakdown {
+        display: inline-block;
+        float: left;
+        -webkit-transition: width 1s;
+        -moz-transition: width 1s;
+        transition: width 1s;
+        text-decoration: none;
+        text-align: center;
+        vertical-align: middle;
+        height: 100%;
+        display: block;
+        border-radius: 2px;
+    }
+
+    .DpsBreakdownPanel > div {
+        background-color: #fff;
+        border: 1px solid #e3e3e3;
+    }
+
+    .DpsTooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+
+        .DpsTooltip .DpsTooltipText {
+            display: none;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+            .DpsTooltip .DpsTooltipText::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: #555 transparent transparent transparent;
+            }
+
+        .DpsTooltip:hover .DpsTooltipText {
+            display: block;
+            opacity: 1;
+        }
+
+    .DpsChartContainer {
+        width: 850px;
+        height: 850px;
+    }
+
+    /* TLS Check Page */
+    .DpsTlsCheckFailedIcon {
+        text-indent: -9999px;
+        background-image: url('/pxpay/images/transaction-failed.png');
+        background-position: center;
+        background-size: 55px 55px;
+        background-repeat: no-repeat;
+        display: block !important;
+        float: none !important;
+        position: relative !important;
+        margin-top: auto !important;
+        margin-bottom: auto !important;
+        width: 70px;
+        height: 70px;
+        margin: 0 auto !important;
+        text-align: center;
+    }
+
+    .DpsTlsCheckFailed {
+        margin: 0 auto;
+        color: #ee1c25;
+        font-size: 18px;
+        display: block;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+
+    .DpsTlsCheckPassedIcon {
+        text-indent: -9999px;
+        background-image: url('/pxpay/images/transaction-success.png');
+        background-position: center;
+        background-size: 55px 55px;
+        background-repeat: no-repeat;
+        display: block !important;
+        float: none !important;
+        position: relative !important;
+        margin-top: auto !important;
+        margin-bottom: auto !important;
+        width: 70px;
+        height: 70px;
+        margin: 0 auto !important;
+        text-align: center;
+    }
+
+    .DpsTlsCheckPassed {
+        margin: 0 auto;
+        color: #4caf50;
+        font-size: 18px;
+        display: block;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    #DpsTlsCheckPanel {
+        width: 100%;
+        margin-top: 40px;
+    }
+
+        #DpsTlsCheckPanel table {
+            margin: 0 auto;
+        }
+
+        #DpsTlsCheckPanel .DpsTableCellLegend {
+            width: auto;
+        }
+
+        #DpsTlsCheckPanel .DpsInlineLink {
+            font-size: 12px;
+            color: #de0033;
+        }
+
+
+    .TOTPQRCode {
+        margin-left: auto;
+        margin-right: auto;
+        display: inline-block;
+        height: 220px;
+        width: 220px;
+    }
+
+    .TableSpinnerContainer {
+        width:100%;
+        display:flex;
+        justify-content:center;
+        background-color:#ddd;
+    }
+    .TableSpinnerOffset {
+        top:6px;
+    }
+    .TableSpinnerBackground {
+       background-color: #ddd;
+    }
+
+    tr.CAManagementColor1 {
+        background-color:#f9f9f9 !important;
+    }
+    tr.CAManagementColor2 {
+        background-color: white !important;
+    }
+    td.CAManagementTableCell {
+        border-top:0px !important;
+        padding:4px !important;
+    }
+    .CAManagementDisplay {
+        display:flex;
+    }
+    .CAManagementTotalContainer {
+        width:250px;
+        height:250px;
+        float:left;
+        position:relative;
+    }
+    .CAManagementTotal {
+        width: 100%;
+        height: 40px;
+        position: absolute;
+        top: 60%;
+        left: 0;
+        margin-top: -20px;
+        line-height: 19px;
+        text-align: center;
+        z-index: 999999999999999;
+     }
+    .CAManagementTableContainer {
+        width:100%;
+        height:250px;
+        font-size:15px;
+        overflow:scroll;
+        background-color:white;
+    }
+    .CAManagementWarning {
+        border:0px;
+    }
+
+    /* End: PageConfig_0205_PXCOM_STANDARDDISPLAY_0002 CSS */

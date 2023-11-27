@@ -1,0 +1,373 @@
+function PxOnKeyUpDynamic(url, inputField, refControlNames, keyEvent, actionType) {
+  if (url.length == 0)
+    return;
+
+  var e = window.event || keyEvent;
+  if(e != null && e.keyCode !== undefined)
+  {
+    if (e.keyCode == 13)
+      PxTriggerEvent(inputField,'SelectValueChanged');
+
+    if (e.keyCode == 40 || e.keyCode == 38 || e.keyCode == 13)
+      return;
+   
+    if (e.keyCode == 17) { // ctrl key
+      searchOptionCtrlOn = false;
+      return;
+    }
+
+    //if searchOptionPasteOn is true if means user paste content by menu click or ctrl+v and we should render search popup.
+    if (searchOptionCtrlOn && e.keyCode != 86 && !searchOptionPasteOn)
+		return;
+  }
+
+  try {
+    var referenceValues = GetReferenceFilterValuesDynamic(inputField, refControlNames);
+
+    if (referenceValues === null) {
+      if (actionType === 'DoTextInputFilter') {
+        //clear text input
+        if (inputField.hasAttribute("readonly"))
+          inputField.innerHTML = ''; //this is a <span>
+      }
+    } else {
+      var JSONstr = JSON.stringify({
+        "PXMI3JSONAction": "FromUiItem",
+        "ActionType": actionType,
+        "UiItemId": inputField.id,
+        "MainControlValue": inputField.value ? inputField.value.trim() : '', //readonly input = no value element in DOM
+        "RefControlValues": referenceValues
+      });
+      PxInvalidateItem(inputField.id);
+      PxAjaxPost(url, JSONstr);
+    }
+  }
+  catch (e) {
+      console.log("Aborting AJAX request: " + e);
+  }
+}
+
+
+function GetReferenceFilterValuesDynamic(inputField, refControlNames) {
+  var refControlValues = {};
+  for (var refName in refControlNames) {
+    var Mandatory = false;
+    if (Array.isArray(refName)) {
+      Mandatory = refName[1] === 'Mandatory';
+      refName = refName[0];
+    }
+    var value = pxapp[refName];
+    if (value === undefined || value === null) 
+      throw ('Unexpected value for field ' + refName);
+    var handlers = referenceFilterCustomRequestHandlers[inputField.id];
+    if (handlers) {
+        var customHandler = handlers[refName];
+        if (customHandler)
+            value = customHandler(value);
+    }
+    if (!value && Mandatory)
+      return null;
+    else
+        refControlValues[refName] = value;
+  } 
+  return refControlValues;
+}
+
+function PxOnSearchKeyUpDynamic(inputField, refControlNames, keyEvent) {
+	//response is a getlist
+	PxOnKeyUpDynamic(pxapp.ajaxUrl, inputField, refControlNames, keyEvent, "DoSearchFilter");
+}
+
+function PxOnTextInputKeyUpDynamic(inputField, refControlNames) {
+	//textinput = response is a Get (can only physically display 1 record anyways)
+	PxOnKeyUpDynamic(pxapp.ajaxUrl, inputField, refControlNames, null, "DoTextInputFilter");
+}
+
+
+function PxOnKeyUp(url, inputField, refControlNames, keyEvent, actionType) {
+  if (url.length == 0)
+    return;
+
+  var e = window.event || keyEvent;
+  if(e != null && e.keyCode !== undefined)
+  {
+    if (e.keyCode == '40' || e.keyCode == '38' || e.keyCode == '13')
+    {
+      if (e.keyCode == '13')
+        PxTriggerEvent(inputField, 'SelectValueChanged');
+      return;
+    }
+   
+    if (e.keyCode == 17) { // ctrl key
+      searchOptionCtrlOn = false;
+      return;
+    }
+
+    //if searchOptionPasteOn is true if means user paste content by menu click or ctrl+v and we should render search popup.
+    if (searchOptionCtrlOn && e.keyCode != 86 && !searchOptionPasteOn)
+      return;
+  }
+  //$(inputField).attr('data-is-valid', 0);
+  try {
+    var referenceValues = GetReferenceFilterValues(inputField, refControlNames);
+    if (referenceValues === null) {
+      if (actionType === 'DoTextInputFilter') {
+        //clear text input
+        if (inputField.hasAttribute("readonly"))
+          inputField.innerHTML = ''; //this is a <span>
+      }
+    } else {
+        
+      var JSONstr = JSON.stringify({
+        "PXMI3JSONAction": "FromUiItem",
+        "ActionType": actionType,
+        "UiItemId": inputField.id,
+        "MainControlValue": inputField.value ? inputField.value.trim() : '', //readonly input = no value element in DOM
+        "RefControlValues": referenceValues
+      });
+      PxInvalidateItem(inputField.id);
+      PxAjaxPost(url, JSONstr);
+    }
+  }
+  catch (e) {
+    console.log("Aborting AJAX request: " + e);
+  }
+}
+
+function PxOnSearchKeyUp(url, inputField, refControlNames, keyEvent) {
+	//response is a getlist
+	PxOnKeyUp(url, inputField, refControlNames, keyEvent, "DoSearchFilter");
+}
+
+function PxOnTextInputKeyUp(url, inputField, refControlNames) {
+	//textinput = response is a Get (can only physically display 1 record anyways)
+	PxOnKeyUp(url, inputField, refControlNames, null, "DoTextInputFilter");
+}
+
+PxSelectAll('.DpsDropList').forEach(function (node, index) {
+  PxBindEvent(node, 'change', function () {
+    PxTriggerEvent(this, 'SelectValueChanged');
+  });
+});
+
+PxSelectAll('.DpsTextField').forEach(function (node, index) {
+  PxBindEvent(node, 'change', function () {
+    PxTriggerEvent(this, 'SelectValueChanged');
+  });
+});//not tested, maybe keydown is needed...
+
+function PxDoDroplistReferencing(url, triggeringRefControl, mainControl, refControlNames, jsEvent) {
+  //note: this is triggered only by RELEVANT controls so there is no need to check triggeringRefControl.attr('name') at it will always be a relevant control.
+  //no validation or anything, just chuck it in.
+  var referenceValues = GetReferenceFilterValues(mainControl[0], refControlNames);
+  if (referenceValues === null) {
+    //some mandatory fields are empty, just clean the drop list
+    PxClearDropList(mainControl[0]);
+  } else {
+    var JSONstr = JSON.stringify({
+      "PXMI3JSONAction": "FromUiItem",
+      "ActionType": "DoDroplistFilter",
+      "UiItemId": mainControl[0].id,
+      "MainControlValue": mainControl[0].value,
+      "RefControlValues": referenceValues
+    });
+    PxInvalidateItem(mainControl[0].id);
+    PxAjaxPost(url, JSONstr);
+  }
+}
+
+function PxInvalidateItem(UiItemId) {
+  if(PxSelectOne("#" + UiItemId))
+    PxSelectOne("#" + UiItemId).setAttribute('data-is-valid', 0);
+}
+
+function PxAjaxPost(uri, JSONstr, callback) {
+  XmlHttp = GetXmlHttpObject();
+  if (XmlHttp == null)
+      return;
+  XmlHttp.onreadystatechange = callback || PxOnXmlHttpObjectStateChanged;
+  XmlHttp.requestText = JSONstr;
+  XmlHttp.open("POST", uri);
+  XmlHttp.send(JSONstr);
+  PxRestartTimeoutTimerOnAjaxRequest();
+}
+
+function PxOnSearchInputBlur(e) {
+  searchOptionCtrlOn = false;  // serch input lose focus, we need to reset searchOptionCtrlOn. 
+}
+// Handles input for search. We need to handle up/down and return keys to make it easier to use the search results popup.
+function PxOnSearchInputKeyDown(e) {
+  var e = e || window.event;
+  var divId = document.activeElement.id + '_' + "list";
+  var existing = document.getElementById(divId);
+
+  if (e.keyCode == 17) // ctrl key
+    searchOptionCtrlOn = true;
+
+  if (searchOptionCtrlOn && e.keyCode == 86) // v key
+    searchOptionPasteOn = true;
+
+  if (existing != null) {
+    // up or down keys.
+    if (e.keyCode == '40' || e.keyCode == '38') {
+      var increment = 0;
+      if (e.keyCode == '40') increment = 1; // down key.
+      if (e.keyCode == '38') increment = -1; // up key.
+
+      var length = existing.children != null ? existing.children.length : 0;
+      if (length > 0 && increment != 0) {
+        var currentlySelected = 0;
+        for (var i = 0; i < length; ++i) {
+          if (Number(existing.children[i].getAttribute('data-selected')) === 1) {
+            // found the currently selected.
+            existing.children[i].setAttribute('data-selected', 0);
+
+            currentlySelected = (i + increment >= length) ? 0 : (i + increment); // check max
+            currentlySelected = (currentlySelected < 0) ? (length - 1) : currentlySelected; // check min
+            break; // ignore rest.
+          }
+        }
+
+        if ($(existing.children[currentlySelected]).text() != searchOptionNoResultsFound) {
+          existing.children[currentlySelected].setAttribute('data-selected', 1);
+          return false;
+        }
+      }
+    }
+
+    if (e.keyCode == '13') {
+      var currentElement = $(document.activeElement);
+
+      // if we've got the search box open, select the highlighted
+      var length = existing.children != null ? existing.children.length : 0;
+      var currentValue = null;
+      if (length > 0) {
+        for (var i = 0; i < length; ++i) {
+          if (Number(existing.children[i].getAttribute('data-selected')) === 1) {
+            // found the currently selected. set and remove the search.
+            currentValue = $(existing.children[i]).text();
+            break;
+
+          }
+        }
+
+        if (!currentValue) {
+          currentValue = $(existing.children[0]).text();
+        }
+
+        if (currentValue != searchOptionNoResultsFound) {
+          currentElement.val(currentValue);
+          searchOptionMouseHighlighted = false; // reset so we can remove the current popup.
+          currentElement.blur();
+          currentElement.focus();
+        } else {
+          // show data invalid for 'Add' operation
+          currentElement.attr('data-is-valid', 0);
+        }
+      }
+      return false; //don't pass the event further up as that causes form submit (so stop event propogation + preventDefault)
+    }
+
+    // tab key.
+    if (e.keyCode == '9')
+      searchOptionMouseHighlighted = false; // reset so we can remove the current popup.
+  }
+
+  return PxCheckForAndHandleSubmission(e); //handle submission the same way as a textinput
+}
+
+function PxOnSearchInputPaste() {
+  searchOptionPasteOn = true;
+  setTimeout(function () {
+    // create native event, https://developer.mozilla.org/en-US/docs/Web/API/document.createEvent
+    var event = document.createEvent('KeyboardEvent');
+    event.initEvent('keyup', true, false);
+    this.dispatchEvent(event);
+  }.bind(this), 0);
+}
+
+var referenceFilterCustomRequestHandlers =  {};
+
+function GetReferenceFilterValues(inputField, refControlNames) {
+  if (inputField == null)
+    return null;
+
+  var refControlValues = {};
+  for (var i = 0; i < refControlNames.length; ++i) {
+    // refControlNames[i] is an array, first element is the control name. If it is manadary reference filter second element is 'Mandatory' 
+    var refElements = PxSelectAll("[name=" + refControlNames[i][0] + "]:not(span)");
+    if (refElements.length) {
+      var refElement = refElements[0];
+      var value = refElement.value;
+      if (referenceFilterCustomRequestHandlers[inputField.id] != undefined) {
+        var customHandler = referenceFilterCustomRequestHandlers[inputField.id][refElement.name];
+        if (customHandler != undefined)
+          value = customHandler(value);
+      }
+      // if mandatory reference fiter is empty we should skip ajax request
+      if (!value && refControlNames[i][1] === 'Mandatory')
+        return null;
+      else
+        refControlValues[refControlNames[i][0]] = value;
+    } else {
+      refControlValues[refControlNames[i][0]] = "";
+    }
+  } 
+  
+  return refControlValues;
+}
+
+function PxOnSearchDynamic(url, field, tableId, filterLoad) {
+  if (filterLoad == null)
+    filterLoad = 0;
+
+  var formDataInJson = CollectFormInputIntoJson(field);
+
+  var JSONstr = JSON.stringify({
+    "PXMI3JSONAction": "FromSearchPage",
+    "ActionType": "GetList",
+    "UiItemId": field.id,
+    "TableId": tableId,
+    "FormContent": formDataInJson,
+    "FilterLoad": filterLoad
+  });
+ 
+  PxAjaxPost(url, JSONstr);
+}
+
+function PxOnUpdateDynamic(url, field) {
+  var formDataInJson = CollectFormInputIntoJson(field);
+
+  var JSONstr = JSON.stringify({
+    "PXMI3JSONAction": "FromButton",
+    "ActionType": "Update",
+    "UiItemId": field.id,
+    "FormContent": formDataInJson
+  });
+
+  PxAjaxPost(url, JSONstr);
+}
+
+function CollectFormInputIntoJson(field) {
+  var formData = $(field).closest('form').serializeArray();
+  var formDataInJson = {};
+  for( var i = 0; i < formData.length; i++) {
+    formDataInJson[formData[i]['name']] = formData[i]['value'];
+  }
+
+  return formDataInJson;
+}
+
+function PxRestartTimeoutTimerOnAjaxRequest() {
+  if (window.SessionTimeoutTime != null && typeof StartSessionTimeoutTimer === "function") {
+    StartSessionTimeoutTimer();
+  }
+}
+
+function PxUploadFileAjax(url, requestId, objectName, file, formData){
+	formData.append('PXMI3FORMAction', 'UploadFile');
+	formData.append('RequestId', requestId);
+	formData.append('Object', objectName);
+	formData.append('ImageData', file);
+	PxAjaxPost(url, formData);
+}

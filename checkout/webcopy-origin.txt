@@ -1,0 +1,16 @@
+Uri: https://sec.windcave.com/pxmi3/0205_0002
+File Name: C:\Downloaded Web Sites\sec.windcave.com\pxmi3\0205_0002
+Content Type: text/css
+
+Uri: https://sec.windcave.com/pxmi3/0305_0001
+File Name: C:\Downloaded Web Sites\sec.windcave.com\pxmi3\0305_0001
+Content Type: text/javascript
+
+Uri: https://sec.windcave.com/pxmi3/0306_0001
+File Name: C:\Downloaded Web Sites\sec.windcave.com\pxmi3\0306_0001
+Content Type: text/javascript
+
+Uri: https://sec.windcave.com/pxmi3/privacy-policy
+File Name: C:\Downloaded Web Sites\sec.windcave.com\pxmi3\privacy-policy.html
+Content Type: text/html
+
