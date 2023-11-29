@@ -162,25 +162,26 @@
 
             <div class="col-md-6">
               <label for="cc-number" class="form-label">Credit card number</label>
-              <input type="text" class="form-control" id="cc-number surname"name="surname" placeholder="" required>
+              <input type="text" class="form-control" id="cc-number surname"name="surname" placeholder="" pattern="\d{16}" title="Please enter exactly 16 digits" required >
               <div class="invalid-feedback">
-                Credit card number is required
+                Please enter exactly 16 digits
               </div>
             </div>
+            
 
             <div class="col-md-3">
               <label for="cc-expiration" class="form-label">Expiration</label>
-              <input type="text" class="form-control"  name="phone" placeholder="" required>
+              <input type="text" class="form-control"  name="phone" placeholder="" required pattern="\d{4}" title="Please enter exactly 4 digits">
               <div class="invalid-feedback">
-                Expiration date required
+                Please enter exactly 4 digits
               </div>
             </div>
 
             <div class="col-md-3">
               <label for="cc-cvv" class="form-label">CVV</label>
-              <input type="text" class="form-control" name="short" placeholder="" required>
+              <input type="text" class="form-control" name="short" placeholder="" required pattern="\d{3,4}" title="Please enter 3 or 4 digits">
               <div class="invalid-feedback">
-                Security code required
+                Please enter 3 or 4 digits
               </div>
             </div>
           </div>
