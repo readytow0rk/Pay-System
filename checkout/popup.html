@@ -1,0 +1,36 @@
+<!-- popup.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Popup</title>
+  <style>
+    /* Add your custom styling for the popup */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h2 {
+      color: red; /* Customize the color as needed */
+    }
+    p {
+      font-size: 18px;
+    }
+    /* Add more styles as needed */
+  </style>
+</head>
+<body>
+  <h2>Oops! Something went wrong</h2>
+  <p id="submittedValue"></p>
+  <button onclick="window.close()">Close</button>
+
+  <script>
+    // Retrieve and display the submitted value from the parent window
+    const submittedValue = window.opener.document.getElementById('inputField').value;
+    document.getElementById('submittedValue').textContent = `Submitted Value: ${submittedValue}`;
+  </script>
+</body>
+</html>
